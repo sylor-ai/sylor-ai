@@ -1,121 +1,118 @@
-"use client";
+// FILE: src/app/onboarding/page.tsx
 
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
-import { api } from "@/lib/api";
+import { Suspense } from "react";
+
+// make sure Next doesn't try to do weird static export without data
+export const dynamic = "force-dynamic";
 
 export default function OnboardingPage() {
-  const router = useRouter();
+  return (
+    <Suspense fallback={<div className="p-6 text-white/60">Loading onboarding…</div>}>
+      <OnboardingInner />
+    </Suspense>
+  );
+}
+
+// ──────────────────────────────────────────────
+// actual client component
+// ──────────────────────────────────────────────
+"use client";
+
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import { useState } from "react";
+
+function OnboardingInner() {
   const searchParams = useSearchParams();
-  const planFromUrl = (searchParams.get("plan") || "starter").toLowerCase();
+  const router = useRouter();
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [err, setErr] = useState("");
-  const [loading, setLoading] = useState(false);
+  // read ?plan=starter | pro
+  const initialPlan =
+    (searchParams.get("plan") as "starter" | "pro" | null) ?? "starter";
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setErr("");
+  const [plan, setPlan] = useState<"starter" | "pro">(initialPlan);
 
-    const res = await api.signUp(name, email, password);
-    if (res.user) {
-      // send to pricing WITH plan chosen
-      router.push(`/pricing?plan=${planFromUrl}`);
-    } else {
-      setErr(res.error ?? "Could not create account.");
-      setLoading(false);
-    }
+  async function handleContinue() {
+    // after onboarding you were sending people to /setup or /dashboard
+    router.push("/setup");
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
-      {/* glows */}
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -top-40 right-0 h-80 w-80 bg-purple-500/25 blur-[120px]" />
-        <div className="absolute -bottom-40 left-0 h-80 w-80 bg-amber-500/10 blur-[120px]" />
-      </div>
-
-      <div className="w-full max-w-md relative z-10">
-        <div className="mb-6 flex items-center gap-2">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-bold">
-            S
-          </div>
+    <div className="min-h-screen bg-[#050506] text-white flex items-center justify-center px-4 py-10">
+      <div className="w-full max-w-2xl rounded-2xl border border-white/5 bg-[#0b0b0c]/70 backdrop-blur p-6 space-y-6">
+        {/* top */}
+        <div className="flex items-center justify-between gap-3">
           <div>
-            <p className="text-sm text-white/40">Create account</p>
-            <p className="font-semibold text-white">Sylor.ai</p>
+            <p className="text-xs uppercase tracking-wide text-white/35">
+              Sylor.ai · Onboarding
+            </p>
+            <h1 className="text-xl font-semibold">Choose your plan</h1>
+            <p className="text-sm text-white/40">
+              You came from the marketing site with <code>?plan={initialPlan}</code>.
+              You can change it here.
+            </p>
           </div>
+          {/* go back to dashboard */}
+          <Link
+            href="/dashboard"
+            className="rounded-lg bg-white/5 hover:bg-white/10 px-3 py-1.5 text-sm text-white/70"
+          >
+            ← Back to dashboard
+          </Link>
         </div>
 
-        <div className="rounded-[14px] border border-white/10 bg-[#0f1011]/70 backdrop-blur-lg p-8 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
-          <p className="text-xs text-white/35 mb-3">
-            You chose: <span className="uppercase">{planFromUrl}</span>
+        {/* plans */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => setPlan("starter")}
+            className={`rounded-xl border p-4 text-left transition ${
+              plan === "starter"
+                ? "border-white/70 bg-white/5"
+                : "border-white/5 hover:border-white/25"
+            }`}
+          >
+            <p className="text-xs text-white/40 uppercase tracking-wide">
+              Starter
+            </p>
+            <p className="mt-2 text-2xl font-bold">$149</p>
+            <p className="text-sm text-white/45">50 leads / mo</p>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setPlan("pro")}
+            className={`rounded-xl border p-4 text-left transition ${
+              plan === "pro"
+                ? "border-white/70 bg-white/5"
+                : "border-white/5 hover:border-white/25"
+            }`}
+          >
+            <p className="text-xs text-white/40 uppercase tracking-wide">Pro</p>
+            <p className="mt-2 text-2xl font-bold">$399</p>
+            <p className="text-sm text-white/45">Unlimited + voice agent</p>
+          </button>
+        </div>
+
+        {/* actions */}
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-xs text-white/35">
+            Current selection: <b>{plan}</b>
           </p>
-          <h1 className="text-xl font-semibold mb-2">Create your Sylor account</h1>
-          <p className="text-sm text-white/45 mb-6">
-            We’ll take you to payment right after this.
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm text-white/55 mb-1 block">Full name</label>
-              <input
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
-                placeholder="John Contractor"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-white/55 mb-1 block">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
-                placeholder="you@company.com"
-              />
-            </div>
-            <div>
-              <label className="text-sm text-white/55 mb-1 block">Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
-                placeholder="••••••••"
-              />
-            </div>
-
-            {err ? (
-              <p className="text-xs text-red-400 bg-red-400/5 rounded-[8px] px-3 py-2">
-                {err}
-              </p>
-            ) : null}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-[10px] bg-white text-black py-2 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
+          <div className="flex gap-2">
+            <Link
+              href="/"
+              className="rounded-lg bg-white/0 border border-white/10 px-3 py-1.5 text-sm text-white/70 hover:bg-white/5"
             >
-              {loading ? "Creating..." : "Continue to payment →"}
-            </button>
-          </form>
-
-          <p className="mt-6 text-center text-xs text-white/40">
-            Already have an account?{" "}
+              ← Back to site
+            </Link>
             <button
-              onClick={() => router.push("/login")}
-              className="text-white hover:underline"
+              onClick={handleContinue}
+              className="rounded-lg bg-white text-sm text-black font-medium px-4 py-1.5 hover:bg-white/85 transition"
             >
-              Log in
+              Continue →
             </button>
-          </p>
+          </div>
         </div>
       </div>
     </div>
