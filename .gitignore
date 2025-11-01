@@ -6,10 +6,11 @@ dist
 .cache
 .vercel
 
-# env
 .env
 .env.local
-.env*.local
+.env.development
+.env.production
+.vercel
 
 # logs
 npm-debug.log*
