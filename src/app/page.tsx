@@ -18,8 +18,8 @@ export default function HomePage() {
   );
 
   function goTo(plan: "starter" | "pro") {
-    // keep your onboarding flow
-    window.location.href = `/onboarding?plan=${plan}`;
+    // ✅ flow: landing -> signup -> pricing -> Stripe -> setup -> dashboard
+    window.location.href = `/signup?plan=${plan}`;
   }
 
   return (
@@ -60,18 +60,43 @@ export default function HomePage() {
             </Link>
 
             {/* NAV get started → open plan picker */}
-            <button
-  onClick={() =>
-    setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
-  }
-  className="relative inline-flex items-center justify-center gap-2 rounded-[8px] p-[2px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
->
-  <span className="rounded-[6px] bg-white px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
-    Get started
-    <span className="text-lg leading-none">→</span>
-  </span>
-</button>
+            <div
+              className="relative"
+              onMouseLeave={() => setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))}
+            >
+              <button
+                onClick={() =>
+                  setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
+                }
+                className="relative inline-flex items-center justify-center gap-2 rounded-[8px] p-[2px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
+              >
+                <span className="rounded-[6px] bg-white px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
+                  Get started
+                  <span className="text-lg leading-none">→</span>
+                </span>
+              </button>
 
+              {/* NAV plan picker dropdown */}
+              {planPickerOpen === "nav" ? (
+                <div className="absolute right-0 top-14 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
+                  <p className="text-xs text-white/40 px-2 pb-1">
+                    Choose a plan to start
+                  </p>
+                  <button
+                    onClick={() => goTo("starter")}
+                    className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
+                  >
+                    Starter <span className="text-white/30 text-xs">$149/mo</span>
+                  </button>
+                  <button
+                    onClick={() => goTo("pro")}
+                    className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
+                  >
+                    Pro <span className="text-white/30 text-xs">$399/mo</span>
+                  </button>
+                </div>
+              ) : null}
+            </div>
 
             {/* mobile menu placeholder */}
             <button
@@ -84,27 +109,6 @@ export default function HomePage() {
                 <span className="block h-0.5 w-4 bg-white/70 rounded" />
               </div>
             </button>
-
-            {/* NAV plan picker dropdown */}
-            {planPickerOpen === "nav" ? (
-              <div className="absolute right-0 top-14 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
-                <p className="text-xs text-white/40 px-2 pb-1">
-                  Choose a plan to start
-                </p>
-                <button
-                  onClick={() => goTo("starter")}
-                  className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                >
-                  Starter <span className="text-white/30 text-xs">$149/mo</span>
-                </button>
-                <button
-                  onClick={() => goTo("pro")}
-                  className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                >
-                  Pro <span className="text-white/30 text-xs">$399/mo</span>
-                </button>
-              </div>
-            ) : null}
           </div>
         </div>
       </header>
@@ -141,7 +145,12 @@ export default function HomePage() {
                 no job is left behind.
               </p>
 
-              <div className="flex flex-wrap gap-3 relative">
+              <div
+                className="flex flex-wrap gap-3 relative"
+                onMouseLeave={() =>
+                  setPlanPickerOpen((prev) => (prev === "hero" ? null : prev))
+                }
+              >
                 {/* HERO get started → open plan picker */}
                 <button
                   onClick={() =>
@@ -154,11 +163,11 @@ export default function HomePage() {
                   Get started for free →
                 </button>
                 <Link
-                  href="#product"
-                  className="rounded-[10px] border border-white/10 bg-white/0 px-5 py-2 text-sm text-white/80 hover:border-white/40 transition"
-                >
-                  Request a demo
-                </Link>
+                    href="#product"
+                    className="rounded-[10px] border border-white/10 bg-white/0 px-5 py-2 text-sm text-white/80 hover:border-white/40 transition"
+                  >
+                    Request a demo
+                  </Link>
 
                 {/* HERO plan picker */}
                 {planPickerOpen === "hero" ? (
@@ -353,12 +362,12 @@ export default function HomePage() {
                   client comms all stay in a single modern interface.
                 </p>
               </div>
-              <Link
-                href="/onboarding?plan=starter"
+              <button
+                onClick={() => goTo("starter")}
                 className="rounded-[10px] bg-white/10 px-4 py-1.5 text-sm text-white hover:bg-white/15"
               >
                 Start chatting →
-              </Link>
+              </button>
             </div>
 
             {/* fake dashboard */}
@@ -465,12 +474,12 @@ export default function HomePage() {
                   <li>• SMS automation</li>
                   <li>• Google Calendar booking</li>
                 </ul>
-                <Link
-                  href="/onboarding?plan=starter"
+                <button
+                  onClick={() => goTo("starter")}
                   className="mt-4 inline-flex rounded-[10px] bg-white/10 px-4 py-1.5 text-sm text-white hover:bg-white/15"
                 >
                   Choose Starter
-                </Link>
+                </button>
               </div>
               {/* PRO */}
               <div className="rounded-[10px] bg-white text-left px-6 py-4 text-slate-950 w-full max-w-sm">
@@ -484,12 +493,12 @@ export default function HomePage() {
                   <li>• Voice agent + SMS</li>
                   <li>• Multi-location / tenants</li>
                 </ul>
-                <Link
-                  href="/onboarding?plan=pro"
+                <button
+                  onClick={() => goTo("pro")}
                   className="mt-4 block w-full rounded-[10px] bg-slate-950 py-2 text-center text-sm text-white hover:bg-slate-900"
                 >
                   Choose Pro
-                </Link>
+                </button>
               </div>
             </div>
           </div>

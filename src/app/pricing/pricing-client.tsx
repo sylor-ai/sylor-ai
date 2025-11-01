@@ -21,8 +21,8 @@ const PLAN_CONFIG: Record<
 
 export default function PricingClient() {
   const searchParams = useSearchParams();
-  const plan = (searchParams.get("plan") || "starter").toLowerCase();
-  const planData = PLAN_CONFIG[plan] ?? PLAN_CONFIG.starter;
+  const currentPlan = (searchParams.get("plan") || "starter").toLowerCase();
+  const planData = PLAN_CONFIG[currentPlan] ?? PLAN_CONFIG.starter;
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -37,7 +37,7 @@ export default function PricingClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           priceId: planData.stripePriceId,
-          plan,
+          plan: currentPlan,
         }),
       });
 
@@ -51,12 +51,14 @@ export default function PricingClient() {
 
       const data = await res.json();
 
+      // Stripe returns hosted checkout → go there
       if (data.url) {
         window.location.href = data.url;
         return;
       }
 
-      window.location.href = "/setup?plan=" + plan;
+      // fallback → go to setup (still after "payment")
+      window.location.href = "/setup?plan=" + currentPlan;
     } catch (e) {
       console.error(e);
       setErr("Something went wrong.");
@@ -68,7 +70,7 @@ export default function PricingClient() {
     <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
       <div className="w-full max-w-md rounded-[14px] border border-white/10 bg-[#0d0d0e]/60 p-6">
         <p className="text-xs text-white/35 mb-2">
-          You chose: {plan.toUpperCase()}
+          You chose: {currentPlan.toUpperCase()}
         </p>
         <h1 className="text-xl font-semibold mb-2">Secure payment</h1>
         <p className="text-sm text-white/45 mb-6">
@@ -78,7 +80,7 @@ export default function PricingClient() {
         <div className="rounded-[12px] bg-white/5 p-4 mb-6">
           <p className="text-sm font-medium mb-1">{planData.label}</p>
           <p className="text-2xl font-bold mb-1">
-            {plan === "pro" ? "$399" : "$149"}
+            {currentPlan === "pro" ? "$399" : "$149"}
             <span className="text-sm text-white/45"> / month</span>
           </p>
           <p className="text-xs text-white/35">

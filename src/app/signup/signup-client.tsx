@@ -21,7 +21,7 @@ export default function SignupClient() {
     const res = await api.signUp(name, email, password);
 
     if (res.user) {
-      // keep your flow: after signup go to pricing with that plan
+      // after signup → pricing with same plan
       router.push(`/pricing?plan=${selectedPlan}`);
     } else {
       setErr(res.error ?? "Could not create account.");
@@ -36,14 +36,6 @@ export default function SignupClient() {
         className="absolute top-6 left-6 text-sm text-white/50 hover:text-white/80"
       >
         ← Back to site
-      </button>
-
-      {/* go to dashboard (you asked for this for login/signup pages) */}
-      <button
-        onClick={() => router.push("/dashboard")}
-        className="absolute top-6 right-6 text-sm text-white/50 hover:text-white/80"
-      >
-        Go to dashboard →
       </button>
 
       <div className="w-full max-w-md rounded-[18px] border border-white/10 bg-[#0f1011]/70 p-8 shadow-xl">
@@ -68,7 +60,9 @@ export default function SignupClient() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-white/50 mb-1 block">Full name</label>
+            <label className="text-sm text-white/50 mb-1 block">
+              Full name
+            </label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
