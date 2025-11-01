@@ -2,13 +2,15 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+// you *can* still set it in Vercel → Environment Variables
+// e.g. NEXT_PUBLIC_APP_URL=https://sylor.ai
+const envAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 if (!stripeSecret) {
-  console.warn("⚠️ STRIPE_SECRET_KEY is missing in .env.local");
+  console.warn("⚠️ STRIPE_SECRET_KEY is missing in .env.local / env");
 }
 
-// keep your apiVersion, but you can set it to a stable one if needed
 const stripe = new Stripe(stripeSecret || "", {
   apiVersion: "2025-10-29.clover",
 });
@@ -37,6 +39,25 @@ export async function POST(req: Request) {
       );
     }
 
+    // 🔥 build baseUrl from the request if env not set
+    const forwardedProto = req.headers.get("x-forwarded-proto");
+    const forwardedHost = req.headers.get("x-forwarded-host");
+    const host = req.headers.get("host");
+
+    // priority:
+    // 1. NEXT_PUBLIC_APP_URL (explicit)
+    // 2. x-forwarded-proto + x-forwarded-host (Vercel/proxy)
+    // 3. host (fallback)
+    // 4. localhost (final fallback)
+    const baseUrl =
+      envAppUrl && envAppUrl.startsWith("http")
+        ? envAppUrl
+        : forwardedProto && forwardedHost
+        ? `${forwardedProto}://${forwardedHost}`
+        : host
+        ? `https://${host}`
+        : "http://localhost:3000";
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [
@@ -45,10 +66,10 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      // ✅ NEW FLOW:
-      // pricing -> stripe -> DASHBOARD
-      success_url: `${appUrl}/dashboard`,
-      cancel_url: `${appUrl}/pricing?plan=${plan}`,
+      // ✅ our new flow ends in dashboard
+      success_url: `${baseUrl}/dashboard`,
+      // if user cancels on Stripe → back to pricing with the chosen plan
+      cancel_url: `${baseUrl}/pricing?plan=${plan}`,
       metadata: {
         sylor_plan: plan,
       },
