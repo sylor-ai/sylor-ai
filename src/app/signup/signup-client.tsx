@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 export default function SignupClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const selectedPlan = (searchParams.get("plan") || "starter").toLowerCase();
+  const selectedPlan = (searchParams.get("plan") || "").toLowerCase();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,8 +21,11 @@ export default function SignupClient() {
     const res = await api.signUp(name, email, password);
 
     if (res.user) {
-      // after signup → pricing with same plan
-      router.push(`/pricing?plan=${selectedPlan}`);
+      // ✅ new flow: signup -> setup (carry plan if exists)
+      const next = selectedPlan
+        ? `/setup?plan=${selectedPlan}`
+        : `/setup`;
+      router.push(next);
     } else {
       setErr(res.error ?? "Could not create account.");
     }
@@ -49,20 +52,20 @@ export default function SignupClient() {
           </div>
         </div>
 
-        <p className="text-xs text-white/35 mb-3">
-          You chose: {selectedPlan.toUpperCase()}
-        </p>
+        {selectedPlan ? (
+          <p className="text-xs text-white/35 mb-3">
+            You’ll continue with: {selectedPlan.toUpperCase()}
+          </p>
+        ) : null}
 
         <h1 className="text-2xl font-semibold mb-2">Get started</h1>
         <p className="text-sm text-white/45 mb-6">
-          We’ll take you to secure payment right after this.
+          We’ll ask for your business info on the next step.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm text-white/50 mb-1 block">
-              Full name
-            </label>
+            <label className="text-sm text-white/50 mb-1 block">Full name</label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}

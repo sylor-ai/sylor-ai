@@ -8,6 +8,7 @@ if (!stripeSecret) {
   console.warn("⚠️ STRIPE_SECRET_KEY is missing in .env.local");
 }
 
+// keep your apiVersion, but you can set it to a stable one if needed
 const stripe = new Stripe(stripeSecret || "", {
   apiVersion: "2025-10-29.clover",
 });
@@ -44,7 +45,9 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      success_url: `${appUrl}/setup?plan=${plan}`,
+      // ✅ NEW FLOW:
+      // pricing -> stripe -> DASHBOARD
+      success_url: `${appUrl}/dashboard`,
       cancel_url: `${appUrl}/pricing?plan=${plan}`,
       metadata: {
         sylor_plan: plan,

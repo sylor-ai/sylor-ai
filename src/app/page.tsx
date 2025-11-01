@@ -12,19 +12,21 @@ const NAV_ITEMS = [
 ];
 
 export default function HomePage() {
-  // which button opened the picker: "nav" | "hero" | null
+  // which button opened the picker: "nav" | null
+  // (hero no longer opens the picker — it goes straight to /signup)
   const [planPickerOpen, setPlanPickerOpen] = useState<"nav" | "hero" | null>(
     null
   );
 
+  // used in pricing section / product CTA – can preselect plan
   function goTo(plan: "starter" | "pro") {
-    // ✅ flow: landing -> signup -> pricing -> Stripe -> setup -> dashboard
+    // ✅ new flow: home -> signup -> setup -> pricing -> stripe -> dashboard
     window.location.href = `/signup?plan=${plan}`;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white scroll-smooth">
-      {/* TOP NAV (announcement bar removed) */}
+      {/* TOP NAV */}
       <header className="sticky top-3 z-50 flex justify-center pointer-events-none">
         <div className="pointer-events-auto mx-auto mt-2 flex h-14 max-w-6xl items-center justify-between gap-4 rounded-[10px] border border-white/5 bg-neutral-300/6 px-2 backdrop-blur-md">
           {/* logo */}
@@ -59,10 +61,12 @@ export default function HomePage() {
               Log in
             </Link>
 
-            {/* NAV get started → open plan picker */}
+            {/* NAV get started → /signup (with plan choices) */}
             <div
               className="relative"
-              onMouseLeave={() => setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))}
+              onMouseLeave={() =>
+                setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))
+              }
             >
               <button
                 onClick={() =>
@@ -117,11 +121,9 @@ export default function HomePage() {
       <main>
         {/* HERO */}
         <section className="relative" id="hero">
-          {/* brighter / rounder glows */}
+          {/* glows */}
           <div className="pointer-events-none absolute inset-0">
-            {/* right purple glow */}
             <div className="absolute right-[-20%] top-[-28%] h-[20px] w-[620px] bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_50%)] blur-[150px]" />
-            {/* left amber glow */}
             <div className="absolute left-[-25%] bottom-[-35%] h-[520px] w-[520px] bg-[radial-gradient(circle,_rgba(255,188,120,0.42)_56%,rgba(10,10,11,0)_80%)] blur-[150px]" />
           </div>
 
@@ -145,51 +147,21 @@ export default function HomePage() {
                 no job is left behind.
               </p>
 
-              <div
-                className="flex flex-wrap gap-3 relative"
-                onMouseLeave={() =>
-                  setPlanPickerOpen((prev) => (prev === "hero" ? null : prev))
-                }
-              >
-                {/* HERO get started → open plan picker */}
+              {/* HERO actions */}
+              <div className="flex flex-wrap gap-3 relative">
+                {/* ✅ hero now goes straight to /signup */}
                 <button
-                  onClick={() =>
-                    setPlanPickerOpen((prev) =>
-                      prev === "hero" ? null : "hero"
-                    )
-                  }
+                  onClick={() => (window.location.href = "/signup")}
                   className="rounded-[10px] bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition"
                 >
                   Get started for free →
                 </button>
                 <Link
-                    href="#product"
-                    className="rounded-[10px] border border-white/10 bg-white/0 px-5 py-2 text-sm text-white/80 hover:border-white/40 transition"
-                  >
-                    Request a demo
-                  </Link>
-
-                {/* HERO plan picker */}
-                {planPickerOpen === "hero" ? (
-                  <div className="absolute top-12 left-0 z-50 w-56 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
-                    <p className="text-xs text-white/40 px-2 pb-1">
-                      Choose a plan to start
-                    </p>
-                    <button
-                      onClick={() => goTo("starter")}
-                      className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                    >
-                      Starter{" "}
-                      <span className="text-white/30 text-xs">$149/mo</span>
-                    </button>
-                    <button
-                      onClick={() => goTo("pro")}
-                      className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                    >
-                      Pro <span className="text-white/30 text-xs">$399/mo</span>
-                    </button>
-                  </div>
-                ) : null}
+                  href="#product"
+                  className="rounded-[10px] border border-white/10 bg-white/0 px-5 py-2 text-sm text-white/80 hover:border-white/40 transition"
+                >
+                  Request a demo
+                </Link>
               </div>
 
               <div className="pt-4">
@@ -208,7 +180,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* hero right: lead panel */}
+            {/* hero right: lead panel (unchanged) */}
             <div className="relative z-10 flex-1 flex justify-center md:justify-end">
               <div className="w-full max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">

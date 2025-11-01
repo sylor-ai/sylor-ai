@@ -3,33 +3,35 @@
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
 
-const PLAN_CONFIG: Record<
-  string,
-  { label: string; price: string; stripePriceId: string }
-> = {
+const PLAN_CONFIG = {
   starter: {
-    label: "Starter plan",
-    price: "$149 / month",
+    label: "Starter",
+    price: 149,
+    desc: ["50 leads / mo", "SMS automation", "Google Calendar booking"],
     stripePriceId: "price_1SN3ReHBRIMb0ChwEPz1g2w5",
   },
   pro: {
-    label: "Pro plan",
-    price: "$399 / month",
+    label: "Pro",
+    price: 399,
+    desc: ["Unlimited leads", "Voice agent + SMS", "Multi-location / tenants"],
     stripePriceId: "price_1SN3RrHBRIMb0ChwjSIbQaYn",
   },
-};
+} as const;
 
 export default function PricingClient() {
   const searchParams = useSearchParams();
-  const currentPlan = (searchParams.get("plan") || "starter").toLowerCase();
-  const planData = PLAN_CONFIG[currentPlan] ?? PLAN_CONFIG.starter;
-
+  const initial = (searchParams.get("plan") || "starter").toLowerCase();
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">(
+    initial === "pro" ? "pro" : "starter"
+  );
   const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
+  const [err, setErr] = useState("");
 
   async function handleCheckout() {
-    setErr(null);
+    setErr("");
     setLoading(true);
+
+    const planData = PLAN_CONFIG[selectedPlan];
 
     try {
       const res = await fetch("/api/checkout", {
@@ -37,7 +39,8 @@ export default function PricingClient() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           priceId: planData.stripePriceId,
-          plan: currentPlan,
+          plan: selectedPlan,
+          // on the API side set success_url to /dashboard now
         }),
       });
 
@@ -51,14 +54,13 @@ export default function PricingClient() {
 
       const data = await res.json();
 
-      // Stripe returns hosted checkout → go there
       if (data.url) {
         window.location.href = data.url;
         return;
       }
 
-      // fallback → go to setup (still after "payment")
-      window.location.href = "/setup?plan=" + currentPlan;
+      // fallback
+      window.location.href = "/dashboard";
     } catch (e) {
       console.error(e);
       setErr("Something went wrong.");
@@ -68,36 +70,70 @@ export default function PricingClient() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
-      <div className="w-full max-w-md rounded-[14px] border border-white/10 bg-[#0d0d0e]/60 p-6">
-        <p className="text-xs text-white/35 mb-2">
-          You chose: {currentPlan.toUpperCase()}
-        </p>
-        <h1 className="text-xl font-semibold mb-2">Secure payment</h1>
-        <p className="text-sm text-white/45 mb-6">
-          We’ll create your Sylor tenant after payment.
+      <div className="w-full max-w-4xl">
+        <h1 className="text-2xl font-semibold mb-2 text-center">
+          Choose your plan
+        </h1>
+        <p className="text-sm text-white/50 mb-8 text-center">
+          You’ve already created your workspace. Pick a billing plan to activate it.
         </p>
 
-        <div className="rounded-[12px] bg-white/5 p-4 mb-6">
-          <p className="text-sm font-medium mb-1">{planData.label}</p>
-          <p className="text-2xl font-bold mb-1">
-            {currentPlan === "pro" ? "$399" : "$149"}
-            <span className="text-sm text-white/45"> / month</span>
-          </p>
-          <p className="text-xs text-white/35">
-            Billed monthly. Change or cancel anytime.
-          </p>
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* starter */}
+          <button
+            onClick={() => setSelectedPlan("starter")}
+            className={`rounded-[14px] border px-6 py-5 text-left transition ${
+              selectedPlan === "starter"
+                ? "border-white/70 bg-white/5"
+                : "border-white/10 bg-white/0 hover:border-white/30"
+            }`}
+          >
+            <p className="text-xs text-white/40 uppercase tracking-wide mb-2">
+              Starter
+            </p>
+            <p className="text-3xl font-bold mb-1">$149</p>
+            <p className="text-sm text-white/40 mb-4">per month</p>
+            <ul className="space-y-2 text-sm text-white/70">
+              {PLAN_CONFIG.starter.desc.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </button>
+
+          {/* pro */}
+          <button
+            onClick={() => setSelectedPlan("pro")}
+            className={`rounded-[14px] border px-6 py-5 text-left transition ${
+              selectedPlan === "pro"
+                ? "border-white/70 bg-white/5"
+                : "border-white/10 bg-white/0 hover:border-white/30"
+            }`}
+          >
+            <p className="text-xs text-white/40 uppercase tracking-wide mb-2">
+              Pro
+            </p>
+            <p className="text-3xl font-bold mb-1">$399</p>
+            <p className="text-sm text-white/40 mb-4">per month</p>
+            <ul className="space-y-2 text-sm text-white/70">
+              {PLAN_CONFIG.pro.desc.map((item) => (
+                <li key={item}>• {item}</li>
+              ))}
+            </ul>
+          </button>
         </div>
 
-        <button
-          onClick={handleCheckout}
-          disabled={loading}
-          className="w-full rounded-[10px] bg-white text-black py-2 text-sm font-medium hover:bg-white/90 disabled:opacity-50"
-        >
-          {loading ? "Creating session..." : "Continue to Stripe →"}
-        </button>
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={handleCheckout}
+            disabled={loading}
+            className="rounded-[10px] bg-white text-black px-6 py-2 text-sm font-medium hover:bg-white/90 disabled:opacity-50"
+          >
+            {loading ? "Redirecting to Stripe..." : "Continue to Stripe →"}
+          </button>
+        </div>
 
         {err ? (
-          <p className="mt-4 text-xs text-red-400 bg-red-400/10 rounded-[8px] px-3 py-2">
+          <p className="mt-4 text-center text-xs text-red-400 bg-red-400/5 rounded-[8px] px-3 py-2 inline-block">
             {err}
           </p>
         ) : null}

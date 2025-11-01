@@ -6,7 +6,7 @@ import { useState } from "react";
 export default function SetupInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const plan = (searchParams.get("plan") || "starter").toLowerCase();
+  const planFromUrl = (searchParams.get("plan") || "").toLowerCase();
 
   const [businessName, setBusinessName] = useState("UrbanLux Construction");
   const [businessPhone, setBusinessPhone] = useState("+1 (818) 555-1234");
@@ -25,7 +25,8 @@ export default function SetupInner() {
         body: JSON.stringify({
           businessName,
           businessPhone,
-          plan,
+          // we can store plan early, but final plan is chosen on /pricing
+          plan: planFromUrl || undefined,
         }),
       });
 
@@ -35,13 +36,19 @@ export default function SetupInner() {
         return;
       }
 
-      router.push("/dashboard");
+      // ✅ new flow: setup → pricing (carry plan if we had it)
+      const next = planFromUrl
+        ? `/pricing?plan=${planFromUrl}`
+        : `/pricing`;
+      router.push(next);
     } catch (error: any) {
       console.error(error);
       setErr("Could not save business profile.");
       setLoading(false);
     }
   }
+
+  const displayPlan = planFromUrl || "starter";
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
@@ -66,7 +73,8 @@ export default function SetupInner() {
         {/* Card */}
         <div className="rounded-[18px] border border-white/10 bg-[#0f1011]/65 backdrop-blur p-8 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
           <p className="text-xs text-white/35 mb-3">
-            Plan: <span className="uppercase">{plan}</span>
+            You will pick a plan next. Current:{" "}
+            <span className="uppercase">{displayPlan}</span>
           </p>
           <h1 className="text-2xl font-semibold mb-2">
             Tell us about your business
@@ -129,7 +137,7 @@ export default function SetupInner() {
               disabled={loading}
               className="w-full rounded-[10px] bg-[#5c6cff] hover:bg-[#4f5edf] transition py-2 text-sm font-medium disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Saving..." : "Continue to dashboard"}
+              {loading ? "Saving..." : "Continue to plan →"}
             </button>
           </form>
 
