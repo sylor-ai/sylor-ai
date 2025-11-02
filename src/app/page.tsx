@@ -47,7 +47,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white scroll-smooth">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0a0a0b] text-white scroll-smooth">
       {/* TOP NAV */}
       <header className="sticky top-3 z-50 flex justify-center pointer-events-none">
         {/* ✅ center on mobile, wider on desktop */}
@@ -93,19 +93,18 @@ export default function HomePage() {
                 setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))
               }
             >
-              {/* ✅ keep your gradient EXACTLY, just fixed height */}
+              {/* ✅ keep your gradient EXACTLY, just fixed height + thin border */}
               <button
-  onClick={() =>
-    setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
-  }
-  className="relative inline-flex h-9 md:h-9 items-center justify-center gap-2 rounded-[8px] p-[1px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
->
-  <span className="rounded-[8px] bg-white px-5 md:px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
-    Get started
-    <span className="text-lg leading-none">→</span>
-  </span>
-</button>
-
+                onClick={() =>
+                  setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
+                }
+                className="relative inline-flex h-9 md:h-9 items-center justify-center gap-2 rounded-[8px] p-[1px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
+              >
+                <span className="rounded-[8px] bg-white px-5 md:px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
+                  Get started
+                  <span className="text-lg leading-none">→</span>
+                </span>
+              </button>
 
               {/* NAV plan picker dropdown */}
               {planPickerOpen === "nav" ? (
@@ -146,7 +145,7 @@ export default function HomePage() {
       </header>
 
       {/* MAIN */}
-      <main>
+      <main className="w-full max-w-full overflow-x-hidden">
         {/* HERO */}
         <section className="relative" id="hero">
           {/* 🚫 DO NOT TOUCH GRADIENTS — keeping exactly as you had */}
@@ -210,8 +209,9 @@ export default function HomePage() {
             </div>
 
             {/* hero right */}
-            <div className="relative z-10 flex-1 flex justify-center md:justify-end">
-              <div className="w-full max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
+            <div className="relative z-10 flex-1 flex w-full justify-center md:justify-end">
+              {/* 👇 THIS was the part that made it scroll: now it obeys mobile width */}
+              <div className="w-full max-w-full md:max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-white/60">Leads inbox</p>
                   <span className="rounded-[10px] bg-emerald-500/10 px-2 py-1 text-xs text-emerald-300">
