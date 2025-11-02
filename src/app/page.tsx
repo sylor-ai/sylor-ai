@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 
 const NAV_ITEMS = [
   { label: "Features", href: "#features" },
@@ -13,48 +13,23 @@ const NAV_ITEMS = [
 
 export default function HomePage() {
   // which button opened the picker: "nav" | "hero" | null
-  // (hero doesn't open a picker anymore – it goes straight to /signup)
   const [planPickerOpen, setPlanPickerOpen] = useState<"nav" | "hero" | null>(
     null
   );
 
-  // refs to detect outside clicks
-  const navPickerRef = useRef<HTMLDivElement | null>(null);
-
-  // close plan picker on outside click + on scroll (mobile friendly)
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      const target = e.target as Node;
-      const insideNav = navPickerRef.current?.contains(target);
-      if (!insideNav) {
-        setPlanPickerOpen(null);
-      }
-    }
-    function handleScroll() {
-      setPlanPickerOpen(null);
-    }
-    document.addEventListener("mousedown", handleClick);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => {
-      document.removeEventListener("mousedown", handleClick);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
-
-  // used in pricing section / product CTA – can preselect plan
   function goTo(plan: "starter" | "pro") {
-    // ✅ flow: home -> signup -> setup -> pricing -> stripe -> dashboard
+    // ✅ flow: landing -> signup -> setup -> pricing -> Stripe -> dashboard
     window.location.href = `/signup?plan=${plan}`;
   }
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white scroll-smooth">
       {/* TOP NAV */}
-      <header className="sticky top-3 z-50 flex justify-center pointer-events-none">
-        <div className="pointer-events-auto mx-auto mt-2 flex h-14 max-w-6xl items-center justify-between gap-4 rounded-[10px] border border-white/5 bg-neutral-300/6 px-2 backdrop-blur-md">
+      <header className="sticky top-0 z-50 flex justify-center px-2 pt-2 pb-1 bg-gradient-to-b from-[#0a0a0b] via-[#0a0a0b]/90 to-transparent backdrop-blur">
+        <div className="w-full max-w-6xl pointer-events-auto flex items-center justify-between gap-3 rounded-[16px] border border-white/5 bg-black/30 px-2 py-1.5 md:h-14 md:px-3">
           {/* logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-bold">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
+            <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-bold">
               S
             </div>
             <span className="text-base font-semibold tracking-tight">
@@ -76,17 +51,17 @@ export default function HomePage() {
           </nav>
 
           {/* right actions */}
-          <div className="flex items-center gap-3 relative">
+          <div className="flex items-center gap-2 md:gap-3 relative">
+            {/* login button (smaller on mobile) */}
             <Link
               href="/login"
-              className="rounded-[5px] bg-[#161616] border border-white/5 px-4 py-1.5 text-sm text-white/80 hover:border-white/30 transition"
+              className="h-10 md:h-11 flex items-center rounded-[10px] bg-[#161616] border border-white/5 px-3 md:px-4 text-sm text-white/80 hover:border-white/30 transition"
             >
               Log in
             </Link>
 
             {/* NAV get started → open plan picker */}
             <div
-              ref={navPickerRef}
               className="relative"
               onMouseLeave={() =>
                 setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))
@@ -96,9 +71,9 @@ export default function HomePage() {
                 onClick={() =>
                   setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
                 }
-                className="relative inline-flex items-center justify-center gap-2 rounded-[8px] p-[2px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
+                className="h-10 md:h-11 relative inline-flex items-center justify-center gap-2 rounded-[10px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move px-[2px]"
               >
-                <span className="rounded-[6px] bg-white px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
+                <span className="rounded-[8px] bg-white px-4 md:px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
                   Get started
                   <span className="text-lg leading-none">→</span>
                 </span>
@@ -106,7 +81,7 @@ export default function HomePage() {
 
               {/* NAV plan picker dropdown */}
               {planPickerOpen === "nav" ? (
-                <div className="absolute right-0 top-14 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
+                <div className="absolute right-0 top-12 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
                   <p className="text-xs text-white/40 px-2 pb-1">
                     Choose a plan to start
                   </p>
@@ -114,8 +89,7 @@ export default function HomePage() {
                     onClick={() => goTo("starter")}
                     className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
                   >
-                    Starter{" "}
-                    <span className="text-white/30 text-xs">$149/mo</span>
+                    Starter <span className="text-white/30 text-xs">$149/mo</span>
                   </button>
                   <button
                     onClick={() => goTo("pro")}
@@ -127,10 +101,10 @@ export default function HomePage() {
               ) : null}
             </div>
 
-            {/* mobile menu placeholder */}
+            {/* mobile menu icon (just visual for now) */}
             <button
               type="button"
-              className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-white/0 hover:bg-white/5 transition md:hidden"
+              className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-white/0 hover:bg-white/5 transition md:hidden"
             >
               <span className="sr-only">Menu</span>
               <div className="space-y-1">
@@ -145,21 +119,23 @@ export default function HomePage() {
       {/* MAIN */}
       <main>
         {/* HERO */}
-        <section className="relative" id="hero">
-          {/* glows */}
+        <section className="relative overflow-hidden" id="hero">
+          {/* Bigger / smoother background glows for mobile */}
           <div className="pointer-events-none absolute inset-0">
-            <div className="absolute right-[-20%] top-[-28%] h-[20px] w-[620px] bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_50%)] blur-[150px]" />
-            <div className="absolute left-[-25%] bottom-[-35%] h-[520px] w-[520px] bg-[radial-gradient(circle,_rgba(255,188,120,0.42)_56%,rgba(10,10,11,0)_80%)] blur-[150px]" />
+            {/* central big glow */}
+            <div className="absolute -top-64 left-1/2 -translate-x-1/2 h-[520px] w-[720px] md:h-[620px] md:w-[920px] rounded-full bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_60%)] blur-[140px]" />
+            {/* bottom fade */}
+            <div className="absolute bottom-[-40%] left-1/2 -translate-x-1/2 h-[520px] w-[720px] bg-[radial-gradient(circle,_rgba(255,188,120,0.25)_0%,rgba(10,10,11,0)_70%)] blur-[120px]" />
           </div>
 
-          <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 pb-16 pt-16 md:flex-row md:items-center md:pb-20 md:pt-20">
+          <div className="mx-auto max-w-6xl px-4 pt-14 pb-16 md:pt-20 md:pb-20 flex flex-col gap-10 md:flex-row md:items-center">
             {/* hero left */}
             <div className="relative z-10 flex-1 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-[10px] border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
+              <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 w-max">
                 <span className="h-2 w-2 rounded-full bg-emerald-400" />
                 AI lead intake & dispatching for service businesses
               </div>
-              <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white md:text-5xl">
+              <h1 className="text-[2.6rem] leading-[2.6rem] md:text-5xl md:leading-tight font-semibold tracking-tight text-white">
                 The next generation
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-300 to-amber-200">
@@ -168,15 +144,23 @@ export default function HomePage() {
               </h1>
               <p className="max-w-xl text-base text-white/55 md:text-lg">
                 Sylor.ai replies to new leads in seconds, books them on your
-                Google Calendar, and syncs every message into your dashboard —
-                so no job is left behind.
+                Google Calendar, and syncs every message into your dashboard — so
+                no job is left behind.
               </p>
 
-              {/* HERO actions */}
-              <div className="flex flex-wrap gap-3 relative">
-                {/* hero → straight to /signup */}
+              <div
+                className="flex flex-wrap gap-3 relative"
+                onMouseLeave={() =>
+                  setPlanPickerOpen((prev) => (prev === "hero" ? null : prev))
+                }
+              >
+                {/* HERO get started → open plan picker */}
                 <button
-                  onClick={() => (window.location.href = "/signup")}
+                  onClick={() =>
+                    setPlanPickerOpen((prev) =>
+                      prev === "hero" ? null : "hero"
+                    )
+                  }
                   className="rounded-[10px] bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition"
                 >
                   Get started for free →
@@ -187,6 +171,28 @@ export default function HomePage() {
                 >
                   Request a demo
                 </Link>
+
+                {/* HERO plan picker */}
+                {planPickerOpen === "hero" ? (
+                  <div className="absolute top-12 left-0 z-50 w-56 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
+                    <p className="text-xs text-white/40 px-2 pb-1">
+                      Choose a plan to start
+                    </p>
+                    <button
+                      onClick={() => goTo("starter")}
+                      className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
+                    >
+                      Starter{" "}
+                      <span className="text-white/30 text-xs">$149/mo</span>
+                    </button>
+                    <button
+                      onClick={() => goTo("pro")}
+                      className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
+                    >
+                      Pro <span className="text-white/30 text-xs">$399/mo</span>
+                    </button>
+                  </div>
+                ) : null}
               </div>
 
               <div className="pt-4">
@@ -205,7 +211,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* hero right */}
+            {/* hero right: lead panel */}
             <div className="relative z-10 flex-1 flex justify-center md:justify-end">
               <div className="w-full max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">
@@ -420,8 +426,8 @@ export default function HomePage() {
                       Client: “Hi, I need a bathroom remodel in Winnetka.”
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-purple-500/10 px-4 py-2 text-sm text-white/90">
-                      Sylor Agent: “Thanks! I can send someone **tomorrow 11:30
-                      AM** or **Thu 9:00 AM**. Which works?”
+                      Sylor Agent: “Thanks! I can send someone **tomorrow 11:30 AM**
+                      or **Thu 9:00 AM**. Which works?”
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-white/5 px-4 py-2 text-sm text-white/80">
                       Client: “Tomorrow is good.”
