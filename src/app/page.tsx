@@ -25,8 +25,9 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white scroll-smooth">
       {/* TOP NAV */}
-      <header className="sticky top-0 z-50 flex justify-center px-2 pt-2 pb-1 bg-gradient-to-b from-[#0a0a0b] via-[#0a0a0b]/90 to-transparent backdrop-blur">
-        <div className="w-full max-w-6xl pointer-events-auto flex items-center justify-between gap-3 rounded-[16px] border border-white/5 bg-black/30 px-2 py-1.5 md:h-14 md:px-3">
+      <header className="sticky top-0 z-50 flex justify-center bg-gradient-to-b from-[#0a0a0b] via-[#0a0a0b]/95 to-transparent backdrop-blur">
+        {/* width locked on mobile, wider on desktop */}
+        <div className="w-full max-w-[430px] md:max-w-6xl mx-auto px-3 pt-2 pb-2 flex items-center justify-between gap-3">
           {/* logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
             <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-bold">
@@ -52,15 +53,15 @@ export default function HomePage() {
 
           {/* right actions */}
           <div className="flex items-center gap-2 md:gap-3 relative">
-            {/* login button (smaller on mobile) */}
+            {/* Log in — GRAPHITE RATIO */}
             <Link
               href="/login"
-              className="h-10 md:h-11 flex items-center rounded-[10px] bg-[#161616] border border-white/5 px-3 md:px-4 text-sm text-white/80 hover:border-white/30 transition"
+              className="h-9 md:h-10 inline-flex items-center justify-center rounded-md border border-white/10 bg-[#111216] px-3 md:px-4 text-sm text-white/85 hover:border-white/30 transition"
             >
               Log in
             </Link>
 
-            {/* NAV get started → open plan picker */}
+            {/* Get started — GRAPHITE RATIO */}
             <div
               className="relative"
               onMouseLeave={() =>
@@ -71,17 +72,19 @@ export default function HomePage() {
                 onClick={() =>
                   setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
                 }
-                className="h-10 md:h-11 relative inline-flex items-center justify-center gap-2 rounded-[10px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move px-[2px]"
+                className="relative h-9 md:h-10 inline-flex items-center justify-center rounded-md p-[1.2px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] hover:brightness-110 transition"
               >
-                <span className="rounded-[8px] bg-white px-4 md:px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
+                {/* soft glow behind, mobile friendly */}
+                <span className="pointer-events-none absolute -inset-1 rounded-[12px] blur-md opacity-[0.35] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)]" />
+                <span className="relative rounded-[6px] bg-[#0a0a0b] px-4 md:px-5 py-[5px] text-sm font-semibold text-white flex items-center gap-1.5">
                   Get started
-                  <span className="text-lg leading-none">→</span>
+                  <span className="text-base leading-none">→</span>
                 </span>
               </button>
 
               {/* NAV plan picker dropdown */}
               {planPickerOpen === "nav" ? (
-                <div className="absolute right-0 top-12 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
+                <div className="absolute right-0 top-11 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
                   <p className="text-xs text-white/40 px-2 pb-1">
                     Choose a plan to start
                   </p>
@@ -101,7 +104,7 @@ export default function HomePage() {
               ) : null}
             </div>
 
-            {/* mobile menu icon (just visual for now) */}
+            {/* mobile menu icon (visual) */}
             <button
               type="button"
               className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-white/0 hover:bg-white/5 transition md:hidden"
@@ -122,13 +125,14 @@ export default function HomePage() {
         <section className="relative overflow-hidden" id="hero">
           {/* Bigger / smoother background glows for mobile */}
           <div className="pointer-events-none absolute inset-0">
-            {/* central big glow */}
-            <div className="absolute -top-64 left-1/2 -translate-x-1/2 h-[520px] w-[720px] md:h-[620px] md:w-[920px] rounded-full bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_60%)] blur-[140px]" />
+            {/* center top glow so it's not cut */}
+            <div className="absolute -top-64 left-1/2 -translate-x-1/2 h-[620px] w-[980px] md:h-[720px] md:w-[1200px] rounded-full bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_70%)] blur-[150px]" />
             {/* bottom fade */}
-            <div className="absolute bottom-[-40%] left-1/2 -translate-x-1/2 h-[520px] w-[720px] bg-[radial-gradient(circle,_rgba(255,188,120,0.25)_0%,rgba(10,10,11,0)_70%)] blur-[120px]" />
+            <div className="absolute bottom-[-42%] left-1/2 -translate-x-1/2 h-[520px] w-[820px] bg-[radial-gradient(circle,_rgba(255,188,120,0.2)_0%,rgba(10,10,11,0)_80%)] blur-[140px]" />
           </div>
 
-          <div className="mx-auto max-w-6xl px-4 pt-14 pb-16 md:pt-20 md:pb-20 flex flex-col gap-10 md:flex-row md:items-center">
+          {/* content — MOBILE WIDTH LOCKED */}
+          <div className="mx-auto max-w-[430px] md:max-w-6xl px-4 pt-16 pb-16 md:pt-20 md:pb-20 flex flex-col gap-10 md:flex-row md:items-center">
             {/* hero left */}
             <div className="relative z-10 flex-1 space-y-6">
               <div className="inline-flex items-center gap-2 rounded-[999px] border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70 w-max">
@@ -144,8 +148,8 @@ export default function HomePage() {
               </h1>
               <p className="max-w-xl text-base text-white/55 md:text-lg">
                 Sylor.ai replies to new leads in seconds, books them on your
-                Google Calendar, and syncs every message into your dashboard — so
-                no job is left behind.
+                Google Calendar, and syncs every message into your dashboard —
+                so no job is left behind.
               </p>
 
               <div
@@ -212,7 +216,7 @@ export default function HomePage() {
             </div>
 
             {/* hero right: lead panel */}
-            <div className="relative z-10 flex-1 flex justify-center md:justify-end">
+            <div className="relative z-10 flex-1 flex justify-center md:justify-end mt-4 md:mt-0">
               <div className="w-full max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-white/60">Leads inbox</p>
@@ -280,7 +284,7 @@ export default function HomePage() {
         {/* FEATURES */}
         <section
           id="features"
-          className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
+          className="mx-auto max-w-[430px] md:max-w-6xl px-4 py-16 sm:px-6 lg:px-8"
         >
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
@@ -349,7 +353,7 @@ export default function HomePage() {
         {/* PRODUCT */}
         <section
           id="product"
-          className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8"
+          className="mx-auto max-w-[430px] md:max-w-6xl px-4 pb-16 sm:px-6 lg:px-8"
         >
           <div className="rounded-[10px] border border-white/5 bg-gradient-to-b from-white/5 to-white/[0.01] p-6 md:p-10">
             <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
@@ -453,7 +457,7 @@ export default function HomePage() {
         {/* PRICING */}
         <section
           id="pricing"
-          className="mx-auto max-w-6xl px-4 pb-16 sm:px-6 lg:px-8"
+          className="mx-auto max-w-[430px] md:max-w-6xl px-4 pb-16 sm:px-6 lg:px-8"
         >
           <div className="rounded-[10px] border border-white/5 bg-gradient-to-r from-purple-500/5 via-slate-900 to-slate-900/30 p-8 text-center">
             <p className="text-sm text-white/50">Pricing</p>
@@ -510,7 +514,7 @@ export default function HomePage() {
 
       {/* FOOTER */}
       <footer className="border-t border-white/5 py-8" id="docs">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 text-sm text-white/40 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mx-auto flex max-w-[430px] md:max-w-6xl flex-col gap-4 px-4 text-sm text-white/40 sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Sylor.ai. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-white transition rounded-[10px]">
