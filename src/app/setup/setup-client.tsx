@@ -1,4 +1,4 @@
-// FILE: src/app/setup/setup-client.tsx
+// src/app/setup/setup-client.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
@@ -9,7 +9,6 @@ import { Tenant } from "@/types";
 
 export default function SetupClient() {
   const router = useRouter();
-  // ✅ this is what the hook actually returns
   const { currentUser, loading } = useCurrentUser();
 
   const [tenant, setTenant] = useState<Tenant | null>(null);
@@ -18,7 +17,6 @@ export default function SetupClient() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  // 1) when we have a user, load the tenant
   useEffect(() => {
     if (!currentUser) return;
     (async () => {
@@ -31,19 +29,17 @@ export default function SetupClient() {
     })();
   }, [currentUser]);
 
-  // 2) loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-bg">
-        <div className="h-8 w-8 rounded-full border-2 border-brand-primary border-t-transparent animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] text-white">
+        <div className="h-8 w-8 rounded-full border-2 border-white/40 border-t-transparent animate-spin" />
       </div>
     );
   }
 
-  // 3) if not logged in → back to login
   if (!currentUser) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-dark-bg text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] text-white px-4 text-center">
         You are not logged in.
       </div>
     );
@@ -56,20 +52,17 @@ export default function SetupClient() {
     setError("");
 
     try {
-      // we must have a tenantId from the user
       const tenantId = currentUser.tenantId;
       if (!tenantId) {
         throw new Error("Missing tenantId on user");
       }
 
-      // this will also mock-provision a twilio number (see api.completeBusinessSetup)
       const updated = await api.completeBusinessSetup(tenantId, {
         businessName,
         businessPhone,
       });
 
       setTenant(updated);
-      // go to dashboard
       router.push("/dashboard");
     } catch (err: any) {
       console.error("setup error", err);
@@ -80,21 +73,20 @@ export default function SetupClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-dark-bg p-4">
-      <div className="w-full max-w-lg bg-glass-bg border border-glass-border rounded-2xl p-8">
+    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] p-4 py-10 sm:py-0">
+      <div className="w-full max-w-lg bg-[#0f1011]/70 border border-white/10 rounded-2xl p-6 sm:p-8">
         <h1 className="text-2xl font-bold text-white mb-2">
           Finish your business setup
         </h1>
-        <p className="text-dark-text-secondary mb-6">
+        <p className="text-sm text-white/40 mb-6">
           We use this info when we text your leads.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* BUSINESS NAME */}
           <div>
             <label
               htmlFor="businessName"
-              className="block text-sm text-dark-text-secondary mb-1"
+              className="block text-sm text-white/50 mb-1"
             >
               Business name
             </label>
@@ -106,15 +98,14 @@ export default function SetupClient() {
               onChange={(e) => setBusinessName(e.target.value)}
               required
               placeholder="UrbanLux Construction"
-              className="w-full bg-slate-900/50 border border-glass-border rounded-md px-3 py-3 outline-none focus:ring-2 focus:ring-brand-primary text-white"
+              className="w-full bg-[#0b0b0c] border border-white/10 rounded-md px-3 py-2.5 outline-none focus:border-white/40 text-sm"
             />
           </div>
 
-          {/* BUSINESS PHONE */}
           <div>
             <label
               htmlFor="businessPhone"
-              className="block text-sm text-dark-text-secondary mb-1"
+              className="block text-sm text-white/50 mb-1"
             >
               Business phone
             </label>
@@ -126,25 +117,23 @@ export default function SetupClient() {
               onChange={(e) => setBusinessPhone(e.target.value)}
               required
               placeholder="+1 (818) 555-1234"
-              className="w-full bg-slate-900/50 border border-glass-border rounded-md px-3 py-3 outline-none focus:ring-2 focus:ring-brand-primary text-white"
+              className="w-full bg-[#0b0b0c] border border-white/10 rounded-md px-3 py-2.5 outline-none focus:border-white/40 text-sm"
             />
           </div>
 
-          {/* ERROR */}
           {error ? <p className="text-red-400 text-sm">{error}</p> : null}
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-brand-primary hover:bg-brand-secondary transition-colors py-3 rounded-lg font-semibold text-white"
+            className="w-full bg-[#5c6cff] hover:bg-[#4f5edf] transition-colors py-2.5 rounded-lg font-semibold text-white disabled:opacity-50"
           >
             {saving ? "Saving..." : "Continue to dashboard"}
           </button>
         </form>
 
-        {/* show current tenant info if we already have */}
         {tenant?.twilioNumber ? (
-          <p className="text-xs text-dark-text-secondary mt-4">
+          <p className="text-xs text-white/30 mt-4">
             Sylor AI number provisioned: {tenant.twilioNumber}
           </p>
         ) : null}

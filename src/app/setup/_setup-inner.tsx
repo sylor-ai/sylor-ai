@@ -1,3 +1,4 @@
+// src/app/setup/_setup-inner.tsx
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
@@ -25,7 +26,6 @@ export default function SetupInner() {
         body: JSON.stringify({
           businessName,
           businessPhone,
-          // we can store plan early, but final plan is chosen on /pricing
           plan: planFromUrl || undefined,
         }),
       });
@@ -36,10 +36,7 @@ export default function SetupInner() {
         return;
       }
 
-      // ✅ new flow: setup → pricing (carry plan if we had it)
-      const next = planFromUrl
-        ? `/pricing?plan=${planFromUrl}`
-        : `/pricing`;
+      const next = planFromUrl ? `/pricing?plan=${planFromUrl}` : `/pricing`;
       router.push(next);
     } catch (error: any) {
       console.error(error);
@@ -51,7 +48,7 @@ export default function SetupInner() {
   const displayPlan = planFromUrl || "starter";
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4 py-10 sm:py-0">
       {/* Background blur glow */}
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute -top-52 right-0 h-80 w-80 bg-purple-500/20 blur-[120px]" />
@@ -71,7 +68,7 @@ export default function SetupInner() {
         </div>
 
         {/* Card */}
-        <div className="rounded-[18px] border border-white/10 bg-[#0f1011]/65 backdrop-blur p-8 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
+        <div className="rounded-[18px] border border-white/10 bg-[#0f1011]/65 backdrop-blur p-6 sm:p-8 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
           <p className="text-xs text-white/35 mb-3">
             You will pick a plan next. Current:{" "}
             <span className="uppercase">{displayPlan}</span>

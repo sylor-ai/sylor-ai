@@ -1,3 +1,4 @@
+// src/app/(dashboard)/dashboard/page.tsx
 "use client";
 
 const LEADS = [
@@ -49,7 +50,7 @@ export default function DashboardPage() {
       </div>
 
       {/* cards */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="rounded-[10px] bg-white/5 border border-white/5 p-4">
           <p className="text-xs text-white/45">New leads (today)</p>
           <p className="mt-2 text-3xl font-semibold">12</p>
@@ -81,14 +82,14 @@ export default function DashboardPage() {
       <div className="grid gap-4 lg:grid-cols-[1.15fr,0.85fr]">
         {/* latest leads */}
         <div className="rounded-[10px] bg-white/2 border border-white/5 p-4">
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 gap-2">
             <p className="text-sm font-medium">Latest leads</p>
-            <button className="text-xs text-white/40 hover:text-white">
+            <button className="text-xs text-white/40 hover:text-white whitespace-nowrap">
               View all →
             </button>
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[500px]">
               <thead>
                 <tr className="text-left text-xs text-white/30 border-b border-white/5">
                   <th className="py-2">Lead</th>
@@ -100,8 +101,8 @@ export default function DashboardPage() {
               <tbody>
                 {LEADS.map((lead) => (
                   <tr key={lead.name} className="border-b border-white/5/10">
-                    <td className="py-2">{lead.name}</td>
-                    <td className="py-2">
+                    <td className="py-2 pr-2">{lead.name}</td>
+                    <td className="py-2 pr-2">
                       <span
                         className={`inline-flex rounded-[10px] px-2 py-0.5 text-xs ${
                           lead.status === "Booked"
@@ -114,12 +115,12 @@ export default function DashboardPage() {
                         {lead.status}
                       </span>
                     </td>
-                    <td className="py-2">
+                    <td className="py-2 pr-2">
                       <span className="inline-flex rounded-[10px] bg-white/5 px-2 py-0.5 text-xs text-white/60">
                         {lead.tag}
                       </span>
                     </td>
-                    <td className="py-2 text-right text-xs text-white/35">
+                    <td className="py-2 text-right text-xs text-white/35 whitespace-nowrap">
                       {lead.time}
                     </td>
                   </tr>
@@ -128,7 +129,6 @@ export default function DashboardPage() {
             </table>
           </div>
 
-          {/* small footer */}
           <p className="mt-4 text-xs text-white/30">
             Synced from Firestore: <code>/tenants/{`{tenantId}`}/leads</code>
           </p>
