@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const NAV_ITEMS = [
   { label: "Features", href: "#features" },
@@ -12,15 +12,38 @@ const NAV_ITEMS = [
 ];
 
 export default function HomePage() {
-  // which button opened the picker: "nav" | null
-  // (hero no longer opens the picker — it goes straight to /signup)
+  // which button opened the picker: "nav" | "hero" | null
+  // (hero doesn't open a picker anymore – it goes straight to /signup)
   const [planPickerOpen, setPlanPickerOpen] = useState<"nav" | "hero" | null>(
     null
   );
 
+  // refs to detect outside clicks
+  const navPickerRef = useRef<HTMLDivElement | null>(null);
+
+  // close plan picker on outside click + on scroll (mobile friendly)
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      const target = e.target as Node;
+      const insideNav = navPickerRef.current?.contains(target);
+      if (!insideNav) {
+        setPlanPickerOpen(null);
+      }
+    }
+    function handleScroll() {
+      setPlanPickerOpen(null);
+    }
+    document.addEventListener("mousedown", handleClick);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => {
+      document.removeEventListener("mousedown", handleClick);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   // used in pricing section / product CTA – can preselect plan
   function goTo(plan: "starter" | "pro") {
-    // ✅ new flow: home -> signup -> setup -> pricing -> stripe -> dashboard
+    // ✅ flow: home -> signup -> setup -> pricing -> stripe -> dashboard
     window.location.href = `/signup?plan=${plan}`;
   }
 
@@ -61,8 +84,9 @@ export default function HomePage() {
               Log in
             </Link>
 
-            {/* NAV get started → /signup (with plan choices) */}
+            {/* NAV get started → open plan picker */}
             <div
+              ref={navPickerRef}
               className="relative"
               onMouseLeave={() =>
                 setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))
@@ -90,7 +114,8 @@ export default function HomePage() {
                     onClick={() => goTo("starter")}
                     className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
                   >
-                    Starter <span className="text-white/30 text-xs">$149/mo</span>
+                    Starter{" "}
+                    <span className="text-white/30 text-xs">$149/mo</span>
                   </button>
                   <button
                     onClick={() => goTo("pro")}
@@ -143,13 +168,13 @@ export default function HomePage() {
               </h1>
               <p className="max-w-xl text-base text-white/55 md:text-lg">
                 Sylor.ai replies to new leads in seconds, books them on your
-                Google Calendar, and syncs every message into your dashboard — so
-                no job is left behind.
+                Google Calendar, and syncs every message into your dashboard —
+                so no job is left behind.
               </p>
 
               {/* HERO actions */}
               <div className="flex flex-wrap gap-3 relative">
-                {/* ✅ hero now goes straight to /signup */}
+                {/* hero → straight to /signup */}
                 <button
                   onClick={() => (window.location.href = "/signup")}
                   className="rounded-[10px] bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition"
@@ -180,7 +205,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* hero right: lead panel (unchanged) */}
+            {/* hero right */}
             <div className="relative z-10 flex-1 flex justify-center md:justify-end">
               <div className="w-full max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">
@@ -395,8 +420,8 @@ export default function HomePage() {
                       Client: “Hi, I need a bathroom remodel in Winnetka.”
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-purple-500/10 px-4 py-2 text-sm text-white/90">
-                      Sylor Agent: “Thanks! I can send someone **tomorrow 11:30 AM**
-                      or **Thu 9:00 AM**. Which works?”
+                      Sylor Agent: “Thanks! I can send someone **tomorrow 11:30
+                      AM** or **Thu 9:00 AM**. Which works?”
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-white/5 px-4 py-2 text-sm text-white/80">
                       Client: “Tomorrow is good.”

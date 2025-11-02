@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
 const NAV = [
@@ -137,160 +137,144 @@ function SidebarIcon({ name }: { name: string }) {
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   async function handleLogout() {
     try {
       await api.logout();
     } finally {
       router.push("/");
-      setMobileOpen(false);
     }
   }
 
+  // Lock body scroll when drawer is open (mobile)
+  useEffect(() => {
+    if (drawerOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = prev;
+      };
+    }
+  }, [drawerOpen]);
+
+  // Close drawer when navigating
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [pathname]);
+
+  const SidebarContent = (
+    <>
+      <div className="h-14 flex items-center gap-2 px-5 border-b border-white/5">
+        <img
+          src="/SELOR.png"
+          alt="Sylor.ai Logo"
+          className="h-8 w-8 rounded-lg object-cover"
+        />
+        <div>
+          <p className="text-sm font-semibold leading-tight">Sylor.ai</p>
+          <p className="text-[10px] text-white/35">Lead automation</p>
+        </div>
+      </div>
+
+      <nav className="flex-1 py-5 space-y-1 px-3">
+        {NAV.map((item) => {
+          const active = pathname === item.href;
+          return (
+            <button
+              key={item.href}
+              onClick={() => router.push(item.href)}
+              className={`flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition ${
+                active
+                  ? "bg-white/10 text-white"
+                  : "text-white/40 hover:bg-white/5 hover:text-white"
+              }`}
+            >
+              <SidebarIcon name={item.icon} />
+              <span>{item.label}</span>
+              {active ? (
+                <span className="ml-auto h-2 w-2 rounded-full bg-emerald-400" />
+              ) : null}
+            </button>
+          );
+        })}
+      </nav>
+
+      <div className="p-3 border-t border-white/5">
+        <div className="rounded-[10px] bg-white/5 p-3 text-xs text-white/60 mb-3">
+          <p className="text-white mb-1 text-sm font-medium">Starter plan</p>
+          <p>50 leads / mo • 24/7 AI</p>
+          <Link
+            href="/billing"
+            className="mt-2 inline-block text-xs text-white hover:underline"
+          >
+            Upgrade to Pro →
+          </Link>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="w-full rounded-[10px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
+        >
+          Log out
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className="min-h-screen bg-[#050506] text-white flex">
-      {/* DESKTOP SIDEBAR */}
+      {/* Desktop sidebar */}
       <aside className="hidden md:flex md:w-60 flex-col border-r border-white/5 bg-[#070708]/80 backdrop-blur">
-        <div className="h-14 flex items-center gap-2 px-5 border-b border-white/5">
-          <img
-            src="/SELOR.png"
-            alt="Sylor.ai Logo"
-            className="h-8 w-8 rounded-lg object-cover"
-          />
-          <div>
-            <p className="text-sm font-semibold leading-tight">Sylor.ai</p>
-            <p className="text-[10px] text-white/35">Lead automation</p>
-          </div>
-        </div>
-
-        <nav className="flex-1 py-5 space-y-1 px-3 overflow-y-auto">
-          {NAV.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <button
-                key={item.href}
-                onClick={() => router.push(item.href)}
-                className={`flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition ${
-                  active
-                    ? "bg-white/10 text-white"
-                    : "text-white/40 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                <SidebarIcon name={item.icon} />
-                <span>{item.label}</span>
-                {active ? (
-                  <span className="ml-auto h-2 w-2 rounded-full bg-emerald-400" />
-                ) : null}
-              </button>
-            );
-          })}
-        </nav>
-
-        <div className="p-3 border-t border-white/5">
-          <div className="rounded-[10px] bg-white/5 p-3 text-xs text-white/60 mb-3">
-            <p className="text-white mb-1 text-sm font-medium">Starter plan</p>
-            <p>50 leads / mo • 24/7 AI</p>
-            <Link
-              href="/billing"
-              className="mt-2 inline-block text-xs text-white hover:underline"
-            >
-              Upgrade to Pro →
-            </Link>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="w-full rounded-[10px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
-          >
-            Log out
-          </button>
-        </div>
+        {SidebarContent}
       </aside>
 
-      {/* MOBILE DRAWER */}
-      {mobileOpen ? (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          {/* backdrop */}
-          <div
-            className="flex-1 bg-black/50"
-            onClick={() => setMobileOpen(false)}
+      {/* Mobile drawer */}
+      <div className="md:hidden">
+        {/* Scrim */}
+        {drawerOpen && (
+          <button
+            aria-label="Close navigation"
+            onClick={() => setDrawerOpen(false)}
+            className="fixed inset-0 z-40 bg-black/50"
           />
-          {/* panel */}
-          <div className="w-64 bg-[#070708] border-l border-white/5 flex flex-col">
-            <div className="h-14 flex items-center gap-2 px-5 border-b border-white/5">
-              <img
-                src="/SELOR.png"
-                alt="Sylor.ai Logo"
-                className="h-8 w-8 rounded-lg object-cover"
-              />
-              <div>
-                <p className="text-sm font-semibold leading-tight">Sylor.ai</p>
-                <p className="text-[10px] text-white/35">Lead automation</p>
-              </div>
-            </div>
-            <nav className="flex-1 py-4 space-y-1 px-3 overflow-y-auto">
-              {NAV.map((item) => {
-                const active = pathname === item.href;
-                return (
-                  <button
-                    key={item.href}
-                    onClick={() => {
-                      router.push(item.href);
-                      setMobileOpen(false);
-                    }}
-                    className={`flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition ${
-                      active
-                        ? "bg-white/10 text-white"
-                        : "text-white/40 hover:bg-white/5 hover:text-white"
-                    }`}
-                  >
-                    <SidebarIcon name={item.icon} />
-                    <span>{item.label}</span>
-                    {active ? (
-                      <span className="ml-auto h-2 w-2 rounded-full bg-emerald-400" />
-                    ) : null}
-                  </button>
-                );
-              })}
-            </nav>
-            <div className="p-3 border-t border-white/5 space-y-2">
-              <Link
-                href="/billing"
-                onClick={() => setMobileOpen(false)}
-                className="block rounded-[10px] bg-white/5 px-3 py-2 text-sm"
-              >
-                Billing & plan
-              </Link>
-              <button
-                onClick={handleLogout}
-                className="w-full rounded-[10px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
-              >
-                Log out
-              </button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+        )}
+        {/* Panel */}
+        <aside
+          className={`fixed top-0 left-0 z-50 h-screen w-[82%] max-w-[320px] bg-[#0a0a0b] border-r border-white/5 transition-transform duration-300 ${
+            drawerOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+          role="dialog"
+          aria-modal="true"
+        >
+          {SidebarContent}
+        </aside>
+      </div>
 
-      {/* MAIN */}
-      <div className="flex-1 flex flex-col min-h-screen min-w-0">
-        {/* topbar */}
-        <header className="h-14 border-b border-white/5 bg-[#070708]/50 backdrop-blur flex items-center justify-between px-3 gap-3 md:px-4">
-          {/* left */}
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* mobile menu button */}
+      {/* Main */}
+      <div className="flex-1 flex flex-col min-h-screen">
+        {/* Topbar */}
+        <header className="h-14 border-b border-white/5 bg-[#070708]/60 backdrop-blur flex items-center justify-between px-4 gap-3">
+          <div className="flex items-center gap-3 flex-1">
+            {/* Mobile burger */}
             <button
-              onClick={() => setMobileOpen(true)}
-              className="md:hidden h-8 w-8 rounded-[10px] bg-white/0 hover:bg-white/5 flex items-center justify-center"
+              onClick={() => setDrawerOpen(true)}
+              className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10"
+              aria-label="Open navigation"
             >
-              <span className="sr-only">Open menu</span>
-              <div className="space-y-1">
-                <span className="block h-0.5 w-4 bg-white rounded" />
-                <span className="block h-0.5 w-4 bg-white rounded" />
-              </div>
+              <svg
+                className="h-5 w-5 text-white/90"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
 
-            <div className="relative flex-1 max-w-sm hidden sm:block">
+            <div className="relative hidden md:block flex-1 max-w-sm">
               <input
                 placeholder="Search"
                 className="w-full bg-white/5 border border-white/5 rounded-[10px] pl-8 pr-3 py-1.5 text-sm outline-none focus:border-white/25"
@@ -310,11 +294,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </svg>
               </span>
             </div>
-          </div>
 
-          {/* right */}
-          <div className="flex items-center gap-2">
-            <span className="hidden md:inline text-xs text-white/35">
+            <div className="hidden md:flex gap-2">
+              <button
+                onClick={() => router.push("/leads?new=1")}
+                className="rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10"
+              >
+                New lead
+              </button>
+              <button
+                onClick={() => router.push("/appointments?new=1")}
+                className="rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10"
+              >
+                + Appointment
+              </button>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:inline text-xs text-white/35">
               Today: Auto-booking ON
             </span>
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-semibold">
@@ -323,8 +320,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        {/* content */}
-        <main className="flex-1 bg-[#050506] p-3 md:p-4 lg:p-6 min-w-0">
+        {/* Content */}
+        <main className="flex-1 bg-[#050506] p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
           {children}
         </main>
       </div>
