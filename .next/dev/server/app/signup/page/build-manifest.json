@@ -2,20 +2,20 @@
   "devFiles": [],
   "ampDevFiles": [],
   "polyfillFiles": [
-    "static/chunks/63814_next_dist_build_polyfills_polyfill-nomodule.js"
+    "static/chunks/0fd89_next_dist_build_polyfills_polyfill-nomodule.js"
   ],
   "lowPriorityFiles": [],
   "rootMainFiles": [
-    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_bca581d5._.js",
-    "static/chunks/63814_next_dist_compiled_react-dom_08afbf48._.js",
-    "static/chunks/63814_next_dist_compiled_react-server-dom-turbopack_4acbb2e0._.js",
-    "static/chunks/63814_next_dist_compiled_next-devtools_index_c82ddaa4.js",
-    "static/chunks/63814_next_dist_compiled_2dac5e94._.js",
-    "static/chunks/63814_next_dist_client_68dab184._.js",
-    "static/chunks/63814_next_dist_776e1acb._.js",
-    "static/chunks/63814_@swc_helpers_cjs_53b4ac68._.js",
-    "static/chunks/Desktop_sylor-new_a0ff3932._.js",
-    "static/chunks/turbopack-Desktop_sylor-new_909ff131._.js"
+    "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_7158f6d8._.js",
+    "static/chunks/0fd89_next_dist_compiled_react-dom_9c84b343._.js",
+    "static/chunks/0fd89_next_dist_compiled_react-server-dom-turbopack_d1108238._.js",
+    "static/chunks/0fd89_next_dist_compiled_next-devtools_index_2de654fd.js",
+    "static/chunks/0fd89_next_dist_compiled_c470b3db._.js",
+    "static/chunks/0fd89_next_dist_client_6580d8c5._.js",
+    "static/chunks/0fd89_next_dist_36585cc0._.js",
+    "static/chunks/0fd89_@swc_helpers_cjs_76cc2940._.js",
+    "static/chunks/Desktop_sylor-ai_a0ff3932._.js",
+    "static/chunks/turbopack-Desktop_sylor-ai_9a27a641._.js"
   ],
   "pages": {},
   "ampFirstPages": []

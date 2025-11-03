@@ -1,6 +1,33 @@
 {
   "version": 3,
-  "middleware": {},
-  "sortedMiddleware": [],
+  "middleware": {
+    "/": {
+      "files": [
+        "server/edge/chunks/Desktop_sylor-ai_3a1cb3f9._.js",
+        "server/edge/chunks/[root-of-the-server]__d89719a5._.js",
+        "server/edge/chunks/turbopack-Desktop_sylor-ai_edge-wrapper_ad9033f8.js"
+      ],
+      "name": "middleware",
+      "page": "/",
+      "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next|api|static|.*\\..*|favicon.ico).*))(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/((?!_next|api|static|.*\\..*|favicon.ico).*)"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "l789wHj7MCKV3ptTHx7RVLjTpz5iEToxahYoYh6jH+8=",
+        "__NEXT_PREVIEW_MODE_ID": "e3dce5803500f30fcabefe209a3d05d8",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "5b40e73cea039ab0bcb7ae87f4ee18a804d129db16255318a8fe63a5b4fedfcc",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "c611f971a6ffcdf9ede60e78955d12b82d3a73832b9854b25ff6431eed5a54d0"
+      }
+    }
+  },
+  "sortedMiddleware": [
+    "/"
+  ],
   "functions": {}
 }

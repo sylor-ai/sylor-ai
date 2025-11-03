@@ -116,8 +116,10 @@ module.exports = mod;
 "[project]/Desktop/sylor-ai/src/lib/firebase.ts [app-ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-// src/lib/firebase.ts
+// FILE: src/lib/firebase.ts
 __turbopack_context__.s([
+    "app",
+    ()=>app,
     "getFirebaseAuth",
     ()=>getFirebaseAuth,
     "getFirebaseDb",
@@ -140,19 +142,20 @@ const firebaseConfig = {
     messagingSenderId: ("TURBOPACK compile-time value", "87291214723"),
     appId: ("TURBOPACK compile-time value", "1:87291214723:web:ee4dde8ad238aa700214b6")
 };
-const app = !(0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getApps"])().length ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["initializeApp"])(firebaseConfig) : (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getApp"])();
+let app;
+if (!(0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getApps"])().length) {
+    app = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["initializeApp"])(firebaseConfig);
+} else {
+    app = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$app$2f$dist$2f$esm$2f$index$2e$esm2017$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getApp"])();
+}
 const getFirebaseAuth = ()=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getAuth"])(app);
 const getFirebaseDb = ()=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirestore"])(app);
+;
 }),
 "[project]/Desktop/sylor-ai/src/lib/api.ts [app-ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 // FILE: src/lib/api.ts
-//
-// Central client-side API for Sylor.ai
-// Uses Firebase Auth + Firestore
-//
-// NOTE: this is a browser/client API — do not import in server-only code.
 __turbopack_context__.s([
     "api",
     ()=>api
@@ -167,9 +170,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$sr
 ;
 ;
 // ─────────────────────────────────────────────────────────
-// 0. LOCAL PLAN DEFINITIONS
-// These are the same as before — just keep the product / price IDs
-// in sync with your real Stripe dashboard.
+// PLANS (local mirror of Stripe)
 const PLANS = {
     starter: {
         id: "starter",
@@ -197,7 +198,8 @@ const PLANS = {
         priceId: "price_1SN3RrHBRIMb0ChwjSIbQaYn"
     }
 };
-// helper: make sure tenant exists (we use it in login + signup)
+// ─────────────────────────────────────────────────────────
+// helpers
 async function ensureTenant(db, tenantId) {
     const tRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId);
     const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDoc"])(tRef);
@@ -213,17 +215,59 @@ async function ensureTenant(db, tenantId) {
         });
     }
 }
+async function ensureUserDocFromFirebaseUser(fbUser) {
+    const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+    const uid = fbUser.uid;
+    const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
+    const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDoc"])(userRef);
+    if (snap.exists()) {
+        return {
+            id: snap.id,
+            ...snap.data()
+        };
+    }
+    // create tenant + user
+    await ensureTenant(db, uid);
+    const display = fbUser.displayName || fbUser.email?.split("@")[0] || "User";
+    const initials = display.split(" ").map((n)=>n[0]).join("").toUpperCase();
+    const userData = {
+        name: display,
+        email: fbUser.email ?? "",
+        avatarInitials: initials || "U",
+        tenantId: uid
+    };
+    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setDoc"])(userRef, userData);
+    return {
+        id: uid,
+        ...userData
+    };
+}
+// tell server "someone logged in" → for auditLogs
+async function logLoginToServer(idToken) {
+    try {
+        await fetch("/api/auth/log-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                idToken
+            })
+        });
+    } catch  {
+    // do not block UI
+    }
+}
 const api = {
-    //
-    // ─── AUTH ─────────────────────────────────────────────
-    //
+    // ─── AUTH (EMAIL+PASSWORD LOGIN) ──────────────────────
     login: async (email, password)=>{
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        // 1) sign in with Firebase Auth
         const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["signInWithEmailAndPassword"])(auth, email, password);
         const uid = cred.user.uid;
-        // 2) try to read Firestore user
+        // audit on server
+        const idToken = await cred.user.getIdToken();
+        await logLoginToServer(idToken);
         const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
         const userSnap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDoc"])(userRef);
         if (userSnap.exists()) {
@@ -232,11 +276,9 @@ const api = {
                 ...userSnap.data()
             };
         }
-        // 3) we reach here when you deleted /users in Firestore but Auth still has the user
-        //    -> recreate the user doc + tenant so the app doesn't break
+        // Firestore doc missing → rebuild
         const fallbackName = cred.user.email?.split("@")[0] ?? "User";
         const initials = fallbackName[0]?.toUpperCase() ?? "U";
-        // make sure tenant with same id exists
         await ensureTenant(db, uid);
         const rebuiltUser = {
             name: fallbackName,
@@ -254,13 +296,14 @@ const api = {
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["signOut"])(auth);
     },
+    // ─── LEGACY DIRECT SIGNUP (keep for admin/superuser) ──
     signUp: async (name, email, password)=>{
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         try {
             const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["createUserWithEmailAndPassword"])(auth, email, password);
             const uid = cred.user.uid;
-            // instead of random tenant id we use UID → simpler everywhere
+            // tenant = uid
             const tenantRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", uid);
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setDoc"])(tenantRef, {
                 id: uid,
@@ -272,7 +315,6 @@ const api = {
                 createdAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["serverTimestamp"])()
             });
             const initials = name.split(" ").map((n)=>n[0]).join("").toUpperCase();
-            // create user profile
             const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
             const userData = {
                 name,
@@ -281,6 +323,9 @@ const api = {
                 tenantId: uid
             };
             await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setDoc"])(userRef, userData);
+            // audit this too
+            const idToken = await cred.user.getIdToken();
+            await logLoginToServer(idToken);
             return {
                 user: {
                     id: uid,
@@ -302,6 +347,104 @@ const api = {
             };
         }
     },
+    // ─── EMAIL-CODE SIGNUP (step 1) ───────────────────────
+    requestSignupCode: async (payload)=>{
+        const res = await fetch("/api/auth/request-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    // ─── EMAIL-CODE SIGNUP (step 2) ───────────────────────
+    verifySignupCode: async (payload)=>{
+        const res = await fetch("/api/auth/verify-code", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    // ─── CHECKOUT (step 3) ─────────────────────────────────
+    startCheckoutForEmail: async (email)=>{
+        const res = await fetch("/api/checkout", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email
+            })
+        });
+        try {
+            const data = await res.json();
+            if (res.ok) {
+                return {
+                    ok: true,
+                    url: data.url
+                };
+            }
+            return {
+                ok: false,
+                error: data.error ?? "Checkout failed"
+            };
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    // ─── FINALIZE (step 4) ─────────────────────────────────
+    finalizeSignup: async (sessionId)=>{
+        const res = await fetch("/api/auth/finalize-signup", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                session_id: sessionId
+            })
+        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    // ─── GOOGLE SIGN-IN ───────────────────────────────────
+    googleSignIn: async ()=>{
+        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+        const provider = new __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["GoogleAuthProvider"]();
+        const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["signInWithPopup"])(auth, provider);
+        const fbUser = cred.user;
+        // audit
+        const idToken = await fbUser.getIdToken();
+        await logLoginToServer(idToken);
+        return await ensureUserDocFromFirebaseUser(fbUser);
+    },
+    // ─── TENANT / USER ────────────────────────────────────
     getUserProfile: async (uid)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid));
@@ -311,9 +454,6 @@ const api = {
             ...snap.data()
         };
     },
-    //
-    // ─── TENANT & SETUP ───────────────────────────────────
-    //
     getTenant: async (tenantId)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId));
@@ -326,7 +466,6 @@ const api = {
     updateTenant: async (tenantId, data)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const ref = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId);
-        // if someone deleted tenant we still want to write
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setDoc"])(ref, {
             id: tenantId,
             ...data
@@ -340,7 +479,6 @@ const api = {
         };
     },
     completeBusinessSetup: async (tenantId, data)=>{
-        // fake provisioning a twilio number for now
         const mockTwilio = `+1${Math.floor(200 + Math.random() * 700)}${Math.floor(1000000 + Math.random() * 9000000)}`;
         return await api.updateTenant(tenantId, {
             ...data,
@@ -357,21 +495,60 @@ const api = {
             ...snap.data()
         };
     },
-    //
-    // ─── PLANS / BILLING (REAL STRIPE CALL) ───────────────
-    //
+    // ─── ACCOUNT MANAGEMENT ───────────────────────────────
+    requestPasswordReset: async (email)=>{
+        const res = await fetch("/api/auth/request-password-reset", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email
+            })
+        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    deleteMyAccount: async ()=>{
+        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+        const current = auth.currentUser;
+        if (!current) return {
+            ok: false,
+            error: "not-logged-in"
+        };
+        const idToken = await current.getIdToken();
+        const res = await fetch("/api/auth/delete-account", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`
+            }
+        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
+    },
+    // ─── PLANS / BILLING (in-app upgrades) ────────────────
     getPlans: ()=>Object.values(PLANS),
     getCurrentPlan: async (tenantId)=>{
         const tenant = await api.getTenant(tenantId);
         if (!tenant?.planId) return null;
         return PLANS[tenant.planId] || null;
     },
-    // REAL call to our Next.js route
     createStripeCheckoutSession: async (planId)=>{
         const plan = PLANS[planId];
-        if (!plan) {
-            throw new Error("Unknown plan");
-        }
+        if (!plan) throw new Error("Unknown plan");
         const baseUrl = ("TURBOPACK compile-time value", "http://localhost:3000") ?? window.location.origin;
         const res = await fetch("/api/checkout", {
             method: "POST",
@@ -399,9 +576,7 @@ const api = {
             planId
         });
     },
-    //
     // ─── LEADS ────────────────────────────────────────────
-    //
     getLeads: async (tenantId)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const leadsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "leads");
@@ -426,7 +601,7 @@ const api = {
             created: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["serverTimestamp"])()
         };
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["addDoc"])(leadsCol, newLead);
-        // also create a conversation so Messages UI has something
+        // create a conversation
         const convoCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations");
         const convoRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(convoCol);
         const batch = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["writeBatch"])(db);
@@ -448,9 +623,7 @@ const api = {
         });
         await batch.commit();
     },
-    //
     // ─── APPOINTMENTS ─────────────────────────────────────
-    //
     getAppointments: async (tenantId)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const colRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "appointments");
@@ -472,14 +645,11 @@ const api = {
     },
     deleteAppointment: async (tenantId, id)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        // keeping your current “empty merge” approach
         await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["setDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId, "appointments", id), {}, {
             merge: true
         });
     },
-    //
-    // ─── MESSAGES / CONVERSATIONS ─────────────────────────
-    //
+    // ─── MESSAGES ─────────────────────────────────────────
     getConversations: async (tenantId)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const colRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$node$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations");

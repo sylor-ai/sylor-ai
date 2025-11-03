@@ -4,7 +4,7 @@
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import { api } from "@/lib/api";
-import { getFirebaseAuth } from "@/lib/firebase";
+import { getFirebaseAuth } from "@/lib/firebase-admin";
 
 export default function OnboardingClient() {
   const searchParams = useSearchParams();

@@ -1,57 +1,132 @@
+// FILE: src/app/(dashboard)/settings/page.tsx
 "use client";
 
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { getFirebaseAuth } from "@/lib/firebase";
 
 export default function SettingsPage() {
-  const [businessName, setBusinessName] = useState("UrbanLux Construction");
-  const [businessPhone, setBusinessPhone] = useState("+1 (818) 555-1234");
+  const [businessName, setBusinessName] = useState("");
+  const [businessPhone, setBusinessPhone] = useState("");
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
+  // ---- 1) Load current profile after auth is ready
+  useEffect(() => {
+    const auth = getFirebaseAuth();
+    const unsub = onAuthStateChanged(auth, async (current) => {
+      if (!current) {
+        setMessage("You are not logged in.");
+        setLoading(false);
+        return;
+      }
+      try {
+        const idToken = await current.getIdToken();
+        const res = await fetch("/api/profile", {
+          method: "GET",
+          headers: { Authorization: `Bearer ${idToken}` },
+        });
+
+        if (!res.ok) {
+          setMessage("Could not load profile.");
+          setLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+        const tenant = data?.tenant || {};
+        setBusinessName(tenant.businessName ?? "");
+        setBusinessPhone(tenant.businessPhone ?? "");
+      } catch {
+        setMessage("Could not load profile.");
+      } finally {
+        setLoading(false);
+      }
+    });
+    return () => unsub();
+  }, []);
+
+  // ---- 2) Save business profile
   async function handleSave(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setMessage("");
 
     try {
+      const auth = getFirebaseAuth();
+      const current = auth.currentUser;
+      if (!current) {
+        setMessage("You are not logged in.");
+        setSaving(false);
+        return;
+      }
+      const idToken = await current.getIdToken();
       const res = await fetch("/api/profile", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          businessName,
-          businessPhone,
-        }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({ businessName, businessPhone }),
       });
 
       if (!res.ok) throw new Error("Failed");
-
       setMessage("Saved ✅");
-    } catch (err) {
+    } catch {
       setMessage("Could not save.");
     } finally {
       setSaving(false);
     }
   }
 
+  // ---- 3) Delete account
+  async function handleDeleteAccount() {
+    if (!confirm("Delete your account permanently? This cannot be undone.")) {
+      return;
+    }
+    try {
+      const auth = getFirebaseAuth();
+      const current = auth.currentUser;
+      if (!current) {
+        alert("You are not logged in.");
+        return;
+      }
+      const idToken = await current.getIdToken();
+      const res = await fetch("/api/auth/delete-account", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.ok) {
+        alert(`Could not delete account${data?.error ? `: ${data.error}` : ""}`);
+        return;
+      }
+      // Best-effort local cleanup
+      await current.delete().catch(() => {});
+      window.location.href = "/";
+    } catch (err) {
+      console.error(err);
+      alert("Could not delete account.");
+    }
+  }
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
+      {/* Header */}
       <div>
-        <h1 className="text-lg font-semibold">Settings</h1>
-        <p className="text-sm text-white/35">
-          Business info, phones, and AI behaviour.
+        <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
+        <p className="text-sm text-white/40">
+          Business info, phones, AI behaviour, and account.
         </p>
       </div>
 
-      {/* BUSINESS CARD */}
-      <div className="rounded-[10px] border border-white/5 bg-white/1 p-4 max-w-xl">
+      {/* Business card */}
+      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl">
         <h2 className="text-sm font-medium mb-3">Business</h2>
-        <form onSubmit={handleSave} className="space-y-3">
-          {/* Business name */}
+        <form onSubmit={handleSave} className="space-y-3" aria-label="Business settings">
           <div>
-            <label
-              htmlFor="businessName"
-              className="text-sm text-white/50 mb-1 block"
-            >
+            <label htmlFor="businessName" className="text-xs text-white/50 mb-1 block">
               Business name
             </label>
             <input
@@ -62,16 +137,13 @@ export default function SettingsPage() {
               onChange={(e) => setBusinessName(e.target.value)}
               required
               placeholder="Enter your business name"
-              className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
+              disabled={loading}
+              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
             />
           </div>
 
-          {/* Business phone */}
           <div>
-            <label
-              htmlFor="businessPhone"
-              className="text-sm text-white/50 mb-1 block"
-            >
+            <label htmlFor="businessPhone" className="text-xs text-white/50 mb-1 block">
               Business phone
             </label>
             <input
@@ -81,34 +153,54 @@ export default function SettingsPage() {
               value={businessPhone}
               onChange={(e) => setBusinessPhone(e.target.value)}
               required
-              placeholder="Enter your business phone"
-              className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
+              placeholder="+1 (555) 000-0000"
+              disabled={loading}
+              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
             />
           </div>
 
           <button
             type="submit"
-            disabled={saving}
-            className="rounded-[10px] bg-white text-black px-4 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
+            disabled={saving || loading}
+            className="rounded-xl bg-white text-black px-4 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
           >
             {saving ? "Saving..." : "Save changes"}
           </button>
 
           {message ? (
-            <p className="text-xs text-white/40 mt-1">{message}</p>
+            <p className="text-xs text-white/40 mt-1" role="status">
+              {message}
+            </p>
           ) : null}
         </form>
       </div>
 
-      {/* AI BEHAVIOUR CARD */}
-      <div className="rounded-[10px] border border-white/5 bg-white/1 p-4 max-w-xl">
+      {/* AI card */}
+      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl">
         <h2 className="text-sm font-medium mb-3">AI behaviour</h2>
         <p className="text-xs text-white/35 mb-2">
-          You can add controls here later: auto-confirm, auto-book, crew routing,
-          etc.
+          Add rules for auto-confirm, auto-book, routing etc.
         </p>
-        <button className="rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10">
+        <button
+          type="button"
+          className="rounded-xl bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
+        >
           + Add rule
+        </button>
+      </div>
+
+      {/* Danger zone */}
+      <div className="rounded-2xl border border-red-500/20 bg-red-950/30 p-5 max-w-xl">
+        <h2 className="text-sm font-medium mb-2 text-red-200">Danger zone</h2>
+        <p className="text-xs text-red-100/70 mb-3">
+          Permanently delete this account and its tenant. This cannot be undone.
+        </p>
+        <button
+          type="button"
+          onClick={handleDeleteAccount}
+          className="rounded-xl bg-red-500/90 px-4 py-1.5 text-sm font-medium text-white hover:bg-red-600"
+        >
+          Delete my account
         </button>
       </div>
     </div>
