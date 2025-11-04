@@ -1,11 +1,11 @@
-// FILE: src/app/(public)/setup/page.tsx
+// FILE: src/app/(public)/setup/setup-client.tsx
 "use client";
 
 import React, { useState } from "react";
-import { getFirebaseAuth } from "@/lib/firebase";
 import { useRouter, useSearchParams } from "next/navigation";
+import { getFirebaseAuth } from "@/lib/firebase";
 
-export default function SetupPage() {
+export default function SetupClient() {
   const router = useRouter();
   const search = useSearchParams();
   const plan = search.get("plan") || "starter";
@@ -23,11 +23,13 @@ export default function SetupPage() {
     try {
       const auth = getFirebaseAuth();
       const current = auth.currentUser;
+
       if (!current) {
         setError("You are not logged in.");
         setSaving(false);
         return;
       }
+
       const idToken = await current.getIdToken();
 
       const res = await fetch("/api/profile", {
