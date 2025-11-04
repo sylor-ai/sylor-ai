@@ -29,6 +29,7 @@ export default function SetupClient({ plan }: SetupClientProps) {
         setSaving(false);
         return;
       }
+
       const idToken = await current.getIdToken();
 
       const res = await fetch("/api/profile", {
@@ -50,7 +51,7 @@ export default function SetupClient({ plan }: SetupClientProps) {
         return;
       }
 
-      // success → go to plan or dashboard
+      // success → go to pricing with chosen plan
       router.push(`/pricing?plan=${plan || "starter"}`);
     } catch (err) {
       console.error(err);
