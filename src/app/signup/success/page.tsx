@@ -1,56 +1,34 @@
-// FILE: src/app/signup/success/page.tsx
-"use client";
+import { Suspense } from "react";
+import SignupSuccessClient from "./signup-success-client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { getFirebaseAuth } from "@/lib/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+type SearchParams = {
+  [key: string]: string | string[] | undefined;
+};
 
-export default function SignupSuccessPage() {
-  const search = useSearchParams();
-  const router = useRouter();
-  const sessionId = search.get("session_id");
-
-  useEffect(() => {
-    if (!sessionId) return;
-
-    (async () => {
-      // 1) finalize server-side (creates user/tenant, deletes pending)
-      const res = await fetch("/api/auth/finalize-signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ session_id: sessionId }),
-      });
-
-      const data = await res.json();
-      if (!data?.ok) {
-        console.error("finalize failed:", data);
-        return;
-      }
-
-      // 2) auto sign-in on the client so auth.currentUser is ready
-      const email = localStorage.getItem("signupEmail") ?? "";
-      const password = localStorage.getItem("signupPassword") ?? "";
-
-      try {
-        if (email && password) {
-          const auth = getFirebaseAuth();
-          await signInWithEmailAndPassword(auth, email, password);
-        }
-      } finally {
-        // clean up regardless
-        localStorage.removeItem("signupEmail");
-        localStorage.removeItem("signupPassword");
-      }
-
-      // 3) go to setup first; dashboard as fallback
-      router.replace("/setup");
-    })();
-  }, [sessionId, router]);
+export default function SignupSuccessPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const raw = searchParams.session_id;
+  const sessionId =
+    typeof raw === "string"
+      ? raw
+      : Array.isArray(raw)
+      ? raw[0]
+      : null;
 
   return (
-    <div className="min-h-[60vh] grid place-items-center text-white">
-      <p className="text-sm opacity-70">Finishing your account…</p>
-    </div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
+          <div className="text-sm text-white/70">
+            Finishing your account…
+          </div>
+        </div>
+      }
+    >
+      <SignupSuccessClient sessionId={sessionId} />
+    </Suspense>
   );
 }
