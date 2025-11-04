@@ -15,7 +15,7 @@ export default function OnboardingClient() {
 
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
-  const [industry, setIndustry] = useState(""); // we keep it in UI only
+  const [industry, setIndustry] = useState(""); // UI-only
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
 
@@ -43,14 +43,13 @@ export default function OnboardingClient() {
         return;
       }
 
-      // 3) update tenant with the fields that actually exist on Tenant
-      //    (businessName, businessPhone) – DO NOT send `industry` here
+      // 3) update tenant with actual fields
       await api.completeBusinessSetup(userProfile.tenantId, {
         businessName,
         businessPhone,
       });
 
-      // 4) make sure plan is saved (in case Stripe wasn’t used yet)
+      // 4) make sure plan is saved
       await api.confirmCheckoutSession(
         userProfile.tenantId,
         selectedPlan as "starter" | "pro"
@@ -110,7 +109,7 @@ export default function OnboardingClient() {
             />
           </div>
 
-          {/* UI-only field – we DON'T send it to Firestore right now */}
+          {/* UI-only field – NOT stored yet */}
           <div>
             <label className="text-sm text-white/55 mb-1 block">
               Industry / service
