@@ -1,142 +1,137 @@
-// src/app/setup/setup-client.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useCurrentUser } from "@/hooks/use-current-user";
-import { api } from "@/lib/api";
-import { Tenant } from "@/types";
+import { getFirebaseAuth } from "@/lib/firebase";
 
-export default function SetupClient() {
+interface SetupClientProps {
+  plan: string;
+}
+
+export default function SetupClient({ plan }: SetupClientProps) {
   const router = useRouter();
-  const { currentUser, loading } = useCurrentUser();
 
-  const [tenant, setTenant] = useState<Tenant | null>(null);
-  const [businessName, setBusinessName] = useState("");
-  const [businessPhone, setBusinessPhone] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [businessName, setBusinessName] = useState("UrbanLux Construction");
+  const [businessPhone, setBusinessPhone] = useState("+1 (718) 455-1334");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (!currentUser) return;
-    (async () => {
-      const t = await api.getTenant(currentUser.tenantId);
-      if (t) {
-        setTenant(t);
-        setBusinessName(t.businessName || "");
-        setBusinessPhone(t.businessPhone || "");
-      }
-    })();
-  }, [currentUser]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] text-white">
-        <div className="h-8 w-8 rounded-full border-2 border-white/40 border-t-transparent animate-spin" />
-      </div>
-    );
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] text-white px-4 text-center">
-        You are not logged in.
-      </div>
-    );
-  }
+  const [saving, setSaving] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!currentUser) return;
     setSaving(true);
     setError("");
 
     try {
-      const tenantId = currentUser.tenantId;
-      if (!tenantId) {
-        throw new Error("Missing tenantId on user");
+      const auth = getFirebaseAuth();
+      const current = auth.currentUser;
+      if (!current) {
+        setError("You are not logged in.");
+        setSaving(false);
+        return;
       }
+      const idToken = await current.getIdToken();
 
-      const updated = await api.completeBusinessSetup(tenantId, {
-        businessName,
-        businessPhone,
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
+        body: JSON.stringify({
+          businessName,
+          businessPhone,
+        }),
       });
 
-      setTenant(updated);
-      router.push("/dashboard");
-    } catch (err: any) {
-      console.error("setup error", err);
-      setError(err?.message || "Could not save setup.");
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        setError(data?.error || "Could not save business profile.");
+        setSaving(false);
+        return;
+      }
+
+      // success → go to plan or dashboard
+      router.push(`/pricing?plan=${plan || "starter"}`);
+    } catch (err) {
+      console.error(err);
+      setError("Could not save business profile.");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0a0b] p-4 py-10 sm:py-0">
-      <div className="w-full max-w-lg bg-[#0f1011]/70 border border-white/10 rounded-2xl p-6 sm:p-8">
-        <h1 className="text-2xl font-bold text-white mb-2">
-          Finish your business setup
-        </h1>
-        <p className="text-sm text-white/40 mb-6">
-          We use this info when we text your leads.
-        </p>
+    <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
+      <div className="w-full max-w-lg rounded-2xl border border-white/5 bg-[rgba(10,10,11,0.5)] backdrop-blur-xl p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+        <div className="mb-6">
+          <p className="text-xs text-white/30 mb-2 tracking-wide">
+            1. Account <span className="text-white/15">→</span> 2. Business
+          </p>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Tell us about your business
+          </h1>
+          <p className="text-sm text-white/40 mt-1">
+            We’ll use this info in your SMS, booking and dashboards.
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Business name */}
+          <div className="space-y-1">
             <label
               htmlFor="businessName"
-              className="block text-sm text-white/50 mb-1"
+              className="text-sm text-white/60 font-medium"
             >
               Business name
             </label>
             <input
               id="businessName"
               name="businessName"
-              type="text"
               value={businessName}
               onChange={(e) => setBusinessName(e.target.value)}
               required
-              placeholder="UrbanLux Construction"
-              className="w-full bg-[#0b0b0c] border border-white/10 rounded-md px-3 py-2.5 outline-none focus:border-white/40 text-sm"
+              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/40 focus:ring-0"
+              placeholder="Your business name"
             />
           </div>
 
-          <div>
+          {/* Business phone */}
+          <div className="space-y-1">
             <label
               htmlFor="businessPhone"
-              className="block text-sm text-white/50 mb-1"
+              className="text-sm text-white/60 font-medium"
             >
               Business phone
             </label>
             <input
               id="businessPhone"
               name="businessPhone"
-              type="tel"
               value={businessPhone}
               onChange={(e) => setBusinessPhone(e.target.value)}
               required
-              placeholder="+1 (818) 555-1234"
-              className="w-full bg-[#0b0b0c] border border-white/10 rounded-md px-3 py-2.5 outline-none focus:border-white/40 text-sm"
+              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/40"
+              placeholder="+1 (555) 000-0000"
             />
           </div>
 
-          {error ? <p className="text-red-400 text-sm">{error}</p> : null}
+          {error ? (
+            <div className="rounded-xl bg-[#2a1212] border border-[#ff5f5f22] text-[#ffbfbf] text-sm px-3 py-2">
+              {error}
+            </div>
+          ) : null}
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full bg-[#5c6cff] hover:bg-[#4f5edf] transition-colors py-2.5 rounded-lg font-semibold text-white disabled:opacity-50"
+            className="w-full py-2.5 rounded-xl bg-[#5C6CFF] hover:bg-[#6d7aff] transition text-sm font-medium disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Continue to dashboard"}
+            {saving ? "Saving..." : "Continue to plan →"}
           </button>
-        </form>
 
-        {tenant?.twilioNumber ? (
-          <p className="text-xs text-white/30 mt-4">
-            Sylor AI number provisioned: {tenant.twilioNumber}
+          <p className="text-xs text-white/30 mt-1 text-center">
+            You can change this later in Settings → Business.
           </p>
-        ) : null}
+        </form>
       </div>
     </div>
   );
