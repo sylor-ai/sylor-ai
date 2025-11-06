@@ -1,16 +1,19 @@
 import { Suspense } from "react";
 import SetupClient from "./setup-client";
 
-type SearchParams = {
+type SearchParams = Promise<{
   [key: string]: string | string[] | undefined;
-};
+}>;
 
-export default function SetupPage({
+export default async function SetupPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const rawPlan = searchParams.plan;
+  // ✅ Await searchParams because it’s now a Promise in Next.js 16
+  const params = await searchParams;
+
+  const rawPlan = params.plan;
   const plan =
     typeof rawPlan === "string"
       ? rawPlan

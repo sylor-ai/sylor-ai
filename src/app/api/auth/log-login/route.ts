@@ -1,36 +1,53 @@
 // FILE: src/app/api/auth/log-login/route.ts
-import { NextResponse } from "next/server";
-import { getAdminAuth, getAdminFirestore } from "@/lib/firebase-admin";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyIdToken, getAdminFirestore } from "@/lib/firebase-admin";
 
-export async function POST(req: Request) {
+const isProd = process.env.NODE_ENV === "production";
+
+export async function POST(req: NextRequest) {
   try {
     const { idToken } = await req.json();
-    if (!idToken) {
+
+    if (!idToken || typeof idToken !== "string") {
       return NextResponse.json(
         { ok: false, error: "Missing idToken" },
         { status: 400 }
       );
     }
 
-    const adminAuth = getAdminAuth();
-    const firestore = getAdminFirestore();
+    const decoded = await verifyIdToken(idToken);
+    const db = getAdminFirestore();
+    // best-effort audit log
+    await db
+      .collection("auditLogs")
+      .add({ type: "login", userId: decoded.uid, ts: Date.now() })
+      .catch(() => {});
 
-    const decoded = await adminAuth.verifyIdToken(idToken);
-    const uid = decoded.uid;
+    const res = NextResponse.json({ ok: true, uid: decoded.uid });
 
-    await firestore.collection("auditLogs").add({
-      userId: uid ?? null,
-      type: "login",
-      ip: req.headers.get("x-forwarded-for") ?? null,
-      ua: req.headers.get("user-agent") ?? null,
-      ts: Date.now(),
+    // ✅ In dev (http://...), secure: false so cookie is actually saved
+    res.cookies.set("sylor_session", idToken, {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
-    return NextResponse.json({ ok: true });
-  } catch (e: any) {
-    console.error("log-login error", e);
+    // track last active
+    res.cookies.set("sylor_last_active", Date.now().toString(), {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return res;
+  } catch (err) {
+    console.error("[log-login] error", err);
     return NextResponse.json(
-      { ok: false, error: "Server error logging login" },
+      { ok: false, error: "Server error" },
       { status: 500 }
     );
   }

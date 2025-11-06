@@ -1,7 +1,6 @@
-// FILE: src/app/(dashboard)/leads/page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { api } from "@/lib/api";
@@ -17,19 +16,34 @@ type NewLeadState = {
 };
 
 const statusColors: Record<Lead["status"], string> = {
-  New: "bg-blue-500/10 text-blue-300",
-  Contacted: "bg-amber-500/10 text-amber-300",
-  Booked: "bg-emerald-500/10 text-emerald-300",
+  New: "bg-blue-500/10 text-blue-200",
+  Contacted: "bg-amber-500/10 text-amber-200",
+  Booked: "bg-emerald-500/10 text-emerald-200",
   Closed: "bg-slate-500/10 text-slate-200",
 };
+
+const currencyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+});
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("")
+    .slice(0, 2) || "LD";
+}
 
 export default function LeadsPage() {
   const router = useRouter();
   const { currentUser, loading } = useCurrentUser();
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [isAddOpen, setIsAddOpen] = useState(false);
   const [filter, setFilter] = useState<Lead["status"] | "all">("all");
   const [search, setSearch] = useState("");
+  const [isAddOpen, setIsAddOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newLead, setNewLead] = useState<NewLeadState>({
     name: "",
@@ -40,22 +54,20 @@ export default function LeadsPage() {
     status: "New",
   });
 
-  // load leads once we have a user
   useEffect(() => {
-    async function run() {
+    async function load() {
       if (loading) return;
       if (!currentUser) {
         router.push("/login");
         return;
       }
-      // user exists
       const data = await api.getLeads(currentUser.tenantId);
       setLeads(data);
     }
-    run();
+    load();
   }, [loading, currentUser, router]);
 
-  async function refreshLeads() {
+  async function refresh() {
     if (!currentUser) return;
     const data = await api.getLeads(currentUser.tenantId);
     setLeads(data);
@@ -67,233 +79,135 @@ export default function LeadsPage() {
 
     setSaving(true);
     await api.createLead(currentUser.tenantId, {
-      name: newLead.name || "New Lead",
-      phone: newLead.phone || "",
+      name: newLead.name || "New lead",
+      phone: newLead.phone,
       service: newLead.service || "General",
-      city: newLead.city || "",
+      city: newLead.city,
       value: Number(newLead.value) || 0,
       status: newLead.status,
     });
     setSaving(false);
     setIsAddOpen(false);
-    setNewLead({
-      name: "",
-      phone: "",
-      service: "",
-      city: "",
-      value: "",
-      status: "New",
-    });
-    await refreshLeads();
+    setNewLead({ name: "", phone: "", service: "", city: "", value: "", status: "New" });
+    await refresh();
   }
 
   const filtered = leads.filter((lead) => {
     const matchesFilter = filter === "all" ? true : lead.status === filter;
-    const q = search.trim().toLowerCase();
+    const query = search.trim().toLowerCase();
     const matchesSearch =
-      q.length === 0
+      query.length === 0
         ? true
-        : lead.name.toLowerCase().includes(q) ||
-          lead.phone.toLowerCase().includes(q) ||
-          lead.service.toLowerCase().includes(q) ||
-          (lead.city || "").toLowerCase().includes(q);
+        : lead.name.toLowerCase().includes(query) ||
+          lead.phone.toLowerCase().includes(query) ||
+          lead.service.toLowerCase().includes(query) ||
+          (lead.city || "").toLowerCase().includes(query);
     return matchesFilter && matchesSearch;
   });
 
   if (loading) {
-    return <div className="p-6 text-slate-400">Loading leads...</div>;
+    return <div className="p-6 text-white/60">Loading leads...</div>;
   }
 
   if (!currentUser) {
-    return (
-      <div className="p-6 text-slate-400">
-        You are not logged in. Redirecting to login...
-      </div>
-    );
+    return <div className="p-6 text-white/60">You are not logged in.</div>;
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between gap-4">
+    <div className="space-y-8">
+      <header className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
           <h1 className="text-2xl font-semibold">Leads</h1>
-          <p className="text-sm text-slate-400">
-            All captured leads across your sources.
+          <p className="text-sm text-white/60">
+            All of your inbound prospects across SMS, web, and manual entry.
           </p>
         </div>
-        <button
-          onClick={() => setIsAddOpen(true)}
-          className="bg-brand-primary px-4 py-2 rounded-lg font-semibold"
-        >
-          + Add lead
-        </button>
-      </div>
-
-      {/* Filters + Search */}
-      <div className="flex flex-wrap gap-3 items-center">
-        <div className="flex gap-2" aria-label="Filter leads by status">
-          <button
-            onClick={() => setFilter("all")}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              filter === "all"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-900/20 text-slate-300"
-            }`}
-          >
-            All ({leads.length})
+        <div className="flex gap-2">
+          <button onClick={() => setIsAddOpen(true)} className="btn-primary">
+            + Add lead
           </button>
-          <button
-            onClick={() => setFilter("New")}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              filter === "New"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-900/20 text-slate-300"
-            }`}
-          >
-            New
-          </button>
-          <button
-            onClick={() => setFilter("Contacted")}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              filter === "Contacted"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-900/20 text-slate-300"
-            }`}
-          >
-            Contacted
-          </button>
-          <button
-            onClick={() => setFilter("Booked")}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              filter === "Booked"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-900/20 text-slate-300"
-            }`}
-          >
-            Booked
-          </button>
-          <button
-            onClick={() => setFilter("Closed")}
-            className={`px-4 py-2 rounded-lg text-sm ${
-              filter === "Closed"
-                ? "bg-slate-800 text-white"
-                : "bg-slate-900/20 text-slate-300"
-            }`}
-          >
-            Closed
+          <button onClick={() => router.push("/settings/public-link")} className="btn-ghost">
+            Share capture link
           </button>
         </div>
+      </header>
 
-        <div className="flex-1" />
-
-        {/* Search with visible label for axe */}
-        <div className="flex flex-col gap-1">
-          <label
-            htmlFor="lead-search"
-            className="text-xs text-slate-400 font-medium"
-          >
-            Search leads
-          </label>
-          <input
-            id="lead-search"
-            name="lead-search"
-            type="text"
-            placeholder="Name, phone, service, city..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm w-64 outline-none focus:ring-1 focus:ring-brand-primary"
-          />
+      <section className="panel space-y-4">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex gap-2" aria-label="Filter leads by status">
+            {(["all", "New", "Contacted", "Booked", "Closed"] as const).map((key) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key === "all" ? "all" : key)}
+                className={`chip ${filter === key ? "!bg-white/12 !text-white !border-white/20" : ""}`}
+              >
+                {key === "all" ? `All (${leads.length})` : key}
+              </button>
+            ))}
+          </div>
+          <div className="flex-1" />
+          <div className="flex flex-col gap-1">
+            <label htmlFor="lead-search" className="text-xs text-white/60 font-medium">
+              Search leads
+            </label>
+            <input
+              id="lead-search"
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Name, phone, service, city..."
+              className="w-64"
+            />
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* Table */}
-      <div className="bg-dark-card rounded-xl border border-slate-800 overflow-hidden">
+      <div className="card overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-950/30">
+          <thead className="bg-white/5 text-xs uppercase tracking-wide text-white/50">
             <tr>
-              <th className="text-left py-3 pl-4 pr-2 text-slate-400 font-medium">
-                Lead
-              </th>
-              <th className="text-left py-3 px-2 text-slate-400 font-medium">
-                Service
-              </th>
-              <th className="text-left py-3 px-2 text-slate-400 font-medium">
-                City
-              </th>
-              <th className="text-left py-3 px-2 text-slate-400 font-medium">
-                Value
-              </th>
-              <th className="text-left py-3 px-2 text-slate-400 font-medium">
-                Status
-              </th>
-              <th className="text-left py-3 px-2 text-slate-400 font-medium">
-                Created
-              </th>
+              <th className="text-left py-3 pl-4 pr-2 font-medium">Lead</th>
+              <th className="text-left py-3 px-2 font-medium">Service</th>
+              <th className="text-left py-3 px-2 font-medium">City</th>
+              <th className="text-left py-3 px-2 font-medium">Value</th>
+              <th className="text-left py-3 px-2 font-medium">Status</th>
+              <th className="text-left py-3 px-2 font-medium">Created</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
-                <td colSpan={6} className="text-center py-10 text-slate-500">
-                  No leads found.
+                <td colSpan={6} className="py-12 text-center text-white/55">
+                  No leads match the current filters.
                 </td>
               </tr>
             ) : (
               filtered.map((lead) => (
-                <tr
-                  key={lead.id}
-                  className="border-t border-slate-800/60 hover:bg-slate-900/25"
-                >
+                <tr key={lead.id} className="border-t border-white/8 transition hover:bg-white/5">
                   <td className="py-3 pl-4 pr-2">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-xs font-semibold">
-                        {lead.name
-                          .split(" ")
-                          .map((n) => n[0])
-                          .join("")
-                          .toUpperCase()
-                          .slice(0, 2)}
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-xs font-semibold">
+                        {getInitials(lead.name)}
                       </div>
                       <div>
-                        <div className="font-medium text-white">
-                          {lead.name}
-                        </div>
-                        <div className="text-xs text-slate-400">
-                          {lead.phone}
-                        </div>
+                        <div className="font-medium text-white">{lead.name}</div>
+                        <div className="text-xs text-white/60">{lead.phone || "-"}</div>
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-2">
-                    <span className="text-slate-200">{lead.service}</span>
-                  </td>
-                  <td className="py-3 px-2">
-                    <span className="text-slate-300">
-                      {lead.city && lead.city.trim().length > 0
-                        ? lead.city
-                        : "-"}
-                    </span>
-                  </td>
-                  <td className="py-3 px-2">
-                    {new Intl.NumberFormat("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      minimumFractionDigits: 0,
-                    }).format(lead.value || 0)}
+                  <td className="py-3 px-2 text-white/85">{lead.service}</td>
+                  <td className="py-3 px-2 text-white/70">{lead.city?.trim() || "-"}</td>
+                  <td className="py-3 px-2 text-white/80">
+                    {currencyFormatter.format(lead.value || 0)}
                   </td>
                   <td className="py-3 px-2">
                     <span
-                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                        statusColors[lead.status]
-                      }`}
+                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ${statusColors[lead.status]}`}
                     >
                       {lead.status}
                     </span>
                   </td>
-                  <td className="py-3 px-2 text-slate-400 text-xs">
-                    {lead.created || "-"}
-                  </td>
+                  <td className="py-3 px-2 text-xs text-white/60">{lead.created || "-"}</td>
                 </tr>
               ))
             )}
@@ -301,173 +215,104 @@ export default function LeadsPage() {
         </table>
       </div>
 
-      {/* Add Lead Modal */}
       {isAddOpen ? (
         <div
-          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4"
           role="dialog"
           aria-modal="true"
           aria-labelledby="add-lead-title"
         >
-          <div className="w-full max-w-lg bg-slate-950/80 border border-slate-700 rounded-2xl p-6 backdrop-blur-xl">
-            <div className="flex items-center justify-between mb-4">
-              <h2 id="add-lead-title" className="text-lg font-semibold">
-                Add new lead
-              </h2>
+          <div className="w-full max-w-lg panel space-y-6">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 id="add-lead-title" className="text-lg font-semibold">
+                  Add a new lead
+                </h2>
+                <p className="text-xs text-white/55">
+                  Quick-add a prospect manually. You can edit details later from the lead drawer.
+                </p>
+              </div>
               <button
                 onClick={() => setIsAddOpen(false)}
-                className="text-slate-400 hover:text-white"
-                aria-label="Close add lead dialog"
+                className="btn-ghost px-3 py-1 text-xs"
+                type="button"
               >
-                ✕
+                Close
               </button>
             </div>
+
             <form onSubmit={handleCreateLead} className="space-y-4">
-              {/* Name */}
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="lead-name"
-                  className="text-sm text-slate-200 font-medium"
-                >
-                  Name
-                </label>
-                <input
-                  id="lead-name"
-                  name="lead-name"
-                  value={newLead.name}
-                  onChange={(e) =>
-                    setNewLead((p) => ({ ...p, name: e.target.value }))
-                  }
-                  required
-                  placeholder="Client name"
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
-                />
-              </div>
-
-              {/* Phone + City */}
-              <div className="flex gap-4">
-                <div className="flex-1 flex flex-col gap-2">
-                  <label
-                    htmlFor="lead-phone"
-                    className="text-sm text-slate-200 font-medium"
-                  >
-                    Phone
-                  </label>
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-2 text-sm text-white/70">
+                  <span>Name</span>
                   <input
-                    id="lead-phone"
-                    name="lead-phone"
-                    type="tel"
+                    value={newLead.name}
+                    onChange={(e) => setNewLead((prev) => ({ ...prev, name: e.target.value }))}
+                    placeholder="Jane Contractor"
+                    required
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm text-white/70">
+                  <span>Phone</span>
+                  <input
                     value={newLead.phone}
-                    onChange={(e) =>
-                      setNewLead((p) => ({ ...p, phone: e.target.value }))
-                    }
+                    onChange={(e) => setNewLead((prev) => ({ ...prev, phone: e.target.value }))}
                     placeholder="+1 (555) 123-4567"
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
                   />
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <label
-                    htmlFor="lead-city"
-                    className="text-sm text-slate-200 font-medium"
-                  >
-                    City
-                  </label>
-                  <input
-                    id="lead-city"
-                    name="lead-city"
-                    value={newLead.city}
-                    onChange={(e) =>
-                      setNewLead((p) => ({ ...p, city: e.target.value }))
-                    }
-                    placeholder="Los Angeles"
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
-                  />
-                </div>
-              </div>
-
-              {/* Service */}
-              <div className="flex flex-col gap-2">
-                <label
-                  htmlFor="lead-service"
-                  className="text-sm text-slate-200 font-medium"
-                >
-                  Service
                 </label>
-                <input
-                  id="lead-service"
-                  name="lead-service"
-                  value={newLead.service}
-                  onChange={(e) =>
-                    setNewLead((p) => ({ ...p, service: e.target.value }))
-                  }
-                  required
-                  placeholder="Roofing, ADU, Kitchen..."
-                  className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
-                />
               </div>
 
-              {/* Value + Status */}
-              <div className="flex gap-4">
-                <div className="flex-1 flex flex-col gap-2">
-                  <label
-                    htmlFor="lead-value"
-                    className="text-sm text-slate-200 font-medium"
-                  >
-                    Lead value ($)
-                  </label>
+              <label className="flex flex-col gap-2 text-sm text-white/70">
+                <span>Service</span>
+                <input
+                  value={newLead.service}
+                  onChange={(e) => setNewLead((prev) => ({ ...prev, service: e.target.value }))}
+                  placeholder="Roof repair, ADU build, kitchen remodel"
+                  required
+                />
+              </label>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <label className="flex flex-col gap-2 text-sm text-white/70">
+                  <span>City</span>
                   <input
-                    id="lead-value"
-                    name="lead-value"
+                    value={newLead.city}
+                    onChange={(e) => setNewLead((prev) => ({ ...prev, city: e.target.value }))}
+                    placeholder="Los Angeles"
+                  />
+                </label>
+                <label className="flex flex-col gap-2 text-sm text-white/70">
+                  <span>Lead value ($)</span>
+                  <input
                     type="number"
                     min={0}
                     value={newLead.value}
-                    onChange={(e) =>
-                      setNewLead((p) => ({ ...p, value: e.target.value }))
-                    }
+                    onChange={(e) => setNewLead((prev) => ({ ...prev, value: e.target.value }))}
                     placeholder="1500"
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
                   />
-                </div>
-                <div className="flex-1 flex flex-col gap-2">
-                  <label
-                    htmlFor="lead-status"
-                    className="text-sm text-slate-200 font-medium"
-                  >
-                    Status
-                  </label>
-                  <select
-                    id="lead-status"
-                    name="lead-status"
-                    value={newLead.status}
-                    onChange={(e) =>
-                      setNewLead((p) => ({
-                        ...p,
-                        status: e.target.value as NewLeadState["status"],
-                      }))
-                    }
-                    className="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2"
-                  >
-                    <option value="New">New</option>
-                    <option value="Contacted">Contacted</option>
-                    <option value="Booked">Booked</option>
-                    <option value="Closed">Closed</option>
-                  </select>
-                </div>
+                </label>
               </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAddOpen(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-900/40 border border-slate-700 text-sm"
+              <label className="flex flex-col gap-2 text-sm text-white/70">
+                <span>Status</span>
+                <select
+                  value={newLead.status}
+                  onChange={(e) =>
+                    setNewLead((prev) => ({ ...prev, status: e.target.value as NewLeadState["status"] }))
+                  }
                 >
+                  <option value="New">New</option>
+                  <option value="Contacted">Contacted</option>
+                  <option value="Booked">Booked</option>
+                  <option value="Closed">Closed</option>
+                </select>
+              </label>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button type="button" onClick={() => setIsAddOpen(false)} className="btn-ghost">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  disabled={saving}
-                  className="px-4 py-2 rounded-lg bg-brand-primary text-sm font-semibold"
-                >
+                <button type="submit" disabled={saving} className="btn-primary">
                   {saving ? "Saving..." : "Save lead"}
                 </button>
               </div>

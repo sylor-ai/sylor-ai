@@ -7,14 +7,17 @@ __turbopack_context__.s([
     "default",
     ()=>SettingsPage
 ]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/compiled/react/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$auth$2f$dist$2f$esm$2f$index$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/firebase/auth/dist/esm/index.esm.js [app-client] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/firebase/node_modules/@firebase/auth/dist/esm2017/index.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/src/lib/firebase.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/src/lib/api.ts [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 ;
 ;
@@ -25,6 +28,14 @@ function SettingsPage() {
     const [loading, setLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
     const [saving, setSaving] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [message, setMessage] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    // Public link states
+    const [pubLoading, setPubLoading] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(true);
+    const [pubSaving, setPubSaving] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [publicSlug, setPublicSlug] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [publicEnabled, setPublicEnabled] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [pubErr, setPubErr] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    const [pubSaved, setPubSaved] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const baseUrl = ("TURBOPACK compile-time value", "http://localhost:3000") ?? (("TURBOPACK compile-time truthy", 1) ? window.location.origin : "TURBOPACK unreachable");
     // ---- 1) Load current profile after auth is ready
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "SettingsPage.useEffect": ()=>{
@@ -65,6 +76,29 @@ function SettingsPage() {
             })["SettingsPage.useEffect"];
         }
     }["SettingsPage.useEffect"], []);
+    // ---- 1b) Load public link settings
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "SettingsPage.useEffect": ()=>{
+            ({
+                "SettingsPage.useEffect": async ()=>{
+                    try {
+                        setPubLoading(true);
+                        const res = await __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].getPublicLinkSettings();
+                        if (res.ok) {
+                            setPublicSlug(res.publicSlug ?? "");
+                            setPublicEnabled(res.publicCaptureEnabled ?? false);
+                        } else {
+                            setPubErr("Could not load public link settings.");
+                        }
+                    } catch  {
+                        setPubErr("Could not load public link settings.");
+                    } finally{
+                        setPubLoading(false);
+                    }
+                }
+            })["SettingsPage.useEffect"]();
+        }
+    }["SettingsPage.useEffect"], []);
     // ---- 2) Save business profile
     async function handleSave(e) {
         e.preventDefault();
@@ -96,6 +130,37 @@ function SettingsPage() {
             setMessage("Could not save.");
         } finally{
             setSaving(false);
+        }
+    }
+    // ---- 2b) Save public link
+    async function handleSavePublic(e) {
+        e.preventDefault();
+        setPubErr("");
+        setPubSaved(false);
+        if (publicEnabled && !publicSlug.trim()) {
+            setPubErr("Slug is required when link is enabled.");
+            return;
+        }
+        setPubSaving(true);
+        try {
+            const res = await __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].updatePublicLinkSettings({
+                publicSlug,
+                publicCaptureEnabled: publicEnabled
+            });
+            if (!res.ok) {
+                if (res.error === "slug-taken") setPubErr("That link is already taken.");
+                else if (res.error === "invalid-slug") setPubErr("Use only letters, numbers and dashes.");
+                else setPubErr("Could not save public link.");
+                setPubSaving(false);
+                return;
+            }
+            setPublicSlug(res.publicSlug ?? "");
+            setPublicEnabled(res.publicCaptureEnabled ?? false);
+            setPubSaved(true);
+        } catch  {
+            setPubErr("Could not save public link.");
+        } finally{
+            setPubSaving(false);
         }
     }
     // ---- 3) Delete account
@@ -140,7 +205,7 @@ function SettingsPage() {
                         children: "Settings"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 118,
+                        lineNumber: 181,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -148,13 +213,13 @@ function SettingsPage() {
                         children: "Business info, phones, AI behaviour, and account."
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 119,
+                        lineNumber: 182,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                lineNumber: 117,
+                lineNumber: 180,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -165,7 +230,7 @@ function SettingsPage() {
                         children: "Business"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 126,
+                        lineNumber: 189,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -181,7 +246,7 @@ function SettingsPage() {
                                         children: "Business name"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                        lineNumber: 129,
+                                        lineNumber: 192,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -196,13 +261,13 @@ function SettingsPage() {
                                         className: "w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                        lineNumber: 132,
+                                        lineNumber: 195,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                lineNumber: 128,
+                                lineNumber: 191,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -213,7 +278,7 @@ function SettingsPage() {
                                         children: "Business phone"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                        lineNumber: 146,
+                                        lineNumber: 209,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -228,13 +293,13 @@ function SettingsPage() {
                                         className: "w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                        lineNumber: 149,
+                                        lineNumber: 212,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                lineNumber: 145,
+                                lineNumber: 208,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -244,7 +309,7 @@ function SettingsPage() {
                                 children: saving ? "Saving..." : "Save changes"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                lineNumber: 162,
+                                lineNumber: 225,
                                 columnNumber: 11
                             }, this),
                             message ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -253,19 +318,19 @@ function SettingsPage() {
                                 children: message
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                                lineNumber: 171,
+                                lineNumber: 234,
                                 columnNumber: 13
                             }, this) : null
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 127,
+                        lineNumber: 190,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                lineNumber: 125,
+                lineNumber: 188,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -276,7 +341,7 @@ function SettingsPage() {
                         children: "AI behaviour"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 180,
+                        lineNumber: 243,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -284,7 +349,7 @@ function SettingsPage() {
                         children: "Add rules for auto-confirm, auto-book, routing etc."
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 181,
+                        lineNumber: 244,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -293,13 +358,192 @@ function SettingsPage() {
                         children: "+ Add rule"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 184,
+                        lineNumber: 247,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                lineNumber: 179,
+                lineNumber: 242,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl",
+                children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                        className: "text-sm font-medium mb-1",
+                        children: "Public lead link"
+                    }, void 0, false, {
+                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                        lineNumber: 257,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        className: "text-xs text-white/40 mb-3",
+                        children: "Share a simple link where homeowners can request a quote. Replies flow into Messages."
+                    }, void 0, false, {
+                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                        lineNumber: 258,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
+                        onSubmit: handleSavePublic,
+                        className: "space-y-3",
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                className: "flex items-center gap-2 text-sm text-white/70",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                        type: "checkbox",
+                                        checked: publicEnabled,
+                                        onChange: (e)=>setPublicEnabled(e.target.checked),
+                                        className: "h-4 w-4",
+                                        disabled: pubLoading
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 264,
+                                        columnNumber: 13
+                                    }, this),
+                                    "Enable public lead link"
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 263,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
+                                        className: "text-xs text-white/50 mb-1 block",
+                                        children: "Link slug"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 275,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "flex items-center gap-2",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-xs text-white/40",
+                                                children: "/lead/"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                                lineNumber: 277,
+                                                columnNumber: 15
+                                            }, this),
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                                                value: publicSlug,
+                                                onChange: (e)=>setPublicSlug(e.target.value),
+                                                disabled: !publicEnabled || pubLoading,
+                                                placeholder: "your-business-name",
+                                                className: "flex-1 rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-40"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                                lineNumber: 278,
+                                                columnNumber: 15
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 276,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                        className: "mt-1 text-[10px] text-white/30",
+                                        children: "Letters, numbers and dashes only. Must be unique."
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 286,
+                                        columnNumber: 13
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 274,
+                                columnNumber: 11
+                            }, this),
+                            publicEnabled && publicSlug && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                className: "rounded-xl bg-white/5 border border-white/10 px-3 py-2 flex items-center justify-between gap-2",
+                                children: [
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                        className: "text-xs break-all",
+                                        children: [
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-white/50",
+                                                children: "Your link:"
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                                lineNumber: 294,
+                                                columnNumber: 17
+                                            }, this),
+                                            " ",
+                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                className: "text-white",
+                                                children: `${baseUrl || ""}/lead/${publicSlug}`
+                                            }, void 0, false, {
+                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                                lineNumber: 295,
+                                                columnNumber: 17
+                                            }, this)
+                                        ]
+                                    }, void 0, true, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 293,
+                                        columnNumber: 15
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        type: "button",
+                                        onClick: ()=>navigator.clipboard?.writeText(`${baseUrl || ""}/lead/${publicSlug}`).catch(()=>{}),
+                                        className: "text-xs px-2 py-1 rounded-[8px] bg-white text-black hover:bg-white/90",
+                                        children: "Copy"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                        lineNumber: 297,
+                                        columnNumber: 15
+                                    }, this)
+                                ]
+                            }, void 0, true, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 292,
+                                columnNumber: 13
+                            }, this),
+                            pubErr ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-xs text-red-400",
+                                children: pubErr
+                            }, void 0, false, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 307,
+                                columnNumber: 21
+                            }, this) : null,
+                            pubSaved ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                className: "text-[11px] text-emerald-400",
+                                children: "Saved. Your lead link is ready."
+                            }, void 0, false, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 309,
+                                columnNumber: 13
+                            }, this) : null,
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                type: "submit",
+                                disabled: pubSaving || pubLoading,
+                                className: "rounded-xl bg-white text-black px-4 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60",
+                                children: pubSaving ? "Saving..." : "Save changes"
+                            }, void 0, false, {
+                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                                lineNumber: 312,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                        lineNumber: 262,
+                        columnNumber: 9
+                    }, this)
+                ]
+            }, void 0, true, {
+                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
+                lineNumber: 256,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -310,7 +554,7 @@ function SettingsPage() {
                         children: "Danger zone"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 194,
+                        lineNumber: 324,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -318,7 +562,7 @@ function SettingsPage() {
                         children: "Permanently delete this account and its tenant. This cannot be undone."
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 195,
+                        lineNumber: 325,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -328,23 +572,23 @@ function SettingsPage() {
                         children: "Delete my account"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                        lineNumber: 198,
+                        lineNumber: 328,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-                lineNumber: 193,
+                lineNumber: 323,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/settings/page.tsx",
-        lineNumber: 115,
+        lineNumber: 178,
         columnNumber: 5
     }, this);
 }
-_s(SettingsPage, "T2GX0MxDaGLHcfT7mIUYy2aW9Uw=");
+_s(SettingsPage, "j6K7Bt/L6OjQnxr8ypU+Zop0Z0I=");
 _c = SettingsPage;
 var _c;
 __turbopack_context__.k.register(_c, "SettingsPage");

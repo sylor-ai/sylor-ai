@@ -2,47 +2,132 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Sylor AI — premium dark SaaS theme */
 :root {
-  --page: #0a0a0b;
+  --bg-body: #050509;
+  --bg-panel: rgba(255,255,255,0.03);
+  --bg-card: radial-gradient(circle at top left, #22213a 0, #050509 45%, #050509 100%);
+  --border-subtle: rgba(255,255,255,0.08);
+  --text-main: #ffffff;
+  --text-muted: rgba(255,255,255,0.6);
+  --accent: #7c5cff;
+}
+
+html,
+body {
+  height: 100%;
 }
 
 body {
-  /* your tailwind base styles */
-  @apply bg-dark-bg text-white;
-
-  /* your background exactly as you wrote it */
-  background-color: #000000;
-  background-image: radial-gradient(
-      ellipse at top right,
-      rgba(121, 92, 255, 0.12),
-      transparent 70%
-    ),
-    radial-gradient(
-      ellipse at bottom left,
-      rgba(255, 200, 150, 0.08),
-      transparent 70%
-    );
+  color: var(--text-main);
+  background: var(--bg-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-image:
+    radial-gradient(900px 480px at 85% -5%, rgba(124, 124, 255, 0.12), transparent 60%),
+    radial-gradient(780px 540px at -10% 110%, rgba(255, 180, 120, 0.10), transparent 60%);
   background-repeat: no-repeat;
   background-attachment: fixed;
-
-  /* layout fixes */
   min-height: 100vh;
   width: 100%;
-  max-width: 100%;
   overflow-x: hidden;
 }
 
-/* safety — some mobile browsers scroll html, not body */
-html {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden;
+@layer base {
+  input,
+  textarea,
+  select {
+    @apply bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm outline-none focus:border-white/25 transition;
+  }
+
+  button { @apply transition; }
+
+  h1 { @apply text-2xl md:text-3xl font-semibold; }
+  h2 { @apply text-xl font-semibold; }
+  h3 { @apply text-base font-medium; }
 }
 
-.bg-glass-bg {
-  background: rgba(15, 23, 42, 0.45);
-}
+@layer components {
+  .dashboard-shell {
+    @apply h-screen overflow-hidden flex bg-[var(--bg-body)] text-[var(--text-main)];
+  }
 
-.border-glass-border {
-  border-color: rgba(148, 163, 184, 0.12);
+  .sidebar {
+    @apply hidden md:flex md:w-64 flex-col sticky top-0 h-screen overflow-y-auto;
+    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+    border-right: 1px solid var(--border-subtle);
+    backdrop-filter: blur(10px);
+  }
+
+  .topbar {
+    @apply sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-6 backdrop-blur;
+    background: rgba(7, 7, 8, 0.72);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .page-container {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 24px 40px;
+  }
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    padding: 1.5rem;
+    box-shadow: 0 18px 40px rgba(5,5,9,0.35);
+  }
+
+  .panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-subtle);
+    border-radius: 18px;
+    backdrop-filter: blur(8px);
+    padding: 1.25rem;
+  }
+
+  .btn-primary {
+    background: #ffffff;
+    color: #050509;
+    border-radius: 9999px;
+    padding: 0.55rem 1.4rem;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 30px rgba(255,255,255,0.12);
+  }
+
+  .btn-primary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .btn-ghost {
+    border: 1px solid var(--border-subtle);
+    color: rgba(255,255,255,0.85);
+    border-radius: 9999px;
+    padding: 0.55rem 1.3rem;
+    background: rgba(255,255,255,0.03);
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+
+  .btn-ghost:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.18);
+  }
+
+  .chip {
+    border: 1px solid var(--border-subtle);
+    border-radius: 9999px;
+    font-size: 11px;
+    padding: 0.25rem 0.7rem;
+    color: rgba(255,255,255,0.7);
+    background: rgba(255,255,255,0.04);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
 }

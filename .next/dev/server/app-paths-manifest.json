@@ -1,12 +1,10 @@
 {
+  "/(dashboard)/billing/page": "app/(dashboard)/billing/page.js",
   "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
-  "/(dashboard)/settings/page": "app/(dashboard)/settings/page.js",
-  "/api/auth/delete-account/route": "app/api/auth/delete-account/route.js",
+  "/(dashboard)/leads/page": "app/(dashboard)/leads/page.js",
+  "/(dashboard)/messages/page": "app/(dashboard)/messages/page.js",
+  "/(dashboard)/settings/public-link/page": "app/(dashboard)/settings/public-link/page.js",
   "/api/auth/log-login/route": "app/api/auth/log-login/route.js",
-  "/api/profile/route": "app/api/profile/route.js",
-  "/login/page": "app/login/page.js",
-  "/page": "app/page.js",
-  "/pricing/page": "app/pricing/page.js",
-  "/setup/page": "app/setup/page.js",
-  "/signup/page": "app/signup/page.js"
+  "/api/metrics/route": "app/api/metrics/route.js",
+  "/login/page": "app/login/page.js"
 }

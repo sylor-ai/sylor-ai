@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { getFirebaseAuth } from "@/lib/firebase";
 import { useState } from "react";
 
 const PLAN_CONFIG = {
@@ -34,9 +35,14 @@ export default function PricingClient() {
     const planData = PLAN_CONFIG[selectedPlan];
 
     try {
+      const auth = getFirebaseAuth();
+      const token = await auth.currentUser?.getIdToken();
       const res = await fetch("/api/checkout", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           priceId: planData.stripePriceId,
           plan: selectedPlan,

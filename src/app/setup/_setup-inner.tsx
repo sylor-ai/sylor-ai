@@ -3,6 +3,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { getFirebaseAuth } from "@/lib/firebase";
 
 export default function SetupInner() {
   const router = useRouter();
@@ -20,9 +21,22 @@ export default function SetupInner() {
     setErr("");
 
     try {
+      const auth = getFirebaseAuth();
+      const current = auth.currentUser;
+      const idToken = current ? await current.getIdToken() : null;
+
+      if (!idToken) {
+        setErr("You are not authenticated. Please log in again.");
+        setLoading(false);
+        return;
+      }
+
       const res = await fetch("/api/profile", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
+        },
         body: JSON.stringify({
           businessName,
           businessPhone,

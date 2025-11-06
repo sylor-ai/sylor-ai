@@ -3,14 +3,14 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { api } from "@/lib/api";
-import { getFirebaseAuth } from "@/lib/firebase";
+import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 export default function OnboardingClient() {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // plan from URL (?plan=starter|pro) – fallback to starter
+  // plan from URL (?plan=starter|pro) – fallback to starter (used only for copy + redirect)
   const selectedPlan = (searchParams.get("plan") || "starter").toLowerCase();
 
   const [businessName, setBusinessName] = useState("");
@@ -35,27 +35,23 @@ export default function OnboardingClient() {
         return;
       }
 
-      // 2) get user profile so we know tenantId
-      const userProfile = await api.getUserProfile(current.uid);
-      if (!userProfile?.tenantId) {
-        setErr("Could not load your workspace. Please sign in again.");
-        setSaving(false);
-        return;
-      }
+      // 2) write tenant data directly to Firestore
+      const db = getFirebaseDb();
+      const tenantId = current.uid; // your tenant = owner uid in this setup
 
-      // 3) update tenant with actual fields
-      await api.completeBusinessSetup(userProfile.tenantId, {
-        businessName,
-        businessPhone,
-      });
-
-      // 4) make sure plan is saved
-      await api.confirmCheckoutSession(
-        userProfile.tenantId,
-        selectedPlan as "starter" | "pro"
+      await setDoc(
+        doc(db, "tenants", tenantId),
+        {
+          id: tenantId,
+          businessName,
+          businessPhone,
+        },
+        { merge: true }
       );
 
-      // 5) done → go to dashboard
+      // Plan is handled by Stripe checkout + webhook, not onboarding
+
+      // 3) done → go to dashboard
       router.push("/dashboard");
     } catch (error) {
       console.error(error);

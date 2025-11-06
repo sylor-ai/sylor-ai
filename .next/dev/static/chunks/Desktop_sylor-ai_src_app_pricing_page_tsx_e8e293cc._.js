@@ -1,7 +1,10 @@
 (globalThis.TURBOPACK_CHUNK_LISTS || (globalThis.TURBOPACK_CHUNK_LISTS = [])).push({
     script: typeof document === "object" ? document.currentScript : undefined,
     chunks: [
-  "static/chunks/Desktop_sylor-ai_c9e8d6b4._.js"
+  "static/chunks/d3178_@firebase_auth_dist_esm2017_f9f6f751._.js",
+  "static/chunks/0fd89_@firebase_firestore_dist_index_esm2017_3b943a9c.js",
+  "static/chunks/0fd89_7ed189ff._.js",
+  "static/chunks/Desktop_sylor-ai_src_eee11233._.js"
 ],
     source: "dynamic"
 });

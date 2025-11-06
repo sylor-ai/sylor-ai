@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -40,17 +40,15 @@ export default function HomePage() {
     };
   }, []);
 
-  // used in pricing section / product CTA – can preselect plan
-  function goTo(plan: "starter" | "pro") {
-    // ✅ flow: home -> signup -> setup -> pricing -> stripe -> dashboard
-    window.location.href = `/signup?plan=${plan}`;
+  // used in pricing section / product CTA  always go to signup
+  function goTo(_plan: "starter" | "pro") {
+    window.location.href = "/signup";
   }
-
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#0a0a0b] text-white scroll-smooth">
       {/* TOP NAV */}
       <header className="sticky top-3 z-50 flex justify-center pointer-events-none">
-        {/* ✅ center on mobile, wider on desktop */}
+        {/*  center on mobile, wider on desktop */}
         <div className="pointer-events-auto mx-auto mt-2 flex h-14 w-full max-w-[430px] md:max-w-6xl items-center justify-between gap-4 rounded-[10px] border border-white/5 bg-neutral-300/6 px-2 backdrop-blur-md">
           {/* logo */}
           <Link href="/" className="flex items-center gap-2">
@@ -77,7 +75,7 @@ export default function HomePage() {
 
           {/* right actions */}
           <div className="flex items-center gap-2 md:gap-3 relative">
-            {/* ✅ login button same height as CTA */}
+            {/*  login button same height as CTA */}
             <Link
               href="/login"
               className="h-9 md:h-10 inline-flex items-center justify-center rounded-[6px] bg-[#161616] border border-white/5 px-3 md:px-4 text-sm text-white/80 hover:border-white/30 transition"
@@ -85,7 +83,7 @@ export default function HomePage() {
               Log in
             </Link>
 
-            {/* NAV get started → open plan picker */}
+            {/* NAV get started  open plan picker */}
             <div
               ref={navPickerRef}
               className="relative"
@@ -93,40 +91,18 @@ export default function HomePage() {
                 setPlanPickerOpen((prev) => (prev === "nav" ? null : prev))
               }
             >
-              {/* ✅ keep your gradient EXACTLY, just fixed height + thin border */}
+              {/*  keep your gradient EXACTLY, just fixed height + thin border */}
               <button
-                onClick={() =>
-                  setPlanPickerOpen((prev) => (prev === "nav" ? null : "nav"))
-                }
+                onClick={() => (window.location.href = "/signup")}
                 className="relative inline-flex h-9 md:h-9 items-center justify-center gap-2 rounded-[8px] p-[1px] bg-[linear-gradient(120deg,#ff5f6d,#ffc371,#71f6c8,#5b5fff,#ff5f6d)] bg-[length:200%_200%] transition-all duration-300 hover:animate-gradient-move"
               >
                 <span className="rounded-[8px] bg-white px-5 md:px-5 py-1.5 text-sm font-semibold text-black flex items-center gap-2">
                   Get started
-                  <span className="text-lg leading-none">→</span>
+                  <span className="text-lg leading-none"></span>
                 </span>
               </button>
 
-              {/* NAV plan picker dropdown */}
-              {planPickerOpen === "nav" ? (
-                <div className="absolute right-0 top-12 z-50 w-52 rounded-[16px] border border-white/10 bg-[#0f1011] shadow-xl p-2 space-y-1">
-                  <p className="text-xs text-white/40 px-2 pb-1">
-                    Choose a plan to start
-                  </p>
-                  <button
-                    onClick={() => goTo("starter")}
-                    className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                  >
-                    Starter{" "}
-                    <span className="text-white/30 text-xs">$149/mo</span>
-                  </button>
-                  <button
-                    onClick={() => goTo("pro")}
-                    className="w-full text-left rounded-[10px] px-2 py-1.5 text-sm hover:bg-white/5 flex items-center justify-between"
-                  >
-                    Pro <span className="text-white/30 text-xs">$399/mo</span>
-                  </button>
-                </div>
-              ) : null}
+              {/* plan picker removed: always go to /signup */}
             </div>
 
             {/* mobile menu placeholder */}
@@ -148,13 +124,13 @@ export default function HomePage() {
       <main className="w-full max-w-full overflow-x-hidden">
         {/* HERO */}
         <section className="relative" id="hero">
-          {/* 🚫 DO NOT TOUCH GRADIENTS — keeping exactly as you had */}
+          {/*  DO NOT TOUCH GRADIENTS  keeping exactly as you had */}
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute right-[-20%] top-[-28%] h-[20px] w-[620px] bg-[radial-gradient(circle,_rgba(121,92,255,0.55)_0%,rgba(10,10,11,0)_50%)] blur-[150px]" />
             <div className="absolute left-[-25%] bottom-[-35%] h-[520px] w-[520px] bg-[radial-gradient(circle,_rgba(255,188,120,0.42)_56%,rgba(10,10,11,0)_80%)] blur-[150px]" />
           </div>
 
-          {/* ✅ content centered on mobile */}
+          {/*  content centered on mobile */}
           <div className="mx-auto flex w-full max-w-[430px] md:max-w-6xl flex-col gap-10 px-4 pb-16 pt-16 md:flex-row md:items-center md:pb-20 md:pt-20">
             {/* hero left */}
             <div className="relative z-10 flex-1 space-y-6">
@@ -171,18 +147,18 @@ export default function HomePage() {
               </h1>
               <p className="max-w-xl text-base text-white/55 md:text-lg">
                 Sylor.ai replies to new leads in seconds, books them on your
-                Google Calendar, and syncs every message into your dashboard —
+                Google Calendar, and syncs every message into your dashboard 
                 so no job is left behind.
               </p>
 
               {/* HERO actions */}
               <div className="flex flex-wrap gap-3 relative">
-                {/* hero → straight to /signup */}
+                {/* hero  straight to /signup */}
                 <button
                   onClick={() => (window.location.href = "/signup")}
                   className="rounded-[10px] bg-white px-5 py-2 text-sm font-medium text-black hover:bg-white/90 transition"
                 >
-                  Get started for free →
+                  Get started for free 
                 </button>
                 <Link
                   href="#product"
@@ -210,7 +186,7 @@ export default function HomePage() {
 
             {/* hero right */}
             <div className="relative z-10 flex-1 flex w-full justify-center md:justify-end">
-              {/* 👇 THIS was the part that made it scroll: now it obeys mobile width */}
+              {/*  THIS was the part that made it scroll: now it obeys mobile width */}
               <div className="w-full max-w-full md:max-w-md rounded-[20px] border border-white/5 bg-[#0c0c0d]/80 p-4 shadow-[0_0_90px_rgba(129,106,255,0.25)]">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-white/60">Leads inbox</p>
@@ -263,11 +239,11 @@ export default function HomePage() {
                 </div>
                 <div className="mt-5 rounded-[14px] border border-purple-500/40 bg-purple-500/5 p-4">
                   <p className="text-xs text-purple-50/70">
-                    Sylor Agent · Smart reply
+                    Sylor Agent  Smart reply
                   </p>
                   <p className="mt-2 text-sm text-white/90">
-                    “Hi John 👋 We got your request for a roof inspection. I can
-                    book you for <b>Tue 10:30am</b> — does that work?”
+                    Hi John  We got your request for a roof inspection. I can
+                    book you for <b>Tue 10:30am</b>  does that work?
                   </p>
                 </div>
               </div>
@@ -283,7 +259,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-semibold text-white">
-                Built for teams that can’t miss a lead
+                Built for teams that cant miss a lead
               </h2>
               <p className="mt-2 max-w-xl text-sm text-white/50">
                 Every new submission, call, or SMS becomes a tracked
@@ -327,7 +303,7 @@ export default function HomePage() {
                 style={{ backgroundColor: "rgba(13,13,14,0.35)" }}
               >
                 <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-[10px] bg-white/5">
-                  <span className="text-lg">✦</span>
+                  <span className="text-lg"></span>
                 </div>
                 <h3 className="text-base font-semibold text-white">
                   {card.title}
@@ -337,7 +313,7 @@ export default function HomePage() {
                   href="#docs"
                   className="mt-4 inline-block text-sm text-purple-200/80 hover:text-purple-100"
                 >
-                  Learn more →
+                  Learn more 
                 </Link>
               </div>
             ))}
@@ -367,7 +343,7 @@ export default function HomePage() {
                 onClick={() => goTo("starter")}
                 className="rounded-[10px] bg-white/10 px-4 py-1.5 text-sm text-white hover:bg-white/15"
               >
-                Start chatting →
+                Start chatting 
               </button>
             </div>
 
@@ -410,30 +386,30 @@ export default function HomePage() {
                     )}
                   </div>
                   <p className="mt-6 text-xs text-white/30">
-                    Synced with Firebase → tenants → leads
+                    Synced with Firebase  tenants  leads
                   </p>
                 </div>
 
                 {/* right conversation */}
                 <div className="p-5 space-y-4">
                   <p className="text-sm text-white/50" id="demo">
-                    Conversation · #1342
+                    Conversation  #1342
                   </p>
                   <div className="space-y-3">
                     <div className="inline-block max-w-lg rounded-[10px] bg-white/5 px-4 py-2 text-sm text-white/90">
-                      Client: “Hi, I need a bathroom remodel in Winnetka.”
+                      Client: Hi, I need a bathroom remodel in Winnetka.
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-purple-500/10 px-4 py-2 text-sm text-white/90">
-                      Sylor Agent: “Thanks! I can send someone **tomorrow 11:30
-                      AM** or **Thu 9:00 AM**. Which works?”
+                      Sylor Agent: Thanks! I can send someone **tomorrow 11:30
+                      AM** or **Thu 9:00 AM**. Which works?
                     </div>
                     <div className="inline-block max-w-lg rounded-[10px] bg-white/5 px-4 py-2 text-sm text-white/80">
-                      Client: “Tomorrow is good.”
+                      Client: Tomorrow is good.
                     </div>
                   </div>
                   <div className="rounded-[10px] border border-white/10 bg-white/0 p-3 flex items-center justify-between">
                     <p className="text-sm text-white/50">
-                      Google Calendar · Appointment will be created
+                      Google Calendar  Appointment will be created
                     </p>
                     <button
                       type="button"
@@ -460,7 +436,7 @@ export default function HomePage() {
             </h2>
             <p className="mt-2 text-sm text-white/50 max-w-2xl mx-auto">
               Perfect for contractors, remodeling companies, pool & landscaping,
-              roofing, ADU teams — anyone who lives on inbound leads.
+              roofing, ADU teams  anyone who lives on inbound leads.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-4">
               {/* STARTER */}
@@ -471,9 +447,9 @@ export default function HomePage() {
                 <p className="mt-2 text-3xl font-bold">$149</p>
                 <p className="text-sm text-white/40">per month</p>
                 <ul className="mt-4 space-y-2 text-sm text-white/70">
-                  <li>• 50 leads / mo</li>
-                  <li>• SMS automation</li>
-                  <li>• Google Calendar booking</li>
+                  <li> 50 leads / mo</li>
+                  <li> SMS automation</li>
+                  <li> Google Calendar booking</li>
                 </ul>
                 <button
                   onClick={() => goTo("starter")}
@@ -490,9 +466,9 @@ export default function HomePage() {
                 <p className="mt-2 text-3xl font-bold">$399</p>
                 <p className="text-sm text-slate-500">per month</p>
                 <ul className="mt-4 space-y-2 text-sm text-slate-700">
-                  <li>• Unlimited leads</li>
-                  <li>• Voice agent + SMS</li>
-                  <li>• Multi-location / tenants</li>
+                  <li> Unlimited leads</li>
+                  <li> Voice agent + SMS</li>
+                  <li> Multi-location / tenants</li>
                 </ul>
                 <button
                   onClick={() => goTo("pro")}
@@ -509,7 +485,7 @@ export default function HomePage() {
       {/* FOOTER */}
       <footer className="border-t border-white/5 py-8" id="docs">
         <div className="mx-auto flex w-full max-w-[430px] md:max-w-6xl flex-col gap-4 px-4 text-sm text-white/40 sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Sylor.ai. All rights reserved.</p>
+          <p> {new Date().getFullYear()} Sylor.ai. All rights reserved.</p>
           <div className="flex gap-4">
             <Link href="#" className="hover:text-white transition rounded-[10px]">
               Status
@@ -526,3 +502,8 @@ export default function HomePage() {
     </div>
   );
 }
+
+
+
+
+

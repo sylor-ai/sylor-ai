@@ -3,8 +3,8 @@
     chunks: [
   "static/chunks/d3178_@firebase_auth_dist_esm2017_f9f6f751._.js",
   "static/chunks/0fd89_@firebase_firestore_dist_index_esm2017_3b943a9c.js",
-  "static/chunks/0fd89_058b900f._.js",
-  "static/chunks/Desktop_sylor-ai_src_579fc514._.js"
+  "static/chunks/0fd89_7ed189ff._.js",
+  "static/chunks/Desktop_sylor-ai_src_972889c7._.js"
 ],
     source: "dynamic"
 });

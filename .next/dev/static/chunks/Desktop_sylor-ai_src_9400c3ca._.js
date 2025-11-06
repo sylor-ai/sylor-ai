@@ -60,8 +60,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$sr
 ;
 ;
 ;
-// ─────────────────────────────────────────────────────────
-// PLANS (local mirror of Stripe)
+// Local plan mirror (used to render Billing/Plans)
 const PLANS = {
     starter: {
         id: "starter",
@@ -89,163 +88,34 @@ const PLANS = {
         priceId: "price_1SN3RrHBRIMb0ChwjSIbQaYn"
     }
 };
-// ─────────────────────────────────────────────────────────
-// helpers
-async function ensureTenant(db, tenantId) {
-    const tRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId);
-    const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(tRef);
-    if (!snap.exists()) {
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(tRef, {
-            id: tenantId,
-            businessName: "",
-            businessPhone: "",
-            planId: null,
-            stripeCustomerId: `cus_${Date.now()}`,
-            twilioNumber: null,
-            createdAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
-        });
-    }
-}
-async function ensureUserDocFromFirebaseUser(fbUser) {
-    const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-    const uid = fbUser.uid;
-    const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
-    const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(userRef);
-    if (snap.exists()) {
-        return {
-            id: snap.id,
-            ...snap.data()
-        };
-    }
-    // create tenant + user
-    await ensureTenant(db, uid);
-    const display = fbUser.displayName || fbUser.email?.split("@")[0] || "User";
-    const initials = display.split(" ").map((n)=>n[0]).join("").toUpperCase();
-    const userData = {
-        name: display,
-        email: fbUser.email ?? "",
-        avatarInitials: initials || "U",
-        tenantId: uid
-    };
-    await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(userRef, userData);
-    return {
-        id: uid,
-        ...userData
-    };
-}
-// tell server "someone logged in" → for auditLogs
-async function logLoginToServer(idToken) {
-    try {
-        await fetch("/api/auth/log-login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                idToken
-            })
-        });
-    } catch  {
-    // do not block UI
-    }
-}
 const api = {
-    // ─── AUTH (EMAIL+PASSWORD LOGIN) ──────────────────────
+    // Email/password login via Firebase, then set session cookie
     login: async (email, password)=>{
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signInWithEmailAndPassword"])(auth, email, password);
-        const uid = cred.user.uid;
-        // audit on server
-        const idToken = await cred.user.getIdToken();
-        await logLoginToServer(idToken);
-        const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
-        const userSnap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(userRef);
-        if (userSnap.exists()) {
-            return {
-                id: userSnap.id,
-                ...userSnap.data()
-            };
-        }
-        // Firestore doc missing → rebuild
-        const fallbackName = cred.user.email?.split("@")[0] ?? "User";
-        const initials = fallbackName[0]?.toUpperCase() ?? "U";
-        await ensureTenant(db, uid);
-        const rebuiltUser = {
-            name: fallbackName,
-            email: cred.user.email ?? "",
-            avatarInitials: initials,
-            tenantId: uid
-        };
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(userRef, rebuiltUser);
-        return {
-            id: uid,
-            ...rebuiltUser
-        };
-    },
-    logout: async ()=>{
-        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signOut"])(auth);
-    },
-    // ─── LEGACY DIRECT SIGNUP (keep for admin/superuser) ──
-    signUp: async (name, email, password)=>{
-        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const user = cred.user;
         try {
-            const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["createUserWithEmailAndPassword"])(auth, email, password);
-            const uid = cred.user.uid;
-            // tenant = uid
-            const tenantRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", uid);
-            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(tenantRef, {
-                id: uid,
-                businessName: "",
-                businessPhone: "",
-                planId: null,
-                stripeCustomerId: `cus_${Date.now()}`,
-                twilioNumber: null,
-                createdAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
-            });
-            const initials = name.split(" ").map((n)=>n[0]).join("").toUpperCase();
-            const userRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid);
-            const userData = {
-                name,
-                email,
-                avatarInitials: initials || "U",
-                tenantId: uid
-            };
-            await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(userRef, userData);
-            // audit this too
-            const idToken = await cred.user.getIdToken();
-            await logLoginToServer(idToken);
-            return {
-                user: {
-                    id: uid,
-                    ...userData
+            const idToken = await user.getIdToken();
+            await fetch("/api/auth/log-login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
                 },
-                error: null
-            };
-        } catch (err) {
-            console.error("signUp error", err);
-            if (err?.code === "auth/email-already-in-use") {
-                return {
-                    user: null,
-                    error: "email-in-use"
-                };
-            }
-            return {
-                user: null,
-                error: "unknown"
-            };
-        }
+                body: JSON.stringify({
+                    idToken
+                })
+            });
+        } catch  {}
+        return user ?? null;
     },
-    // ─── EMAIL-CODE SIGNUP (step 1) ───────────────────────
-    requestSignupCode: async (payload)=>{
+    // Send signup code to email and stash pending signup
+    requestSignupCode: async (opts)=>{
         const res = await fetch("/api/auth/request-code", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(opts)
         });
         try {
             return await res.json();
@@ -256,86 +126,143 @@ const api = {
             };
         }
     },
-    // ─── EMAIL-CODE SIGNUP (step 2) ───────────────────────
-    verifySignupCode: async (payload)=>{
+    // List conversations for a tenant (most recent first)
+    getConversations: async (tenantId)=>{
+        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const convCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations");
+        let snap;
+        try {
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(convCol, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("lastMessageAt", "desc")));
+        } catch  {
+            // fallback without index
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(convCol);
+        }
+        return snap.docs.map((d)=>({
+                id: d.id,
+                ...d.data()
+            }));
+    },
+    // List messages for a conversation (ascending by time)
+    getMessagesForConversation: async (tenantId, conversationId)=>{
+        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const msgsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations", conversationId, "messages");
+        let snap;
+        try {
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(msgsCol, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("createdAt", "asc")));
+        } catch  {
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(msgsCol);
+        }
+        return snap.docs.map((d)=>({
+                id: d.id,
+                ...d.data()
+            }));
+    },
+    // Fetch a single lead by id
+    getLead: async (tenantId, leadId)=>{
+        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const ref = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId, "leads", leadId);
+        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(ref);
+        if (!snap.exists()) return null;
+        return {
+            id: snap.id,
+            ...snap.data()
+        };
+    },
+    // List leads for a tenant
+    getLeads: async (tenantId)=>{
+        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const leadsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "leads");
+        let snap;
+        try {
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(leadsCol, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("created", "desc")));
+        } catch  {
+            snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(leadsCol);
+        }
+        return snap.docs.map((d)=>({
+                id: d.id,
+                ...d.data()
+            }));
+    },
+    // Create a lead (minimal fields supported by UI)
+    createLead: async (tenantId, lead)=>{
+        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
+        const leadsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "leads");
+        const ref = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["addDoc"])(leadsCol, {
+            name: lead.name || "New Lead",
+            phone: lead.phone || "",
+            service: lead.service || "General",
+            city: lead.city || "",
+            value: lead.value ?? 0,
+            status: lead.status,
+            email: lead.email || "",
+            created: new Date().toISOString()
+        });
+        // denormalize id if needed by UI that expects leadId
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(ref, {
+            leadId: ref.id
+        }, {
+            merge: true
+        });
+        return {
+            id: ref.id
+        };
+    },
+    // Verify code, sign in with custom token, set cookie via server
+    verifySignupCode: async (opts)=>{
         const res = await fetch("/api/auth/verify-code", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(opts)
         });
-        try {
-            return await res.json();
-        } catch  {
+        const data = await res.json().catch(()=>null);
+        if (!res.ok || !data?.ok) {
             return {
                 ok: false,
-                error: "SERVER_HTML_RESPONSE"
+                error: data?.error || "verify-failed"
             };
         }
-    },
-    // ─── CHECKOUT (step 3) ─────────────────────────────────
-    startCheckoutForEmail: async (email)=>{
-        const res = await fetch("/api/checkout", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email
-            })
-        });
-        try {
-            const data = await res.json();
-            if (res.ok) {
-                return {
-                    ok: true,
-                    url: data.url
-                };
-            }
-            return {
-                ok: false,
-                error: data.error ?? "Checkout failed"
-            };
-        } catch  {
-            return {
-                ok: false,
-                error: "SERVER_HTML_RESPONSE"
-            };
+        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signInWithCustomToken"])(auth, data.customToken);
+        const current = auth.currentUser;
+        const idToken = await current?.getIdToken();
+        if (idToken) {
+            await fetch("/api/auth/log-login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idToken
+                })
+            }).catch(()=>{});
         }
+        return {
+            ok: true
+        };
     },
-    // ─── FINALIZE (step 4) ─────────────────────────────────
-    finalizeSignup: async (sessionId)=>{
-        const res = await fetch("/api/auth/finalize-signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                session_id: sessionId
-            })
-        });
-        try {
-            return await res.json();
-        } catch  {
-            return {
-                ok: false,
-                error: "SERVER_HTML_RESPONSE"
-            };
-        }
-    },
-    // ─── GOOGLE SIGN-IN ───────────────────────────────────
+    // Google OAuth sign-in via Firebase, then set cookie via server
     googleSignIn: async ()=>{
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
         const provider = new __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["GoogleAuthProvider"]();
         const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signInWithPopup"])(auth, provider);
-        const fbUser = cred.user;
-        // audit
-        const idToken = await fbUser.getIdToken();
-        await logLoginToServer(idToken);
-        return await ensureUserDocFromFirebaseUser(fbUser);
+        const user = cred.user;
+        try {
+            const idToken = await user.getIdToken();
+            await fetch("/api/auth/log-login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    idToken
+                })
+            });
+        } catch  {}
+        return user ?? null;
     },
-    // ─── TENANT / USER ────────────────────────────────────
+    // Return current user profile (from Firestore)
     getUserProfile: async (uid)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "users", uid));
@@ -345,6 +272,7 @@ const api = {
             ...snap.data()
         };
     },
+    // Return tenant by id
     getTenant: async (tenantId)=>{
         const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
         const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId));
@@ -354,107 +282,41 @@ const api = {
             ...snap.data()
         };
     },
-    updateTenant: async (tenantId, data)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const ref = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId);
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])(ref, {
-            id: tenantId,
-            ...data
-        }, {
-            merge: true
-        });
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(ref);
-        return {
-            id: snap.id,
-            ...snap.data()
-        };
-    },
-    completeBusinessSetup: async (tenantId, data)=>{
-        const mockTwilio = `+1${Math.floor(200 + Math.random() * 700)}${Math.floor(1000000 + Math.random() * 9000000)}`;
-        return await api.updateTenant(tenantId, {
-            ...data,
-            twilioNumber: mockTwilio
-        });
-    },
-    updateUser: async (userId, data)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const ref = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "users", userId);
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["updateDoc"])(ref, data);
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDoc"])(ref);
-        return {
-            id: snap.id,
-            ...snap.data()
-        };
-    },
-    // ─── ACCOUNT MANAGEMENT ───────────────────────────────
-    requestPasswordReset: async (email)=>{
-        const res = await fetch("/api/auth/request-password-reset", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email
-            })
-        });
-        try {
-            return await res.json();
-        } catch  {
-            return {
-                ok: false,
-                error: "SERVER_HTML_RESPONSE"
-            };
-        }
-    },
-    deleteMyAccount: async ()=>{
-        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
-        const current = auth.currentUser;
-        if (!current) return {
-            ok: false,
-            error: "not-logged-in"
-        };
-        const idToken = await current.getIdToken();
-        const res = await fetch("/api/auth/delete-account", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${idToken}`
-            }
-        });
-        try {
-            return await res.json();
-        } catch  {
-            return {
-                ok: false,
-                error: "SERVER_HTML_RESPONSE"
-            };
-        }
-    },
-    // ─── PLANS / BILLING (in-app upgrades) ────────────────
-    getPlans: ()=>Object.values(PLANS),
+    // Get the current plan object for a tenant
     getCurrentPlan: async (tenantId)=>{
         const tenant = await api.getTenant(tenantId);
         if (!tenant?.planId) return null;
         return PLANS[tenant.planId] || null;
     },
+    // Create a Stripe checkout session for a given plan (starter|pro)
     createStripeCheckoutSession: async (planId)=>{
         const plan = PLANS[planId];
         if (!plan) throw new Error("Unknown plan");
-        const baseUrl = ("TURBOPACK compile-time value", "http://localhost:3000") ?? window.location.origin;
+        const baseUrl = ("TURBOPACK compile-time value", "https://sylor.ai") ?? window.location.origin;
+        // include ID token so server can associate checkout with the tenant
+        let authHeader = {};
+        try {
+            const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+            const token = await auth.currentUser?.getIdToken();
+            if (token) authHeader = {
+                Authorization: `Bearer ${token}`
+            };
+        } catch  {}
         const res = await fetch("/api/checkout", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
+                ...authHeader
             },
             body: JSON.stringify({
                 priceId: plan.priceId,
-                successUrl: `${baseUrl}/setup?plan=${planId}`,
-                cancelUrl: `${baseUrl}/pricing?canceled=1`
+                planId,
+                successUrl: `${baseUrl}/billing?checkout=success&plan=${planId}`,
+                cancelUrl: `${baseUrl}/billing?checkout=canceled`
             })
         });
         if (!res.ok) {
             const err = await res.json().catch(()=>({}));
-            console.error("Stripe checkout failed:", err);
             throw new Error(err?.error ?? "Checkout failed");
         }
         const data = await res.json();
@@ -462,118 +324,44 @@ const api = {
             redirectUrl: data.url
         };
     },
-    confirmCheckoutSession: async (tenantId, planId)=>{
-        await api.updateTenant(tenantId, {
-            planId
-        });
+    // Sign out (and clear server cookie)
+    logout: async ()=>{
+        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signOut"])(auth);
+        try {
+            await fetch("/api/auth/logout", {
+                method: "POST"
+            });
+        } catch  {}
     },
-    // ─── LEADS ────────────────────────────────────────────
-    getLeads: async (tenantId)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const leadsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "leads");
-        const q = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(leadsCol, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("created", "desc"));
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(q);
-        return snap.docs.map((d)=>{
-            const data = d.data();
-            const created = data.created ? data.created.toDate().toLocaleDateString("en-US") : "N/A";
-            return {
-                id: d.id,
-                ...data,
-                created
-            };
-        });
-    },
-    createLead: async (tenantId, leadData)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const leadsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "leads");
-        const newLead = {
-            ...leadData,
-            leadId: `L-${Math.floor(Math.random() * 9000) + 1000}`,
-            created: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
+    // Toggle Sylor AI auto-replies per conversation
+    toggleConversationAi: async (conversationId, aiPaused)=>{
+        const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
+        const current = auth.currentUser;
+        if (!current) return {
+            ok: false,
+            error: "not-logged-in"
         };
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["addDoc"])(leadsCol, newLead);
-        // create a conversation
-        const convoCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations");
-        const convoRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(convoCol);
-        const batch = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["writeBatch"])(db);
-        batch.set(convoRef, {
-            leadId: "temp",
-            leadName: leadData.name,
-            lastMessage: `Hey ${leadData.name}, thanks for contacting us!`,
-            lastMessageAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])(),
-            channel: "sms",
-            leadAvatarUrl: `https://i.pravatar.cc/150?u=${leadData.phone}`
+        const idToken = await current.getIdToken();
+        const res = await fetch("/api/conversations/ai-toggle", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`
+            },
+            body: JSON.stringify({
+                conversationId,
+                aiPaused
+            })
         });
-        const msgsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations", convoRef.id, "messages");
-        const msgRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(msgsCol);
-        batch.set(msgRef, {
-            from: "agent",
-            direction: "outbound",
-            body: `Hey ${leadData.name}, thanks for contacting us!`,
-            createdAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
-        });
-        await batch.commit();
-    },
-    // ─── APPOINTMENTS ─────────────────────────────────────
-    getAppointments: async (tenantId)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const colRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "appointments");
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(colRef);
-        return snap.docs.map((d)=>({
-                id: d.id,
-                ...d.data()
-            }));
-    },
-    saveAppointment: async (tenantId, appt)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const id = appt.id?.startsWith("new-") ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "appointments")).id : appt.id;
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId, "appointments", id), {
-            ...appt,
-            id
-        }, {
-            merge: true
-        });
-    },
-    deleteAppointment: async (tenantId, id)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["setDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId, "appointments", id), {}, {
-            merge: true
-        });
-    },
-    // ─── MESSAGES ─────────────────────────────────────────
-    getConversations: async (tenantId)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const colRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations");
-        const q = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(colRef, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("lastMessageAt", "desc"));
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(q);
-        return snap.docs.map((d)=>({
-                id: d.id,
-                ...d.data()
-            }));
-    },
-    getMessagesForConversation: async (tenantId, conversationId)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const colRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations", conversationId, "messages");
-        const q = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["query"])(colRef, (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["orderBy"])("createdAt", "asc"));
-        const snap = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getDocs"])(q);
-        return snap.docs.map((d)=>({
-                id: d.id,
-                ...d.data()
-            }));
-    },
-    simulateInboundSms: async (tenantId, conversationId, body)=>{
-        const db = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseDb"])();
-        const msgsCol = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["collection"])(db, "tenants", tenantId, "conversations", conversationId, "messages");
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["addDoc"])(msgsCol, {
-            from: "lead",
-            direction: "inbound",
-            body,
-            createdAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
-        });
-        await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["updateDoc"])((0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["doc"])(db, "tenants", tenantId, "conversations", conversationId), {
-            lastMessage: body,
-            lastMessageAt: (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f40$firebase$2f$firestore$2f$dist$2f$index$2e$esm2017$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["serverTimestamp"])()
-        });
+        try {
+            return await res.json();
+        } catch  {
+            return {
+                ok: false,
+                error: "SERVER_HTML_RESPONSE"
+            };
+        }
     }
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
@@ -583,11 +371,11 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
-// src/app/(dashboard)/layout.tsx
 __turbopack_context__.s([
     "default",
     ()=>DashboardLayout
 ]);
+var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/compiled/react/jsx-dev-runtime.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/client/app-dir/link.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/navigation.js [app-client] (ecmascript)");
@@ -602,7 +390,7 @@ var _s = __turbopack_context__.k.signature();
 ;
 const NAV = [
     {
-        label: "Dashboard",
+        label: "Overview",
         href: "/dashboard",
         icon: "grid"
     },
@@ -610,11 +398,6 @@ const NAV = [
         label: "Leads",
         href: "/leads",
         icon: "checklist"
-    },
-    {
-        label: "Appointments",
-        href: "/appointments",
-        icon: "calendar"
     },
     {
         label: "Messages",
@@ -627,8 +410,13 @@ const NAV = [
         icon: "card"
     },
     {
-        label: "Settings",
-        href: "/settings",
+        label: "AI Settings",
+        href: "/settings/ai",
+        icon: "cog"
+    },
+    {
+        label: "Public lead link",
+        href: "/settings/public-link",
         icon: "cog"
     }
 ];
@@ -655,7 +443,7 @@ function SidebarIcon({ name }) {
                             rx: "1"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 34,
+                            lineNumber: 33,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
@@ -666,7 +454,7 @@ function SidebarIcon({ name }) {
                             rx: "1"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 35,
+                            lineNumber: 34,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
@@ -677,7 +465,7 @@ function SidebarIcon({ name }) {
                             rx: "1"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 36,
+                            lineNumber: 35,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
@@ -688,18 +476,18 @@ function SidebarIcon({ name }) {
                             rx: "1"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 37,
+                            lineNumber: 36,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 25,
+                    lineNumber: 24,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 24,
+                lineNumber: 23,
                 columnNumber: 9
             }, this);
         case "checklist":
@@ -718,108 +506,53 @@ function SidebarIcon({ name }) {
                             d: "M9 6h11"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 53,
+                            lineNumber: 52,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "M9 12h11"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 54,
+                            lineNumber: 53,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "M9 18h11"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 55,
+                            lineNumber: 54,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "m4 6 1.5 1.5L7 6"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 56,
+                            lineNumber: 55,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "m4 12 1.5 1.5L7 12"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 57,
+                            lineNumber: 56,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "m4 18 1.5 1.5L7 18"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 58,
+                            lineNumber: 57,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 44,
+                    lineNumber: 43,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 43,
-                columnNumber: 9
-            }, this);
-        case "calendar":
-            return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                className: base,
-                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
-                    className: "h-3.5 w-3.5 text-white/80",
-                    viewBox: "0 0 24 24",
-                    fill: "none",
-                    stroke: "currentColor",
-                    strokeWidth: "1.6",
-                    strokeLinecap: "round",
-                    strokeLinejoin: "round",
-                    children: [
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("rect", {
-                            x: "4",
-                            y: "5",
-                            width: "16",
-                            height: "15",
-                            rx: "2"
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 74,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                            d: "M16 3v4"
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 75,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                            d: "M8 3v4"
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 76,
-                            columnNumber: 13
-                        }, this),
-                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
-                            d: "M4 11h16"
-                        }, void 0, false, {
-                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 77,
-                            columnNumber: 13
-                        }, this)
-                    ]
-                }, void 0, true, {
-                    fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 65,
-                    columnNumber: 11
-                }, this)
-            }, void 0, false, {
-                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 64,
+                lineNumber: 42,
                 columnNumber: 9
             }, this);
         case "chat":
@@ -837,17 +570,17 @@ function SidebarIcon({ name }) {
                         d: "M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 93,
+                        lineNumber: 73,
                         columnNumber: 13
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 84,
+                    lineNumber: 64,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 83,
+                lineNumber: 63,
                 columnNumber: 9
             }, this);
         case "card":
@@ -870,32 +603,32 @@ function SidebarIcon({ name }) {
                             rx: "2"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 109,
+                            lineNumber: 89,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "M2 10h20"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 110,
+                            lineNumber: 90,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "M6 15h4"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 111,
+                            lineNumber: 91,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 100,
+                    lineNumber: 80,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 99,
+                lineNumber: 79,
                 columnNumber: 9
             }, this);
         case "cog":
@@ -916,25 +649,25 @@ function SidebarIcon({ name }) {
                             r: "3"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 127,
+                            lineNumber: 107,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                             d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H10a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                            lineNumber: 128,
+                            lineNumber: 108,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                    lineNumber: 118,
+                    lineNumber: 98,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 117,
+                lineNumber: 97,
                 columnNumber: 9
             }, this);
         default:
@@ -942,7 +675,7 @@ function SidebarIcon({ name }) {
                 className: base
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 133,
+                lineNumber: 113,
                 columnNumber: 14
             }, this);
     }
@@ -960,7 +693,6 @@ function DashboardLayout({ children }) {
             router.push("/");
         }
     }
-    // Lock body scroll when drawer is open (mobile)
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "DashboardLayout.useEffect": ()=>{
             if (drawerOpen) {
@@ -976,7 +708,6 @@ function DashboardLayout({ children }) {
     }["DashboardLayout.useEffect"], [
         drawerOpen
     ]);
-    // Close drawer when navigating
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "DashboardLayout.useEffect": ()=>{
             setDrawerOpen(false);
@@ -987,150 +718,152 @@ function DashboardLayout({ children }) {
     const SidebarContent = /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "h-14 flex items-center gap-2 px-5 border-b border-white/5",
+                className: "h-16 flex items-center gap-3 px-5 border-b border-white/10",
                 children: [
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("img", {
-                        src: "/SELOR.png",
-                        alt: "Sylor.ai Logo",
-                        className: "h-8 w-8 rounded-lg object-cover"
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        className: "h-9 w-9 rounded-full bg-white text-black flex items-center justify-center font-bold",
+                        children: "S"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 169,
+                        lineNumber: 147,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-sm font-semibold leading-tight",
-                                children: "Sylor.ai"
+                                children: "Sylor AI"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 175,
+                                lineNumber: 151,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                className: "text-[10px] text-white/35",
+                                className: "text-[11px] text-white/40",
                                 children: "Lead automation"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 176,
+                                lineNumber: 152,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 174,
+                        lineNumber: 150,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 168,
+                lineNumber: 146,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("nav", {
-                className: "flex-1 py-5 space-y-1 px-3",
+                className: "flex-1 py-6 space-y-1 px-3",
                 children: NAV.map((item)=>{
                     const active = pathname === item.href;
                     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         onClick: ()=>router.push(item.href),
-                        className: `flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition ${active ? "bg-white/10 text-white" : "text-white/40 hover:bg-white/5 hover:text-white"}`,
+                        className: `flex w-full items-center gap-3 rounded-[12px] px-3 py-2 text-sm transition ${active ? "bg-white/12 text-white" : "text-white/55 hover:bg-white/6 hover:text-white"}`,
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(SidebarIcon, {
                                 name: item.icon
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 193,
+                                lineNumber: 169,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 children: item.label
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 194,
+                                lineNumber: 170,
                                 columnNumber: 15
                             }, this),
                             active ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                 className: "ml-auto h-2 w-2 rounded-full bg-emerald-400"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 196,
+                                lineNumber: 172,
                                 columnNumber: 17
                             }, this) : null
                         ]
                     }, item.href, true, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 184,
+                        lineNumber: 160,
                         columnNumber: 13
                     }, this);
                 })
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 180,
+                lineNumber: 156,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "p-3 border-t border-white/5",
+                className: "p-4 border-t border-white/10",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        className: "rounded-[10px] bg-white/5 p-3 text-xs text-white/60 mb-3",
+                        className: "rounded-[12px] bg-white/5 p-3 text-xs text-white/65 mb-3",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                 className: "text-white mb-1 text-sm font-medium",
                                 children: "Starter plan"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 205,
+                                lineNumber: 181,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
-                                children: "50 leads / mo • 24/7 AI"
+                                children: "50 leads / mo - 24/7 AI"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 206,
+                                lineNumber: 182,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                 href: "/billing",
                                 className: "mt-2 inline-block text-xs text-white hover:underline",
-                                children: "Upgrade to Pro →"
-                            }, void 0, false, {
+                                children: [
+                                    "Upgrade to Pro ",
+                                    "›"
+                                ]
+                            }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 207,
+                                lineNumber: 183,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 204,
+                        lineNumber: 180,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         onClick: handleLogout,
-                        className: "w-full rounded-[10px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]",
+                        className: "w-full rounded-[12px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]",
                         children: "Log out"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 214,
+                        lineNumber: 190,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 203,
+                lineNumber: 179,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "min-h-screen bg-[#050506] text-white flex",
+        className: "dashboard-shell",
         children: [
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("aside", {
-                className: "hidden md:flex md:w-60 flex-col border-r border-white/5 bg-[#070708]/80 backdrop-blur",
+                className: "sidebar hidden md:flex flex-col",
                 children: SidebarContent
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 227,
+                lineNumber: 203,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1139,40 +872,40 @@ function DashboardLayout({ children }) {
                     drawerOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                         "aria-label": "Close navigation",
                         onClick: ()=>setDrawerOpen(false),
-                        className: "fixed inset-0 z-40 bg-black/50"
+                        className: "fixed inset-0 z-40 bg-black/55"
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 235,
+                        lineNumber: 208,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("aside", {
-                        className: `fixed top-0 left-0 z-50 h-screen w-[82%] max-w-[320px] bg-[#0a0a0b] border-r border-white/5 transition-transform duration-300 ${drawerOpen ? "translate-x-0" : "-translate-x-full"}`,
+                        className: `fixed top-0 left-0 z-50 h-screen w-[80%] max-w-[320px] bg-[#09090d] border-r border-white/10 transition-transform duration-300 ${drawerOpen ? "translate-x-0" : "-translate-x-full"}`,
                         role: "dialog",
                         "aria-modal": "true",
                         children: SidebarContent
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 242,
+                        lineNumber: 214,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 232,
+                lineNumber: 206,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                className: "flex-1 flex flex-col min-h-screen",
+                className: "flex-1 flex flex-col h-screen overflow-hidden",
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("header", {
-                        className: "h-14 border-b border-white/5 bg-[#070708]/60 backdrop-blur flex items-center justify-between px-4 gap-3",
+                        className: "topbar",
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "flex items-center gap-3 flex-1",
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                         onClick: ()=>setDrawerOpen(true),
-                                        className: "md:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10",
+                                        className: "md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10",
                                         "aria-label": "Open navigation",
                                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                             className: "h-5 w-5 text-white/90",
@@ -1186,17 +919,17 @@ function DashboardLayout({ children }) {
                                                 d: "M4 6h16M4 12h16M4 18h16"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                lineNumber: 273,
+                                                lineNumber: 243,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                            lineNumber: 264,
+                                            lineNumber: 234,
                                             columnNumber: 15
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                        lineNumber: 259,
+                                        lineNumber: 229,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1204,14 +937,14 @@ function DashboardLayout({ children }) {
                                         children: [
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
                                                 placeholder: "Search",
-                                                className: "w-full bg-white/5 border border-white/5 rounded-[10px] pl-8 pr-3 py-1.5 text-sm outline-none focus:border-white/25"
+                                                className: "w-full bg-white/5 border border-white/10 rounded-[12px] pl-9 pr-3 py-2 text-sm outline-none focus:border-white/25"
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                lineNumber: 278,
+                                                lineNumber: 248,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                className: "absolute left-2 top-1.5 text-white/70 text-sm",
+                                                className: "absolute left-3 top-2 text-white/70",
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
                                                     className: "h-4 w-4",
                                                     viewBox: "0 0 24 24",
@@ -1227,115 +960,125 @@ function DashboardLayout({ children }) {
                                                             r: "5"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                            lineNumber: 292,
+                                                            lineNumber: 262,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
                                                             d: "m21 21-4.35-4.35"
                                                         }, void 0, false, {
                                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                            lineNumber: 293,
+                                                            lineNumber: 263,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                    lineNumber: 283,
+                                                    lineNumber: 253,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                lineNumber: 282,
+                                                lineNumber: 252,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                        lineNumber: 277,
-                                        columnNumber: 13
-                                    }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "hidden md:flex gap-2",
-                                        children: [
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>router.push("/leads?new=1"),
-                                                className: "rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10",
-                                                children: "New lead"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                lineNumber: 299,
-                                                columnNumber: 15
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                                onClick: ()=>router.push("/appointments?new=1"),
-                                                className: "rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10",
-                                                children: "+ Appointment"
-                                            }, void 0, false, {
-                                                fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                                lineNumber: 305,
-                                                columnNumber: 15
-                                            }, this)
-                                        ]
-                                    }, void 0, true, {
-                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                        lineNumber: 298,
+                                        lineNumber: 247,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 257,
+                                lineNumber: 228,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                className: "flex items-center gap-3",
+                                className: "hidden md:flex gap-2",
                                 children: [
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                        className: "hidden sm:inline text-xs text-white/35",
-                                        children: "Today: Auto-booking ON"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>router.push("/leads?new=1"),
+                                        className: "btn-ghost",
+                                        children: "New lead"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                        lineNumber: 314,
+                                        lineNumber: 270,
                                         columnNumber: 13
                                     }, this),
-                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        className: "h-8 w-8 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-semibold",
-                                        children: "OG"
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        className: "btn-primary",
+                                        onClick: async ()=>{
+                                            try {
+                                                const res = await fetch("/api/settings/public-link", {
+                                                    method: "GET",
+                                                    headers: {
+                                                        "Content-Type": "application/json"
+                                                    }
+                                                });
+                                                const data = await res.json().catch(()=>({}));
+                                                if (res.ok && data?.ok && data.publicSlug && data.publicCaptureEnabled) {
+                                                    const base = ("TURBOPACK compile-time value", "https://sylor.ai") || window.location.origin;
+                                                    const url = `${base}/lead/${data.publicSlug}`;
+                                                    await navigator.clipboard?.writeText(url);
+                                                } else {
+                                                    router.push("/settings/public-link");
+                                                }
+                                            } catch  {
+                                                router.push("/settings/public-link");
+                                            }
+                                        },
+                                        children: "Share lead link"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                        lineNumber: 317,
+                                        lineNumber: 276,
+                                        columnNumber: 13
+                                    }, this),
+                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        onClick: ()=>router.push("/settings/ai"),
+                                        className: "btn-ghost",
+                                        children: "AI Settings"
+                                    }, void 0, false, {
+                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
+                                        lineNumber: 306,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                                lineNumber: 313,
+                                lineNumber: 269,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 256,
+                        lineNumber: 227,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
-                        className: "flex-1 bg-[#050506] p-4 pb-[max(16px,env(safe-area-inset-bottom))]",
-                        children: children
+                        className: "flex-1 overflow-y-auto",
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "page-container",
+                            children: children
+                        }, void 0, false, {
+                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
+                            lineNumber: 316,
+                            columnNumber: 11
+                        }, this)
                     }, void 0, false, {
                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                        lineNumber: 324,
+                        lineNumber: 315,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-                lineNumber: 254,
+                lineNumber: 226,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/layout.tsx",
-        lineNumber: 225,
+        lineNumber: 201,
         columnNumber: 5
     }, this);
 }

@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
+  const [sendingReset, setSendingReset] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -62,6 +63,33 @@ export default function LoginPage() {
               placeholder="you@example.com"
               className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
             />
+          </div>
+          <div className="flex items-center justify-between">
+            <span />
+            <button
+              type="button"
+              disabled={!email || sendingReset}
+              onClick={async () => {
+                setErr("");
+                if (!email) return;
+                try {
+                  setSendingReset(true);
+                  await fetch("/api/auth/request-password-reset", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email }),
+                  });
+                  setErr("If that email exists, a reset link was sent.");
+                } catch {
+                  setErr("Could not send reset email.");
+                } finally {
+                  setSendingReset(false);
+                }
+              }}
+              className="text-xs text-white/60 hover:text-white/90 disabled:opacity-40"
+            >
+              {sendingReset ? "Sending…" : "Forgot password?"}
+            </button>
           </div>
           <div>
             <label className="text-sm text-white/50 mb-1 block">Password</label>

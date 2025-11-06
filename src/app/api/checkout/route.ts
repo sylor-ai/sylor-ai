@@ -1,5 +1,6 @@
 import Stripe from "stripe";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { verifyIdTokenFromRequest, getAdminFirestore } from "@/lib/firebase-admin";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
 
@@ -15,15 +16,19 @@ const stripe = new Stripe(stripeSecret || "", {
   apiVersion: "2025-10-29.clover",
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const plan = (body.plan || "starter").toLowerCase();
+    const requestedPlan = (body.plan || body.planId || "").toLowerCase();
     const priceId =
       body.priceId ||
       (plan === "pro"
         ? "price_1SN3RrHBRIMb0ChwjSIbQaYn"
         : "price_1SN3ReHBRIMb0ChwEPz1g2w5");
+    // Infer plan from priceId if not provided
+    const proPrice = "price_1SN3RrHBRIMb0ChwjSIbQaYn";
+    const starterPrice = "price_1SN3ReHBRIMb0ChwEPz1g2w5";
+    const plan = requestedPlan || (priceId === proPrice ? "pro" : "starter");
 
     if (!stripeSecret) {
       return NextResponse.json(
@@ -58,6 +63,17 @@ export async function POST(req: Request) {
         ? `https://${host}`
         : "http://localhost:3000";
 
+    // optional auth: associate checkout to current user for webhook handling
+    const decoded = await verifyIdTokenFromRequest(req);
+    if (!decoded) {
+      return NextResponse.json({ error: "Missing auth" }, { status: 401 });
+    }
+    const uid = decoded.uid;
+    const db = getAdminFirestore();
+    const userSnap = await db.collection("users").doc(uid).get();
+    const userData = userSnap.exists ? (userSnap.data() as any) : null;
+    const tenantId = userData?.tenantId || uid;
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [
@@ -67,12 +83,11 @@ export async function POST(req: Request) {
         },
       ],
       // ✅ our new flow ends in dashboard
-      success_url: `${baseUrl}/dashboard`,
+      success_url: `${baseUrl}/billing?checkout=success&plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
       // if user cancels on Stripe → back to pricing with the chosen plan
-      cancel_url: `${baseUrl}/pricing?plan=${plan}`,
-      metadata: {
-        sylor_plan: plan,
-      },
+      cancel_url: `${baseUrl}/billing?checkout=canceled&reason=user`,
+      client_reference_id: tenantId,
+      metadata: { sylor_plan: plan, sylor_tenant_id: tenantId, planId: plan, tenantId },
     });
 
     return NextResponse.json({ url: session.url });
@@ -84,3 +99,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+

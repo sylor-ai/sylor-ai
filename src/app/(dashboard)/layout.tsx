@@ -1,4 +1,3 @@
-// src/app/(dashboard)/layout.tsx
 "use client";
 
 import Link from "next/link";
@@ -7,12 +6,12 @@ import { ReactNode, useEffect, useState } from "react";
 import { api } from "@/lib/api";
 
 const NAV = [
-  { label: "Dashboard", href: "/dashboard", icon: "grid" },
+  { label: "Overview", href: "/dashboard", icon: "grid" },
   { label: "Leads", href: "/leads", icon: "checklist" },
-  { label: "Appointments", href: "/appointments", icon: "calendar" },
   { label: "Messages", href: "/messages", icon: "chat" },
   { label: "Billing", href: "/billing", icon: "card" },
-  { label: "Settings", href: "/settings", icon: "cog" },
+  { label: "AI Settings", href: "/settings/ai", icon: "cog" },
+  { label: "Public lead link", href: "/settings/public-link", icon: "cog" },
 ];
 
 function SidebarIcon({ name }: { name: string }) {
@@ -31,10 +30,10 @@ function SidebarIcon({ name }: { name: string }) {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <rect x="4" y="4" width="6" height="6" rx="1"></rect>
-            <rect x="14" y="4" width="6" height="6" rx="1"></rect>
-            <rect x="4" y="14" width="6" height="6" rx="1"></rect>
-            <rect x="14" y="14" width="6" height="6" rx="1"></rect>
+            <rect x="4" y="4" width="6" height="6" rx="1" />
+            <rect x="14" y="4" width="6" height="6" rx="1" />
+            <rect x="4" y="14" width="6" height="6" rx="1" />
+            <rect x="14" y="14" width="6" height="6" rx="1" />
           </svg>
         </span>
       );
@@ -56,25 +55,6 @@ function SidebarIcon({ name }: { name: string }) {
             <path d="m4 6 1.5 1.5L7 6" />
             <path d="m4 12 1.5 1.5L7 12" />
             <path d="m4 18 1.5 1.5L7 18" />
-          </svg>
-        </span>
-      );
-    case "calendar":
-      return (
-        <span className={base}>
-          <svg
-            className="h-3.5 w-3.5 text-white/80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="4" y="5" width="16" height="15" rx="2" />
-            <path d="M16 3v4" />
-            <path d="M8 3v4" />
-            <path d="M4 11h16" />
           </svg>
         </span>
       );
@@ -147,7 +127,6 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   }
 
-  // Lock body scroll when drawer is open (mobile)
   useEffect(() => {
     if (drawerOpen) {
       const prev = document.body.style.overflow;
@@ -158,36 +137,33 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     }
   }, [drawerOpen]);
 
-  // Close drawer when navigating
   useEffect(() => {
     setDrawerOpen(false);
   }, [pathname]);
 
   const SidebarContent = (
     <>
-      <div className="h-14 flex items-center gap-2 px-5 border-b border-white/5">
-        <img
-          src="/SELOR.png"
-          alt="Sylor.ai Logo"
-          className="h-8 w-8 rounded-lg object-cover"
-        />
+      <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
+        <div className="h-9 w-9 rounded-full bg-white text-black flex items-center justify-center font-bold">
+          S
+        </div>
         <div>
-          <p className="text-sm font-semibold leading-tight">Sylor.ai</p>
-          <p className="text-[10px] text-white/35">Lead automation</p>
+          <p className="text-sm font-semibold leading-tight">Sylor AI</p>
+          <p className="text-[11px] text-white/40">Lead automation</p>
         </div>
       </div>
 
-      <nav className="flex-1 py-5 space-y-1 px-3">
+      <nav className="flex-1 py-6 space-y-1 px-3">
         {NAV.map((item) => {
           const active = pathname === item.href;
           return (
             <button
               key={item.href}
               onClick={() => router.push(item.href)}
-              className={`flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition ${
+              className={`flex w-full items-center gap-3 rounded-[12px] px-3 py-2 text-sm transition ${
                 active
-                  ? "bg-white/10 text-white"
-                  : "text-white/40 hover:bg-white/5 hover:text-white"
+                  ? "bg-white/12 text-white"
+                  : "text-white/55 hover:bg-white/6 hover:text-white"
               }`}
             >
               <SidebarIcon name={item.icon} />
@@ -200,20 +176,20 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         })}
       </nav>
 
-      <div className="p-3 border-t border-white/5">
-        <div className="rounded-[10px] bg-white/5 p-3 text-xs text-white/60 mb-3">
+      <div className="p-4 border-t border-white/10">
+        <div className="rounded-[12px] bg-white/5 p-3 text-xs text-white/65 mb-3">
           <p className="text-white mb-1 text-sm font-medium">Starter plan</p>
-          <p>50 leads / mo • 24/7 AI</p>
+          <p>50 leads / mo - 24/7 AI</p>
           <Link
             href="/billing"
             className="mt-2 inline-block text-xs text-white hover:underline"
           >
-            Upgrade to Pro →
+            Upgrade to Pro {"›"}
           </Link>
         </div>
         <button
           onClick={handleLogout}
-          className="w-full rounded-[10px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
+          className="w-full rounded-[12px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
         >
           Log out
         </button>
@@ -222,25 +198,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   );
 
   return (
-    <div className="min-h-screen bg-[#050506] text-white flex">
+    <div className="dashboard-shell">
       {/* Desktop sidebar */}
-      <aside className="hidden md:flex md:w-60 flex-col border-r border-white/5 bg-[#070708]/80 backdrop-blur">
-        {SidebarContent}
-      </aside>
+      <aside className="sidebar hidden md:flex flex-col">{SidebarContent}</aside>
 
       {/* Mobile drawer */}
       <div className="md:hidden">
-        {/* Scrim */}
         {drawerOpen && (
           <button
             aria-label="Close navigation"
             onClick={() => setDrawerOpen(false)}
-            className="fixed inset-0 z-40 bg-black/50"
+            className="fixed inset-0 z-40 bg-black/55"
           />
         )}
-        {/* Panel */}
         <aside
-          className={`fixed top-0 left-0 z-50 h-screen w-[82%] max-w-[320px] bg-[#0a0a0b] border-r border-white/5 transition-transform duration-300 ${
+          className={`fixed top-0 left-0 z-50 h-screen w-[80%] max-w-[320px] bg-[#09090d] border-r border-white/10 transition-transform duration-300 ${
             drawerOpen ? "translate-x-0" : "-translate-x-full"
           }`}
           role="dialog"
@@ -250,15 +222,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </aside>
       </div>
 
-      {/* Main */}
-      <div className="flex-1 flex flex-col min-h-screen">
-        {/* Topbar */}
-        <header className="h-14 border-b border-white/5 bg-[#070708]/60 backdrop-blur flex items-center justify-between px-4 gap-3">
+      {/* Main content */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <header className="topbar">
           <div className="flex items-center gap-3 flex-1">
-            {/* Mobile burger */}
             <button
               onClick={() => setDrawerOpen(true)}
-              className="md:hidden inline-flex h-9 w-9 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10"
+              className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-lg bg-white/5 hover:bg-white/10"
               aria-label="Open navigation"
             >
               <svg
@@ -277,9 +247,9 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <div className="relative hidden md:block flex-1 max-w-sm">
               <input
                 placeholder="Search"
-                className="w-full bg-white/5 border border-white/5 rounded-[10px] pl-8 pr-3 py-1.5 text-sm outline-none focus:border-white/25"
+                className="w-full bg-white/5 border border-white/10 rounded-[12px] pl-9 pr-3 py-2 text-sm outline-none focus:border-white/25"
               />
-              <span className="absolute left-2 top-1.5 text-white/70 text-sm">
+              <span className="absolute left-3 top-2 text-white/70">
                 <svg
                   className="h-4 w-4"
                   viewBox="0 0 24 24"
@@ -294,35 +264,56 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 </svg>
               </span>
             </div>
-
-            <div className="hidden md:flex gap-2">
-              <button
-                onClick={() => router.push("/leads?new=1")}
-                className="rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10"
-              >
-                New lead
-              </button>
-              <button
-                onClick={() => router.push("/appointments?new=1")}
-                className="rounded-[10px] bg-white/5 px-3 py-1.5 text-sm text-white/70 hover:bg-white/10"
-              >
-                + Appointment
-              </button>
-            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <span className="hidden sm:inline text-xs text-white/35">
-              Today: Auto-booking ON
-            </span>
-            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-[#5d5ff7] to-[#43e7e1] flex items-center justify-center text-sm font-semibold">
-              OG
-            </div>
+
+          <div className="hidden md:flex gap-2">
+            <button
+              onClick={() => router.push("/leads?new=1")}
+              className="btn-ghost"
+            >
+              New lead
+            </button>
+            <button
+              className="btn-primary"
+              onClick={async () => {
+                try {
+                  const res = await fetch("/api/settings/public-link", {
+                    method: "GET",
+                    headers: { "Content-Type": "application/json" },
+                  });
+                  const data = await res.json().catch(() => ({}));
+                  if (
+                    res.ok &&
+                    data?.ok &&
+                    data.publicSlug &&
+                    data.publicCaptureEnabled
+                  ) {
+                    const base =
+                      process.env.NEXT_PUBLIC_APP_URL ||
+                      window.location.origin;
+                    const url = `${base}/lead/${data.publicSlug}`;
+                    await navigator.clipboard?.writeText(url);
+                  } else {
+                    router.push("/settings/public-link");
+                  }
+                } catch {
+                  router.push("/settings/public-link");
+                }
+              }}
+            >
+              Share lead link
+            </button>
+            <button
+              onClick={() => router.push("/settings/ai")}
+              className="btn-ghost"
+            >
+              AI Settings
+            </button>
           </div>
         </header>
 
-        {/* Content */}
-        <main className="flex-1 bg-[#050506] p-4 pb-[max(16px,env(safe-area-inset-bottom))]">
-          {children}
+        <main className="flex-1 overflow-y-auto">
+          <div className="page-container">{children}</div>
         </main>
       </div>
     </div>

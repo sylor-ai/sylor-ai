@@ -11,11 +11,12 @@ __turbopack_context__.n(__turbopack_context__.i("[project]/Desktop/sylor-ai/src/
 }),
 "[project]/Desktop/sylor-ai/src/app/page.tsx [app-rsc] (ecmascript)", ((__turbopack_context__, module, exports) => {
 
+const e = new Error("Could not parse module '[project]/Desktop/sylor-ai/src/app/page.tsx'\n\nfailed to convert rope into string\n\nCaused by:\n- invalid utf-8 sequence of 1 bytes from index 1363");
+e.code = 'MODULE_UNPARSABLE';
+throw e;
 }),
 "[project]/Desktop/sylor-ai/src/app/page.tsx [app-rsc] (ecmascript, Next.js Server Component)", ((__turbopack_context__) => {
 
 __turbopack_context__.n(__turbopack_context__.i("[project]/Desktop/sylor-ai/src/app/page.tsx [app-rsc] (ecmascript)"));
 }),
 ];
-
-//# sourceMappingURL=%5Broot-of-the-server%5D__4e5e3f34._.js.map

@@ -14,6 +14,23 @@ export type Tenant = {
   stripeCustomerId?: string | null;
   planId?: string | null;
   twilioNumber?: string | null;
+  createdAt?: any | null;
+
+  // Public lead capture slug (tenants can have a public URL)
+  publicSlug?: string | null;
+  publicCaptureEnabled?: boolean;
+
+  // Optional AI profile (used by SMS AI)
+  aiProfile?: {
+    enabled?: boolean;
+    tone?: string;
+    bookingStyle?: string;
+    bookingPhone?: string;
+    services?: string; // comma-separated
+    serviceArea?: string;
+    hours?: string;
+    extraNotes?: string;
+  };
 };
 
 export type LeadStatus = "New" | "Contacted" | "Booked" | "Closed";
@@ -28,7 +45,10 @@ export type Lead = {
   value: number;
   status: LeadStatus;
   created: string;
-  email?: string; // ← added so your dashboard map(email) doesn’t error
+  email?: string;
+  // SMS opt-out flags
+  unsubscribed?: boolean;
+  unsubscribedAt?: any;
 };
 
 export type Appointment = {
@@ -49,6 +69,9 @@ export type Conversation = {
   lastMessageAt: any;
   channel: "sms";
   leadAvatarUrl?: string;
+  // AI controls (optional)
+  aiPaused?: boolean;
+  aiLastStatus?: "on" | "off" | "blocked" | "unsubscribed";
 };
 
 export type Message = {
@@ -74,3 +97,4 @@ export type Metric = {
   subtitle?: string;
   change?: string;
 };
+

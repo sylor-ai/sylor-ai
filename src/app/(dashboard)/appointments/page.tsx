@@ -4,19 +4,19 @@ import { useState } from "react";
 
 const MOCK_APPOINTMENTS = [
   {
-    title: "Roof inspection – Calabasas",
+    title: "Roof inspection - Calabasas",
     when: "Tue, 10:30 AM",
     assignee: "Crew A",
     status: "Confirmed",
   },
   {
-    title: "Pool design – Thousand Oaks",
+    title: "Pool design - Thousand Oaks",
     when: "Tue, 1:00 PM",
     assignee: "Crew B",
     status: "Pending",
   },
   {
-    title: "Backyard landscaping – Woodland Hills",
+    title: "Backyard landscaping - Woodland Hills",
     when: "Wed, 9:00 AM",
     assignee: "Crew C",
     status: "Confirmed",
@@ -31,7 +31,7 @@ export default function AppointmentsPage() {
 
   function handleCreate(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // here you’d call a real API: await api.createAppointment(...)
+    // here you'd call a real API: await api.createAppointment(...)
     setOpen(false);
     setTitle("");
     setWhen("");
@@ -91,7 +91,7 @@ export default function AppointmentsPage() {
                 onClick={() => setOpen(false)}
                 className="text-white/30 hover:text-white"
               >
-                ✕
+                x
               </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-3">
@@ -104,7 +104,7 @@ export default function AppointmentsPage() {
                   onChange={(e) => setTitle(e.target.value)}
                   required
                   className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
-                  placeholder="Roof inspection – Calabasas"
+                  placeholder="Roof inspection - Calabasas"
                 />
               </div>
               <div>
