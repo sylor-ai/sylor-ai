@@ -258,15 +258,18 @@ async function savePublicLinkSettings(payload) {
             },
             body: JSON.stringify(payload)
         });
-        if (!res.ok) {
-            const text = await res.text();
+        const data = await res.json().catch(()=>({}));
+        if (!res.ok || data?.ok === false) {
+            const error = typeof data?.error === "string" ? data.error : "Failed to save public link settings";
             return {
                 ok: false,
-                error: text || "Failed to save public link settings"
+                error
             };
         }
         return {
-            ok: true
+            ok: true,
+            publicSlug: data.publicSlug ?? payload.publicSlug ?? null,
+            publicCaptureEnabled: data.publicCaptureEnabled ?? payload.publicCaptureEnabled ?? false
         };
     } catch (err) {
         console.error("Error in savePublicLinkSettings:", err);

@@ -109,7 +109,12 @@ export async function getPublicLinkSettings(): Promise<{
 export async function savePublicLinkSettings(payload: {
   publicSlug: string | null;
   publicCaptureEnabled: boolean;
-}): Promise<{ ok: boolean; error?: string }> {
+}): Promise<{
+  ok: boolean;
+  publicSlug?: string | null;
+  publicCaptureEnabled?: boolean | null;
+  error?: string;
+}> {
   try {
     const res = await fetch("/api/settings/public-link", {
       method: "POST",
@@ -119,12 +124,22 @@ export async function savePublicLinkSettings(payload: {
       body: JSON.stringify(payload),
     });
 
-    if (!res.ok) {
-      const text = await res.text();
-      return { ok: false, error: text || "Failed to save public link settings" };
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || data?.ok === false) {
+      const error =
+        typeof data?.error === "string"
+          ? data.error
+          : "Failed to save public link settings";
+      return { ok: false, error };
     }
 
-    return { ok: true };
+    return {
+      ok: true,
+      publicSlug: data.publicSlug ?? payload.publicSlug ?? null,
+      publicCaptureEnabled:
+        data.publicCaptureEnabled ?? payload.publicCaptureEnabled ?? false,
+    };
   } catch (err: any) {
     console.error("Error in savePublicLinkSettings:", err);
     return { ok: false, error: err?.message ?? "Unknown error" };
