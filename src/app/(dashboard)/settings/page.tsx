@@ -122,7 +122,7 @@ export default function SettingsPage() {
     }
     setPubSaving(true);
     try {
-      const res = await api.updatePublicLinkSettings({
+      const res = await api.savePublicLinkSettings({
         publicSlug,
         publicCaptureEnabled: publicEnabled,
       });
