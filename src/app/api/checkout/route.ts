@@ -20,14 +20,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const requestedPlan = (body.plan || body.planId || "").toLowerCase();
-    const priceId =
-      body.priceId ||
-      (plan === "pro"
-        ? "price_1SN3RrHBRIMb0ChwjSIbQaYn"
-        : "price_1SN3ReHBRIMb0ChwEPz1g2w5");
-    // Infer plan from priceId if not provided
     const proPrice = "price_1SN3RrHBRIMb0ChwjSIbQaYn";
     const starterPrice = "price_1SN3ReHBRIMb0ChwEPz1g2w5";
+    const priceId =
+      body.priceId ||
+      (requestedPlan === "pro" ? proPrice : starterPrice);
+    // Infer plan from priceId if not provided
     const plan = requestedPlan || (priceId === proPrice ? "pro" : "starter");
 
     if (!stripeSecret) {
