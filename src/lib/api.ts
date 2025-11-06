@@ -47,6 +47,26 @@ const PLANS: Record<string, Plan> = {
   },
 };
 
+// Log login + set sylor_session cookie on the server
+export async function logLoginToServer(idToken: string) {
+  try {
+    const res = await fetch("/api/auth/log-login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${idToken}`,
+      },
+      body: JSON.stringify({}),
+    });
+
+    if (!res.ok) {
+      console.error("Failed to log login:", await res.text());
+    }
+  } catch (err) {
+    console.error("Error calling /api/auth/log-login:", err);
+  }
+}
+
 export const api = {
   // Email/password login via Firebase, then set session cookie
   login: async (email: string, password: string): Promise<FirebaseUser | null> => {
@@ -55,11 +75,7 @@ export const api = {
     const user = cred.user;
     try {
       const idToken = await user.getIdToken();
-      await fetch("/api/auth/log-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
+      await logLoginToServer(idToken);
     } catch {}
     return user ?? null;
   },
@@ -197,11 +213,7 @@ export const api = {
     const current = auth.currentUser;
     const idToken = await current?.getIdToken();
     if (idToken) {
-      await fetch("/api/auth/log-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      }).catch(() => {});
+      await logLoginToServer(idToken);
     }
 
     return { ok: true };
@@ -215,11 +227,7 @@ export const api = {
     const user = cred.user;
     try {
       const idToken = await user.getIdToken();
-      await fetch("/api/auth/log-login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ idToken }),
-      });
+      await logLoginToServer(idToken);
     } catch {}
     return user ?? null;
   },
@@ -317,4 +325,6 @@ export const api = {
       return { ok: false, error: "SERVER_HTML_RESPONSE" };
     }
   },
+
+  logLoginToServer,
 };

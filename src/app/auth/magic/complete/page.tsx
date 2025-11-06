@@ -22,9 +22,12 @@ export default function MagicCompletePage() {
       }
       try {
         const auth = getFirebaseAuth();
-        const cred = await signInWithCustomToken(auth, token);
-        const idToken = await cred.user.getIdToken();
-        await logLoginToServer(idToken);
+        await signInWithCustomToken(auth, token);
+        const user = auth.currentUser;
+        if (user) {
+          const idToken = await user.getIdToken();
+          await logLoginToServer(idToken);
+        }
         router.replace(next);
       } catch (e: any) {
         console.error(e);
@@ -41,4 +44,3 @@ export default function MagicCompletePage() {
     </div>
   );
 }
-

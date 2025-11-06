@@ -6,7 +6,26 @@ const isProd = process.env.NODE_ENV === "production";
 
 export async function POST(req: NextRequest) {
   try {
-    const { idToken } = await req.json();
+    let idToken: string | undefined;
+
+    const authHeader = req.headers.get("authorization");
+    if (authHeader) {
+      const match = authHeader.match(/^Bearer\s+(.+)$/i);
+      if (match?.[1]) {
+        idToken = match[1].trim();
+      }
+    }
+
+    if (!idToken) {
+      try {
+        const body = await req.json();
+        if (body && typeof body.idToken === "string") {
+          idToken = body.idToken;
+        }
+      } catch {
+        // ignore parse errors; handled below when idToken missing
+      }
+    }
 
     if (!idToken || typeof idToken !== "string") {
       return NextResponse.json(
@@ -25,7 +44,7 @@ export async function POST(req: NextRequest) {
 
     const res = NextResponse.json({ ok: true, uid: decoded.uid });
 
-    // ✅ In dev (http://...), secure: false so cookie is actually saved
+    // In dev (http://...), secure: false so cookie is actually saved
     res.cookies.set("sylor_session", idToken, {
       httpOnly: true,
       secure: isProd,

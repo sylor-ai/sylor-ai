@@ -48,7 +48,9 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 // FILE: src/lib/api.ts
 __turbopack_context__.s([
     "api",
-    ()=>api
+    ()=>api,
+    "logLoginToServer",
+    ()=>logLoginToServer
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$auth$2f$dist$2f$esm$2f$index$2e$esm$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/firebase/auth/dist/esm/index.esm.js [app-client] (ecmascript) <locals>");
@@ -88,6 +90,23 @@ const PLANS = {
         priceId: "price_1SN3RrHBRIMb0ChwjSIbQaYn"
     }
 };
+async function logLoginToServer(idToken) {
+    try {
+        const res = await fetch("/api/auth/log-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${idToken}`
+            },
+            body: JSON.stringify({})
+        });
+        if (!res.ok) {
+            console.error("Failed to log login:", await res.text());
+        }
+    } catch (err) {
+        console.error("Error calling /api/auth/log-login:", err);
+    }
+}
 const api = {
     // Email/password login via Firebase, then set session cookie
     login: async (email, password)=>{
@@ -96,15 +115,7 @@ const api = {
         const user = cred.user;
         try {
             const idToken = await user.getIdToken();
-            await fetch("/api/auth/log-login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    idToken
-                })
-            });
+            await logLoginToServer(idToken);
         } catch  {}
         return user ?? null;
     },
@@ -228,15 +239,7 @@ const api = {
         const current = auth.currentUser;
         const idToken = await current?.getIdToken();
         if (idToken) {
-            await fetch("/api/auth/log-login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    idToken
-                })
-            }).catch(()=>{});
+            await logLoginToServer(idToken);
         }
         return {
             ok: true
@@ -250,15 +253,7 @@ const api = {
         const user = cred.user;
         try {
             const idToken = await user.getIdToken();
-            await fetch("/api/auth/log-login", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    idToken
-                })
-            });
+            await logLoginToServer(idToken);
         } catch  {}
         return user ?? null;
     },
@@ -362,7 +357,8 @@ const api = {
                 error: "SERVER_HTML_RESPONSE"
             };
         }
-    }
+    },
+    logLoginToServer
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
