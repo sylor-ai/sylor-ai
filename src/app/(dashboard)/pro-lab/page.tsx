@@ -5,7 +5,8 @@ import { verifySylorSession } from "@/lib/auth-server";
 import { getTenantPlan } from "@/lib/plan-server";
 
 export default async function ProLabPage() {
-  const session = cookies().get("sylor_session")?.value || null;
+  const cookieStore = await cookies();
+  const session = cookieStore.get("sylor_session")?.value ?? null;
   if (!session) redirect("/login?redirectTo=/pro-lab");
 
   const user = await verifySylorSession(session);
@@ -55,4 +56,3 @@ export default async function ProLabPage() {
     </div>
   );
 }
-
