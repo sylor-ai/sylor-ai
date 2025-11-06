@@ -67,6 +67,70 @@ export async function logLoginToServer(idToken: string) {
   }
 }
 
+// ─────────────────────────────────────────────────────────
+// Public lead link settings
+// GET /api/settings/public-link
+export async function getPublicLinkSettings(): Promise<{
+  ok: boolean;
+  publicSlug?: string | null;
+  publicCaptureEnabled?: boolean | null;
+  error?: string;
+}> {
+  try {
+    const res = await fetch("/api/settings/public-link", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return {
+        ok: false,
+        error: text || "Failed to load public link settings",
+      };
+    }
+
+    const data = await res.json();
+
+    return {
+      ok: true,
+      publicSlug: data.publicSlug ?? null,
+      publicCaptureEnabled: data.publicCaptureEnabled ?? false,
+    };
+  } catch (err: any) {
+    console.error("Error in getPublicLinkSettings:", err);
+    return { ok: false, error: err?.message ?? "Unknown error" };
+  }
+}
+
+// POST /api/settings/public-link
+export async function savePublicLinkSettings(payload: {
+  publicSlug: string | null;
+  publicCaptureEnabled: boolean;
+}): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const res = await fetch("/api/settings/public-link", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      return { ok: false, error: text || "Failed to save public link settings" };
+    }
+
+    return { ok: true };
+  } catch (err: any) {
+    console.error("Error in savePublicLinkSettings:", err);
+    return { ok: false, error: err?.message ?? "Unknown error" };
+  }
+}
+
 export const api = {
   // Email/password login via Firebase, then set session cookie
   login: async (email: string, password: string): Promise<FirebaseUser | null> => {
@@ -327,4 +391,6 @@ export const api = {
   },
 
   logLoginToServer,
+  getPublicLinkSettings,
+  savePublicLinkSettings,
 };

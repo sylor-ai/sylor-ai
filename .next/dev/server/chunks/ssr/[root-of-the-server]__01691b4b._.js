@@ -159,8 +159,12 @@ const getFirebaseDb = ()=>(0, __TURBOPACK__imported__module__$5b$project$5d2f$De
 __turbopack_context__.s([
     "api",
     ()=>api,
+    "getPublicLinkSettings",
+    ()=>getPublicLinkSettings,
     "logLoginToServer",
-    ()=>logLoginToServer
+    ()=>logLoginToServer,
+    "savePublicLinkSettings",
+    ()=>savePublicLinkSettings
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$auth$2f$dist$2f$index$2e$mjs__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__$3c$locals$3e$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/firebase/auth/dist/index.mjs [app-ssr] (ecmascript) <locals>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$node$2d$esm$2f$index$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/firebase/node_modules/@firebase/auth/dist/node-esm/index.js [app-ssr] (ecmascript)");
@@ -214,6 +218,62 @@ async function logLoginToServer(idToken) {
         }
     } catch (err) {
         console.error("Error calling /api/auth/log-login:", err);
+    }
+}
+async function getPublicLinkSettings() {
+    try {
+        const res = await fetch("/api/settings/public-link", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            return {
+                ok: false,
+                error: text || "Failed to load public link settings"
+            };
+        }
+        const data = await res.json();
+        return {
+            ok: true,
+            publicSlug: data.publicSlug ?? null,
+            publicCaptureEnabled: data.publicCaptureEnabled ?? false
+        };
+    } catch (err) {
+        console.error("Error in getPublicLinkSettings:", err);
+        return {
+            ok: false,
+            error: err?.message ?? "Unknown error"
+        };
+    }
+}
+async function savePublicLinkSettings(payload) {
+    try {
+        const res = await fetch("/api/settings/public-link", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+        if (!res.ok) {
+            const text = await res.text();
+            return {
+                ok: false,
+                error: text || "Failed to save public link settings"
+            };
+        }
+        return {
+            ok: true
+        };
+    } catch (err) {
+        console.error("Error in savePublicLinkSettings:", err);
+        return {
+            ok: false,
+            error: err?.message ?? "Unknown error"
+        };
     }
 }
 const api = {
@@ -467,7 +527,9 @@ const api = {
             };
         }
     },
-    logLoginToServer
+    logLoginToServer,
+    getPublicLinkSettings,
+    savePublicLinkSettings
 };
 }),
 "[project]/Desktop/sylor-ai/src/app/login/page.tsx [app-ssr] (ecmascript)", ((__turbopack_context__) => {
