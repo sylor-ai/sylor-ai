@@ -74,6 +74,7 @@ export async function getPublicLinkSettings(): Promise<{
   ok: boolean;
   publicSlug?: string | null;
   publicCaptureEnabled?: boolean | null;
+  businessName?: string | null;
   error?: string;
 }> {
   try {
@@ -98,6 +99,7 @@ export async function getPublicLinkSettings(): Promise<{
       ok: true,
       publicSlug: data.publicSlug ?? null,
       publicCaptureEnabled: data.publicCaptureEnabled ?? false,
+      businessName: data.businessName ?? null,
     };
   } catch (err: any) {
     console.error("Error in getPublicLinkSettings:", err);
@@ -113,6 +115,7 @@ export async function savePublicLinkSettings(payload: {
   ok: boolean;
   publicSlug?: string | null;
   publicCaptureEnabled?: boolean | null;
+  businessName?: string | null;
   error?: string;
 }> {
   try {
@@ -139,6 +142,7 @@ export async function savePublicLinkSettings(payload: {
       publicSlug: data.publicSlug ?? payload.publicSlug ?? null,
       publicCaptureEnabled:
         data.publicCaptureEnabled ?? payload.publicCaptureEnabled ?? false,
+      businessName: data.businessName ?? null,
     };
   } catch (err: any) {
     console.error("Error in savePublicLinkSettings:", err);

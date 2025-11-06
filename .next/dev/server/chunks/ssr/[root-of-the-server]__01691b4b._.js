@@ -239,7 +239,8 @@ async function getPublicLinkSettings() {
         return {
             ok: true,
             publicSlug: data.publicSlug ?? null,
-            publicCaptureEnabled: data.publicCaptureEnabled ?? false
+            publicCaptureEnabled: data.publicCaptureEnabled ?? false,
+            businessName: data.businessName ?? null
         };
     } catch (err) {
         console.error("Error in getPublicLinkSettings:", err);
@@ -269,7 +270,8 @@ async function savePublicLinkSettings(payload) {
         return {
             ok: true,
             publicSlug: data.publicSlug ?? payload.publicSlug ?? null,
-            publicCaptureEnabled: data.publicCaptureEnabled ?? payload.publicCaptureEnabled ?? false
+            publicCaptureEnabled: data.publicCaptureEnabled ?? payload.publicCaptureEnabled ?? false,
+            businessName: data.businessName ?? null
         };
     } catch (err) {
         console.error("Error in savePublicLinkSettings:", err);

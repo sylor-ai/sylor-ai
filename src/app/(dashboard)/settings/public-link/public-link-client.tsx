@@ -53,7 +53,10 @@ export default function PublicLinkClient() {
     }
     setSaving(true);
     try {
-      const res = await api.updatePublicLinkSettings({ publicSlug: slug, publicCaptureEnabled: enabled });
+      const res = await api.savePublicLinkSettings({
+        publicSlug: slug,
+        publicCaptureEnabled: enabled,
+      });
       if (!res.ok) {
         if (res.error === "slug-taken") setErr("That link is already taken. Please choose another.");
         else if (res.error === "invalid-slug") setErr("Please use only letters, numbers and dashes.");
@@ -169,4 +172,3 @@ export default function PublicLinkClient() {
     </div>
   );
 }
-
