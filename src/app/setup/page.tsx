@@ -1,6 +1,7 @@
-import { Suspense } from "react";
+// FILE: src/app/setup/page.tsx
 import SetupClient from "./setup-client";
 
+// In Next.js 16, searchParams can be a Promise
 type SearchParams = Promise<{
   [key: string]: string | string[] | undefined;
 }>;
@@ -10,7 +11,7 @@ export default async function SetupPage({
 }: {
   searchParams: SearchParams;
 }) {
-  // ✅ Await searchParams because it’s now a Promise in Next.js 16
+  // Await the Promise to get the actual params
   const params = await searchParams;
 
   const rawPlan = params.plan;
@@ -21,17 +22,10 @@ export default async function SetupPage({
       ? rawPlan[0]
       : "starter";
 
+  // No Suspense here either – just render the client-side setup UI
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
-          <div className="text-sm text-white/60">
-            Loading business setup…
-          </div>
-        </div>
-      }
-    >
+    <div className="min-h-screen bg-[#0a0a0b] text-white">
       <SetupClient plan={plan} />
-    </Suspense>
+    </div>
   );
 }

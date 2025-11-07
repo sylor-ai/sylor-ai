@@ -1,19 +1,13 @@
 // FILE: src/app/onboarding/page.tsx
 "use client";
 
-import { Suspense } from "react";
 import OnboardingClient from "@/app/onboarding/onboarding-client";
 
 export default function OnboardingPage() {
+  // Again, no Suspense/fallback – show real errors if something breaks
   return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center">
-          Loading onboarding…
-        </div>
-      }
-    >
+    <div className="min-h-screen bg-[#0a0a0b] text-white">
       <OnboardingClient />
-    </Suspense>
+    </div>
   );
 }
