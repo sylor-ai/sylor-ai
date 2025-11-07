@@ -1,17 +1,24 @@
-// src/app/reauth/page.tsx
 "use client";
 
-import { useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function ReauthPage() {
+  const router = useRouter();
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
-  const searchParams = useSearchParams();
-  const router = useRouter();
+  const [redirectTo, setRedirectTo] = useState("/dashboard");
 
-  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      const param = url.searchParams.get("redirectTo");
+      if (param) setRedirectTo(param);
+    } catch (error) {
+      console.error("[reauth] failed to parse redirectTo param", error);
+    }
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
