@@ -99,16 +99,34 @@ async function logLoginToServer(idToken) {
         const res = await fetch("/api/auth/log-login", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${idToken}`
+                "Content-Type": "application/json"
             },
-            body: JSON.stringify({})
+            body: JSON.stringify({
+                idToken
+            })
         });
         if (!res.ok) {
-            console.error("Failed to log login:", await res.text());
+            const text = await res.text().catch(()=>"");
+            console.error("[logLoginToServer] non-OK", res.status, text);
+            return {
+                ok: false,
+                status: res.status,
+                error: text || "non-ok"
+            };
         }
+        const data = await res.json().catch(()=>({
+                ok: true
+            }));
+        return data?.ok === false ? data : {
+            ok: true,
+            ...data
+        };
     } catch (err) {
-        console.error("Error calling /api/auth/log-login:", err);
+        console.error("[logLoginToServer] error", err);
+        return {
+            ok: false,
+            error: err?.message || String(err)
+        };
     }
 }
 async function getPublicLinkSettings() {
@@ -177,12 +195,7 @@ const api = {
     login: async (email, password)=>{
         const auth = (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$firebase$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFirebaseAuth"])();
         const cred = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$firebase$2f$node_modules$2f40$firebase$2f$auth$2f$dist$2f$esm2017$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["signInWithEmailAndPassword"])(auth, email, password);
-        const user = cred.user;
-        try {
-            const idToken = await user.getIdToken();
-            await logLoginToServer(idToken);
-        } catch  {}
-        return user ?? null;
+        return cred.user ?? null;
     },
     // Send signup code to email and stash pending signup
     requestSignupCode: async (opts)=>{

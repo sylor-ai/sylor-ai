@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCurrentUser } from "@/hooks/use-current-user";
 import { api } from "@/lib/api";
 import type { Lead } from "@/types";
+import { DashboardButton } from "@/components/dashboard-button";
 
 type NewLeadState = {
   name: string;
@@ -58,7 +59,6 @@ export default function LeadsPage() {
     async function load() {
       if (loading) return;
       if (!currentUser) {
-        router.push("/login");
         return;
       }
       const data = await api.getLeads(currentUser.tenantId);
@@ -123,12 +123,15 @@ export default function LeadsPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setIsAddOpen(true)} className="btn-primary">
-            + Add lead
-          </button>
-          <button onClick={() => router.push("/settings/public-link")} className="btn-ghost">
+          <DashboardButton onClick={() => setIsAddOpen(true)} className="rounded-[10px]">
+            Add lead
+          </DashboardButton>
+          <DashboardButton
+            onClick={() => router.push("/settings/public-link")}
+            className="rounded-[10px]"
+          >
             Share capture link
-          </button>
+          </DashboardButton>
         </div>
       </header>
 
@@ -234,7 +237,7 @@ export default function LeadsPage() {
               </div>
               <button
                 onClick={() => setIsAddOpen(false)}
-                className="btn-ghost px-3 py-1 text-xs"
+                className="rounded-[10px] border border-white/20 px-3 py-1 text-xs text-white/75 transition hover:border-red-400 hover:bg-red-500/10 hover:text-red-200 hover:shadow-[0_0_18px_rgba(255,0,0,0.45)]"
                 type="button"
               >
                 Close
@@ -295,26 +298,53 @@ export default function LeadsPage() {
 
               <label className="flex flex-col gap-2 text-sm text-white/70">
                 <span>Status</span>
-                <select
-                  value={newLead.status}
-                  onChange={(e) =>
-                    setNewLead((prev) => ({ ...prev, status: e.target.value as NewLeadState["status"] }))
-                  }
-                >
-                  <option value="New">New</option>
-                  <option value="Contacted">Contacted</option>
-                  <option value="Booked">Booked</option>
-                  <option value="Closed">Closed</option>
-                </select>
+                <div className="relative">
+                  <select
+                    value={newLead.status}
+                    onChange={(e) =>
+                      setNewLead((prev) => ({
+                        ...prev,
+                        status: e.target.value as NewLeadState["status"],
+                      }))
+                    }
+                    className="appearance-none w-full bg-black/40 border border-white/15 rounded-[12px] px-3 py-2 pr-8 text-sm text-white/80 focus:border-white/30 transition"
+                  >
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Booked">Booked</option>
+                    <option value="Closed">Closed</option>
+                  </select>
+                  <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60">
+                    <svg
+                      className="h-3.5 w-3.5"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth="1.7"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                  </span>
+                </div>
               </label>
 
               <div className="flex justify-end gap-3 pt-2">
-                <button type="button" onClick={() => setIsAddOpen(false)} className="btn-ghost">
+                <DashboardButton
+                  type="button"
+                  onClick={() => setIsAddOpen(false)}
+                  className="w-28 justify-center rounded-[10px]"
+                >
                   Cancel
-                </button>
-                <button type="submit" disabled={saving} className="btn-primary">
+                </DashboardButton>
+                <DashboardButton
+                  type="submit"
+                  disabled={saving}
+                  className="w-28 justify-center rounded-[10px]"
+                >
                   {saving ? "Saving..." : "Save lead"}
-                </button>
+                </DashboardButton>
               </div>
             </form>
           </div>

@@ -2,35 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Sylor AI — premium dark SaaS theme */
 :root {
   --bg-body: #050509;
-  --bg-panel: rgba(255,255,255,0.03);
-  --bg-card: radial-gradient(circle at top left, #22213a 0, #050509 45%, #050509 100%);
-  --border-subtle: rgba(255,255,255,0.08);
+  --bg-panel: rgba(255, 255, 255, 0.03);
+  --bg-card: radial-gradient(
+      circle at top left,
+      rgba(38, 33, 84, 0.6) 0%,
+      rgba(5, 5, 9, 0.95) 45%,
+      #050509 100%
+    ),
+    rgba(5, 5, 9, 0.9);
+  --border-subtle: rgba(255, 255, 255, 0.08);
   --text-main: #ffffff;
-  --text-muted: rgba(255,255,255,0.6);
+  --text-muted: rgba(255, 255, 255, 0.6);
   --accent: #7c5cff;
 }
 
 html,
 body {
-  height: 100%;
+  min-height: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
-  color: var(--text-main);
   background: var(--bg-body);
+  color: var(--text-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-image:
-    radial-gradient(900px 480px at 85% -5%, rgba(124, 124, 255, 0.12), transparent 60%),
-    radial-gradient(780px 540px at -10% 110%, rgba(255, 180, 120, 0.10), transparent 60%);
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  min-height: 100vh;
-  width: 100%;
-  overflow-x: hidden;
+}
+
+a {
+  color: inherit;
 }
 
 @layer base {
@@ -40,66 +42,75 @@ body {
     @apply bg-white/5 border border-white/10 rounded-[12px] px-3 py-2 text-sm outline-none focus:border-white/25 transition;
   }
 
-  button { @apply transition; }
+  button {
+    @apply transition;
+  }
 
-  h1 { @apply text-2xl md:text-3xl font-semibold; }
-  h2 { @apply text-xl font-semibold; }
-  h3 { @apply text-base font-medium; }
+  h1 {
+    @apply text-3xl md:text-4xl font-semibold;
+  }
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+  h3 {
+    @apply text-lg font-medium;
+  }
+}
+
+.dashboard-shell {
+  @apply h-screen overflow-hidden flex bg-[var(--bg-body)] text-[var(--text-main)];
+}
+
+.sidebar {
+  @apply hidden md:flex md:w-64 flex-col sticky top-0 h-screen overflow-y-auto;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  border-right: 1px solid var(--border-subtle);
+  backdrop-filter: blur(10px);
+}
+
+.topbar {
+  @apply sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-6 backdrop-blur;
+  background: rgba(7, 7, 8, 0.72);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.page-container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 32px 24px 40px;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  padding: 1.5rem;
+  box-shadow: 0 18px 40px rgba(5, 5, 9, 0.35);
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  backdrop-filter: blur(8px);
+  padding: 1.25rem;
 }
 
 @layer components {
-  .dashboard-shell {
-    @apply h-screen overflow-hidden flex bg-[var(--bg-body)] text-[var(--text-main)];
-  }
-
-  .sidebar {
-    @apply hidden md:flex md:w-64 flex-col sticky top-0 h-screen overflow-y-auto;
-    background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
-    border-right: 1px solid var(--border-subtle);
-    backdrop-filter: blur(10px);
-  }
-
-  .topbar {
-    @apply sticky top-0 z-30 h-16 flex items-center justify-between px-4 md:px-6 backdrop-blur;
-    background: rgba(7, 7, 8, 0.72);
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .page-container {
-    max-width: 1120px;
-    margin: 0 auto;
-    padding: 32px 24px 40px;
-  }
-
-  .card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-subtle);
-    border-radius: 20px;
-    backdrop-filter: blur(8px);
-    padding: 1.5rem;
-    box-shadow: 0 18px 40px rgba(5,5,9,0.35);
-  }
-
-  .panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border-subtle);
-    border-radius: 18px;
-    backdrop-filter: blur(8px);
-    padding: 1.25rem;
-  }
-
   .btn-primary {
+    @apply rounded-full px-5 py-2 font-medium transition-transform transition-shadow;
     background: #ffffff;
     color: #050509;
-    border-radius: 9999px;
-    padding: 0.55rem 1.4rem;
-    font-weight: 500;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
   }
 
   .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 10px 30px rgba(255,255,255,0.12);
+    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.12);
   }
 
   .btn-primary:disabled {
@@ -107,27 +118,89 @@ body {
   }
 
   .btn-ghost {
-    border: 1px solid var(--border-subtle);
-    color: rgba(255,255,255,0.85);
-    border-radius: 9999px;
-    padding: 0.55rem 1.3rem;
-    background: rgba(255,255,255,0.03);
-    transition: background 0.2s ease, border-color 0.2s ease;
+    @apply rounded-full px-5 py-2 border transition;
+    border-color: var(--border-subtle);
+    color: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.03);
   }
 
   .btn-ghost:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(255,255,255,0.18);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.18);
   }
 
-  .chip {
-    border: 1px solid var(--border-subtle);
-    border-radius: 9999px;
-    font-size: 11px;
-    padding: 0.25rem 0.7rem;
-    color: rgba(255,255,255,0.7);
-    background: rgba(255,255,255,0.04);
-    letter-spacing: 0.03em;
-    text-transform: uppercase;
+  .btn-pill {
+    @apply inline-flex items-center justify-center gap-1 rounded-[10px] min-w-[170px] px-5 text-base font-semibold transition duration-300;
+    height: 42px;
   }
+
+  .btn-pill-primary {
+    @apply btn-pill text-black bg-white;
+    box-shadow: 0 15px 35px rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-pill-primary:hover {
+    @apply -translate-y-0.5;
+    box-shadow: 0 20px 45px rgba(255, 255, 255, 0.35);
+  }
+
+  .btn-pill-outline {
+    @apply btn-pill text-white/80 border bg-white/5;
+    border-color: rgba(255, 255, 255, 0.25);
+  }
+
+  .btn-pill-outline:hover {
+    @apply text-white;
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+.chip {
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  font-size: 11px;
+  padding: 0.25rem 0.7rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.sidebar,
+.topbar,
+.card,
+.panel {
+  @apply text-[var(--text-main)];
+}
+
+/* Scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.05)
+  );
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.1)
+  );
 }

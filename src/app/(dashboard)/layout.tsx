@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 import { api } from "@/lib/api";
+import { DashboardButton } from "@/components/dashboard-button";
+import { getFirebaseAuth } from "@/lib/firebase";
 
 const NAV = [
   { label: "Overview", href: "/dashboard", icon: "grid" },
@@ -118,6 +120,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [planCard, setPlanCard] = useState({
+    title: "Starter plan",
+    subtitle: "50 leads / mo - 24/7 AI",
+    cta: "Upgrade to Pro ›",
+    href: "/billing",
+  });
 
   async function handleLogout() {
     try {
@@ -141,6 +149,32 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setDrawerOpen(false);
   }, [pathname]);
 
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const auth = getFirebaseAuth();
+        const current = auth.currentUser;
+        if (!current) return;
+        const profile = await api.getUserProfile(current.uid);
+        if (!profile?.tenantId) return;
+        const plan = await api.getCurrentPlan(profile.tenantId);
+        if (!plan || cancelled) return;
+        setPlanCard({
+          title: `${plan.name} plan`,
+          subtitle: plan.features?.[0] ?? "Sylor AI automations active",
+          cta: plan.id === "pro" ? "Manage plan ›" : "Upgrade to Pro ›",
+          href: "/billing",
+        });
+      } catch (err) {
+        console.warn("[layout] failed to load plan info", err);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const SidebarContent = (
     <>
       <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
@@ -160,10 +194,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <button
               key={item.href}
               onClick={() => router.push(item.href)}
-              className={`flex w-full items-center gap-3 rounded-[12px] px-3 py-2 text-sm transition ${
+              className={`flex w-full items-center gap-3 rounded-[10px] px-3 py-2 text-sm transition border ${
                 active
-                  ? "bg-white/12 text-white"
-                  : "text-white/55 hover:bg-white/6 hover:text-white"
+                  ? "border-white/30 bg-white/10 text-white"
+                  : "border-transparent text-white/55 hover:border-white/15 hover:bg-white/5 hover:text-white"
               }`}
             >
               <SidebarIcon name={item.icon} />
@@ -178,21 +212,24 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
       <div className="p-4 border-t border-white/10">
         <div className="rounded-[12px] bg-white/5 p-3 text-xs text-white/65 mb-3">
-          <p className="text-white mb-1 text-sm font-medium">Starter plan</p>
-          <p>50 leads / mo - 24/7 AI</p>
+          <p className="text-white mb-1 text-sm font-medium">
+            {planCard.title}
+          </p>
+          <p>{planCard.subtitle}</p>
           <Link
-            href="/billing"
+            href={planCard.href}
             className="mt-2 inline-block text-xs text-white hover:underline"
           >
-            Upgrade to Pro {"›"}
+            {planCard.cta}
           </Link>
         </div>
-        <button
+        <DashboardButton
+          variant="ghost"
+          className="w-full bg-[#16181a] text-white/80 hover:bg-[#1f2124] border-white/10"
           onClick={handleLogout}
-          className="w-full rounded-[12px] bg-[#16181a] py-2 text-sm text-white/80 hover:bg-[#1f2124]"
         >
           Log out
-        </button>
+        </DashboardButton>
       </div>
     </>
   );
@@ -243,38 +280,34 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 <path d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
-
-            <div className="relative hidden md:block flex-1 max-w-sm">
+            <div className="hidden md:flex flex-1 max-w-sm items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/70 focus-within:border-white/20">
+              <svg
+                className="h-4 w-4 text-white/60"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth="1.4"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="5" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
               <input
                 placeholder="Search"
-                className="w-full bg-white/5 border border-white/10 rounded-[12px] pl-9 pr-3 py-2 text-sm outline-none focus:border-white/25"
+                className="flex-1 bg-transparent text-sm text-white/70 placeholder:text-white/40 outline-none border-none p-0"
               />
-              <span className="absolute left-3 top-2 text-white/70">
-                <svg
-                  className="h-4 w-4"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="11" cy="11" r="5" />
-                  <path d="m21 21-4.35-4.35" />
-                </svg>
-              </span>
             </div>
           </div>
 
           <div className="hidden md:flex gap-2">
-            <button
+            <DashboardButton
+              variant="ghost"
               onClick={() => router.push("/leads?new=1")}
-              className="btn-ghost"
             >
               New lead
-            </button>
-            <button
-              className="btn-primary"
+            </DashboardButton>
+            <DashboardButton
               onClick={async () => {
                 try {
                   const res = await fetch("/api/settings/public-link", {
@@ -302,13 +335,13 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               }}
             >
               Share lead link
-            </button>
-            <button
+            </DashboardButton>
+            <DashboardButton
+              variant="ghost"
               onClick={() => router.push("/settings/ai")}
-              className="btn-ghost"
             >
               AI Settings
-            </button>
+            </DashboardButton>
           </div>
         </header>
 

@@ -11,7 +11,7 @@ __turbopack_context__.n(__turbopack_context__.i("[project]/Desktop/sylor-ai/src/
 }),
 "[project]/Desktop/sylor-ai/src/app/page.tsx [app-rsc] (ecmascript)", ((__turbopack_context__, module, exports) => {
 
-const e = new Error("Could not parse module '[project]/Desktop/sylor-ai/src/app/page.tsx'\n\nfailed to convert rope into string\n\nCaused by:\n- invalid utf-8 sequence of 1 bytes from index 1363");
+const e = new Error("Could not parse module '[project]/Desktop/sylor-ai/src/app/page.tsx', file not found");
 e.code = 'MODULE_UNPARSABLE';
 throw e;
 }),

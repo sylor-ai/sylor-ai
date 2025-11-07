@@ -515,6 +515,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../src/app/favicon.ico/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/favicon.ico">> = Specific
+  const handler = {} as typeof import("../../../src/app/favicon.ico/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 
 
 

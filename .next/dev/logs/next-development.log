@@ -1,11 +1,3122 @@
-[00:00:02.017] Server  LOG      ✓ Ready in 1733ms
-[00:00:05.364] Server  LOG      ○ Compiling /dashboard ...
-[00:00:05.824] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:05.895] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:27.471] Server  LOG        Reload env: .env.local
-[00:03:29.729] Server  LOG        Reload env: .env.local
-[00:04:15.538] Server  LOG        Reload env: .env.local
-[00:04:23.050] Server  LOG        Reload env: .env.local
-[00:35:35.748] Server  LOG        Reload env: .env.local
-[03:06:23.014] Server  LOG      ✓ Compiled in 223ms
-[03:06:36.132] Server  LOG      ✓ Compiled in 190ms
+[00:00:01.272] Server  LOG      ✓ Ready in 962ms
+[00:00:06.392] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:7:58
+Module not found: Can't resolve '@/components/home/footer-cta'
+   5 | import { ProductPreview } from "@/components/home/product-preview";
+   6 | import { Testimonials } from "@/components/home/testimonials";
+>  7 | import { PricingCTA } from "@/components/home/pricing-cta";
+     |                                                          ^^
+>  8 | import { FooterCTA } from "@/components/home/footer-cta";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 |
+  10 | export default function HomePage() {
+  11 |   return (
+
+Import map: aliased to relative './src/components/home/footer-cta' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:07.941] Browser ERROR   uncaughtError: Error: ./Desktop/sylor-ai/src/app/page.tsx:7:58
+Module not found: Can't resolve '@/components/home/footer-cta'
+   5 | import { ProductPreview } from "@/components/home/product-preview";
+   6 | import { Testimonials } from "@/components/home/testimonials";
+>  7 | import { PricingCTA } from "@/components/home/pricing-cta";
+     |                                                          ^^
+>  8 | import { FooterCTA } from "@/components/home/footer-cta";
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   9 |
+  10 | export default function HomePage() {
+  11 |   return (
+
+Import map: aliased to relative './src/components/home/footer-cta' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:00:07.987] Server  LOG      ✓ Compiled in 324ms
+[00:00:24.200] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:00:24.202] Server  WARN     ⚠ Fast Refresh had to perform a full reload when ./Desktop/sylor-ai/node_modules/next/dist/shared/lib/router/router.js changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:00:24.202] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:01:48.136] Server  LOG      ✓ Compiled in 99ms
+[00:02:22.970] Server  LOG      ✓ Compiled in 110ms
+[00:03:25.965] Server  LOG      ✓ Compiled in 275ms
+[00:03:35.722] Server  LOG      ✓ Compiled in 246ms
+[00:04:11.447] Server  LOG      ✓ Compiled in 210ms
+[00:04:43.200] Server  LOG      ✓ Compiled in 218ms
+[00:05:48.803] Server  LOG      ✓ Compiled in 191ms
+[00:06:00.259] Server  LOG      ✓ Compiled in 233ms
+[00:07:45.940] Server  LOG      ✓ Compiled in 192ms
+[00:08:27.180] Server  LOG      ✓ Compiled in 234ms
+[00:08:50.354] Server  LOG      ✓ Compiled in 138ms
+[00:09:00.134] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:07.106] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:34.479] Server  LOG      ✓ Compiled in 140ms
+[00:11:02.080] Server  LOG      ✓ Compiled in 203ms
+[00:12:42.540] Server  LOG      ✓ Compiled in 147ms
+[00:12:42.665] Browser ERROR   ./Desktop/sylor-ai/src/components/home/hero.tsx:39:4
+Parsing ecmascript source code failed
+  37 |       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(122,106,255,0.2),transparent_90%)]" />
+  38 |
+> 39 | <<<<<<< ours
+     |    ^^
+  40 |       <header className="pointer-events-none sticky top-0 z-50 flex justify-center border-b border-white/10 bg-[rgba(7,7,8,0.7)] px-0 backdrop-blur">
+  41 | =======
+  42 |       <header className="pointer-events-none absolute inset-x-0 top-4 z-30 flex justify-center px-4 sm:px-6">
+
+Expression expected
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/components/home/hero.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/components/home/hero.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+[00:14:38.004] Server  LOG      ✓ Compiled in 408ms
+[00:17:07.383] Server  LOG      ✓ Compiled in 232ms
+[00:22:51.330] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.332] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.344] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.353] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.360] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.363] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.367] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.378] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.388] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.394] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.398] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.409] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.418] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.426] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.440] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.453] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.460] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.463] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.467] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.477] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.564] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.576] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.585] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.594] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.627] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.630] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.632] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.639] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:22:51.645] Server  LOG      ✓ Compiled in 168ms
+[00:22:51.773] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:23:51.770] Server  LOG      ✓ Compiled in 55ms
+[00:25:20.890] Server  LOG      ✓ Compiled in 185ms
+[00:25:32.127] Server  LOG      ✓ Compiled in 111ms
+[00:29:02.460] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.462] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.469] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.476] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.488] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.492] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.494] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.496] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.501] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.508] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.525] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.528] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.531] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.539] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.546] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.556] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.560] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.563] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.572] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.579] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.592] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.595] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.598] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.605] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.612] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.624] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.628] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.630] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:29:02.631] Server  LOG      ✓ Compiled in 148ms
+[00:29:02.740] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:30:03.351] Server  LOG      ✓ Compiled in 265ms
+[00:30:24.743] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:12.409] Server  LOG      ✓ Compiled in 166ms
+[00:32:34.433] Server  LOG      ✓ Compiled in 499ms
+[00:34:00.828] Server  LOG      ✓ Compiled in 200ms
+[00:34:09.188] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:34:45.989] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:35:03.452] Server  LOG      ✓ Compiled in 321ms
+[00:35:15.008] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:39:16.892] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.895] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.897] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.900] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.908] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.915] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.922] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.930] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.932] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.934] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.940] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.947] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.968] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.976] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.982] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.991] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.995] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.997] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:16.999] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.004] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.014] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.025] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.028] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.032] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.037] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.048] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.057] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.062] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:39:17.064] Server  LOG      ✓ Compiled in 149ms
+[00:39:17.177] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:40:28.565] Server  LOG      ✓ Compiled in 154ms
+[00:40:46.228] Server  LOG      ✓ Compiled in 162ms
+[00:42:13.942] Server  LOG      ✓ Compiled in 321ms
+[00:42:35.411] Server  LOG      ✓ Compiled in 237ms
+[00:44:47.615] Server  LOG      ✓ Compiled in 281ms
+[00:45:32.276] Server  LOG      ✓ Compiled in 139ms
+[00:45:34.741] Server  LOG      ✓ Compiled in 105ms
+[00:45:37.692] Server  LOG      ✓ Compiled in 93ms
+[00:45:41.749] Server  LOG      ✓ Compiled in 104ms
+[00:45:56.838] Server  LOG      ✓ Compiled in 259ms
+[00:46:02.332] Server  LOG      ✓ Compiled in 147ms
+[00:46:05.914] Server  LOG      ✓ Compiled in 165ms
+[00:46:09.222] Server  LOG      ✓ Compiled in 240ms
+[00:46:12.151] Server  LOG      ✓ Compiled in 166ms
+[00:46:17.870] Server  LOG      ✓ Compiled in 176ms
+[00:46:28.054] Server  LOG      ✓ Compiled in 144ms
+[00:46:33.469] Server  LOG      ✓ Compiled in 105ms
+[00:47:11.450] Server  LOG      ✓ Compiled in 104ms
+[00:47:20.191] Server  LOG      ✓ Compiled in 86ms
+[00:47:55.521] Server  LOG      ✓ Compiled in 82ms
+[00:48:32.905] Server  LOG      ✓ Compiled in 57ms
+[00:49:25.126] Server  LOG      ✓ Compiled in 84ms
+[00:51:05.052] Server  LOG      ✓ Compiled in 61ms
+[00:54:10.611] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.614] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.623] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.625] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.630] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.634] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.636] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.638] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.641] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.643] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.647] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.649] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.652] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.654] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.656] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.658] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.664] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.667] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.670] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.672] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.675] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.681] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.684] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.686] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.689] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.691] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.692] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.695] Server  ERROR    ⨯ ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:54:10.703] Server  LOG      ✓ Compiled in 109ms
+[00:54:10.840] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Module not found: Can't resolve '@/components/home/hero'
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+Import map: aliased to relative './src/components/home/hero' inside of [project]/Desktop/sylor-ai
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+[00:55:49.875] Server  LOG      ✓ Compiled in 70ms
+[01:06:31.724] Server  LOG      ✓ Compiled in 55ms
+[01:06:31.942] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Export Hero doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+The export Hero was not found in module [project]/Desktop/sylor-ai/src/components/home/hero.tsx [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+[01:06:31.942] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Export Hero doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+The export Hero was not found in module [project]/Desktop/sylor-ai/src/components/home/hero.tsx [app-ssr] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+[01:07:03.305] Server  LOG      ✓ Compiled in 81ms
+[01:07:03.416] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Export Hero doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+The export Hero was not found in module [project]/Desktop/sylor-ai/src/components/home/hero.tsx [app-client] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+[01:07:03.416] Browser ERROR   ./Desktop/sylor-ai/src/app/page.tsx:3:1
+Export Hero doesn't exist in target module
+  1 | "use client";
+  2 |
+> 3 | import { Hero } from "@/components/home/hero";
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  4 | import { FeatureGrid } from "@/components/home/feature-grid";
+  5 | import { ProductPreview } from "@/components/home/product-preview";
+  6 | import { Testimonials } from "@/components/home/testimonials";
+
+The export Hero was not found in module [project]/Desktop/sylor-ai/src/components/home/hero.tsx [app-ssr] (ecmascript).
+The module has no exports at all.
+All exports of the module are statically known (It doesn't have dynamic exports). So it's known statically that the requested export doesn't exist.
+
+Import traces:
+  Client Component Browser:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component Browser]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./Desktop/sylor-ai/src/app/page.tsx [Client Component SSR]
+    ./Desktop/sylor-ai/src/app/page.tsx [Server Component]
+[01:07:14.596] Server  LOG      ✓ Compiled in 99ms
+[01:07:19.032] Server  LOG      ✓ Compiled in 84ms
+[01:07:34.996] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:10:33.187] Server  LOG      ✓ Compiled in 66ms
+[01:10:37.189] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold

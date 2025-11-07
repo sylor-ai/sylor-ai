@@ -86,9 +86,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$no
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/node_modules/next/navigation.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$hooks$2f$use$2d$current$2d$user$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/src/hooks/use-current-user.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/src/lib/api.ts [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$components$2f$dashboard$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/Desktop/sylor-ai/src/components/dashboard-button.tsx [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 ;
 ;
@@ -129,7 +131,6 @@ function LeadsPage() {
             async function load() {
                 if (loading) return;
                 if (!currentUser) {
-                    router.push("/login");
                     return;
                 }
                 const data = await __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["api"].getLeads(currentUser.tenantId);
@@ -230,18 +231,18 @@ function LeadsPage() {
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "flex gap-2",
                         children: [
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$components$2f$dashboard$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DashboardButton"], {
                                 onClick: ()=>setIsAddOpen(true),
-                                className: "btn-primary",
-                                children: "+ Add lead"
+                                className: "rounded-[10px]",
+                                children: "Add lead"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
                                 lineNumber: 126,
                                 columnNumber: 11
                             }, this),
-                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$components$2f$dashboard$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DashboardButton"], {
                                 onClick: ()=>router.push("/settings/public-link"),
-                                className: "btn-ghost",
+                                className: "rounded-[10px]",
                                 children: "Share capture link"
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
@@ -280,19 +281,19 @@ function LeadsPage() {
                                     children: key === "all" ? `All (${leads.length})` : key
                                 }, key, false, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 139,
+                                    lineNumber: 142,
                                     columnNumber: 15
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 137,
+                            lineNumber: 140,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex-1"
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 148,
+                            lineNumber: 151,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -304,7 +305,7 @@ function LeadsPage() {
                                     children: "Search leads"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 150,
+                                    lineNumber: 153,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -316,24 +317,24 @@ function LeadsPage() {
                                     className: "w-64"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 153,
+                                    lineNumber: 156,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 149,
+                            lineNumber: 152,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                    lineNumber: 136,
+                    lineNumber: 139,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                lineNumber: 135,
+                lineNumber: 138,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -350,7 +351,7 @@ function LeadsPage() {
                                         children: "Lead"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 169,
+                                        lineNumber: 172,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -358,7 +359,7 @@ function LeadsPage() {
                                         children: "Service"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 170,
+                                        lineNumber: 173,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -366,7 +367,7 @@ function LeadsPage() {
                                         children: "City"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 171,
+                                        lineNumber: 174,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -374,7 +375,7 @@ function LeadsPage() {
                                         children: "Value"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 172,
+                                        lineNumber: 175,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -382,7 +383,7 @@ function LeadsPage() {
                                         children: "Status"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 173,
+                                        lineNumber: 176,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -390,18 +391,18 @@ function LeadsPage() {
                                         children: "Created"
                                     }, void 0, false, {
                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                        lineNumber: 174,
+                                        lineNumber: 177,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                lineNumber: 168,
+                                lineNumber: 171,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 167,
+                            lineNumber: 170,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -412,12 +413,12 @@ function LeadsPage() {
                                     children: "No leads match the current filters."
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 180,
+                                    lineNumber: 183,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                lineNumber: 179,
+                                lineNumber: 182,
                                 columnNumber: 15
                             }, this) : filtered.map((lead)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tr", {
                                     className: "border-t border-white/8 transition hover:bg-white/5",
@@ -432,7 +433,7 @@ function LeadsPage() {
                                                         children: getInitials(lead.name)
                                                     }, void 0, false, {
                                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                        lineNumber: 189,
+                                                        lineNumber: 192,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -442,7 +443,7 @@ function LeadsPage() {
                                                                 children: lead.name
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                                lineNumber: 193,
+                                                                lineNumber: 196,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -450,24 +451,24 @@ function LeadsPage() {
                                                                 children: lead.phone || "-"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                                lineNumber: 194,
+                                                                lineNumber: 197,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                        lineNumber: 192,
+                                                        lineNumber: 195,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                lineNumber: 188,
+                                                lineNumber: 191,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 187,
+                                            lineNumber: 190,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -475,7 +476,7 @@ function LeadsPage() {
                                             children: lead.service
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 198,
+                                            lineNumber: 201,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -483,7 +484,7 @@ function LeadsPage() {
                                             children: lead.city?.trim() || "-"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 199,
+                                            lineNumber: 202,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -491,7 +492,7 @@ function LeadsPage() {
                                             children: currencyFormatter.format(lead.value || 0)
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 200,
+                                            lineNumber: 203,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -501,12 +502,12 @@ function LeadsPage() {
                                                 children: lead.status
                                             }, void 0, false, {
                                                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                lineNumber: 204,
+                                                lineNumber: 207,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 203,
+                                            lineNumber: 206,
                                             columnNumber: 19
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -514,29 +515,29 @@ function LeadsPage() {
                                             children: lead.created || "-"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 210,
+                                            lineNumber: 213,
                                             columnNumber: 19
                                         }, this)
                                     ]
                                 }, lead.id, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 186,
+                                    lineNumber: 189,
                                     columnNumber: 17
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 177,
+                            lineNumber: 180,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                    lineNumber: 166,
+                    lineNumber: 169,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                lineNumber: 165,
+                lineNumber: 168,
                 columnNumber: 7
             }, this),
             isAddOpen ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -558,7 +559,7 @@ function LeadsPage() {
                                             children: "Add a new lead"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 228,
+                                            lineNumber: 231,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -566,29 +567,29 @@ function LeadsPage() {
                                             children: "Quick-add a prospect manually. You can edit details later from the lead drawer."
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 231,
+                                            lineNumber: 234,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 227,
+                                    lineNumber: 230,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>setIsAddOpen(false),
-                                    className: "btn-ghost px-3 py-1 text-xs",
+                                    className: "rounded-[10px] border border-white/20 px-3 py-1 text-xs text-white/75 transition hover:border-red-400 hover:bg-red-500/10 hover:text-red-200 hover:shadow-[0_0_18px_rgba(255,0,0,0.45)]",
                                     type: "button",
                                     children: "Close"
                                 }, void 0, false, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 235,
+                                    lineNumber: 238,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 226,
+                            lineNumber: 229,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("form", {
@@ -605,7 +606,7 @@ function LeadsPage() {
                                                     children: "Name"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 247,
+                                                    lineNumber: 250,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -618,13 +619,13 @@ function LeadsPage() {
                                                     required: true
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 248,
+                                                    lineNumber: 251,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 246,
+                                            lineNumber: 249,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -634,7 +635,7 @@ function LeadsPage() {
                                                     children: "Phone"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 256,
+                                                    lineNumber: 259,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -646,19 +647,19 @@ function LeadsPage() {
                                                     placeholder: "+1 (555) 123-4567"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 257,
+                                                    lineNumber: 260,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 255,
+                                            lineNumber: 258,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 245,
+                                    lineNumber: 248,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -668,7 +669,7 @@ function LeadsPage() {
                                             children: "Service"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 266,
+                                            lineNumber: 269,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -681,13 +682,13 @@ function LeadsPage() {
                                             required: true
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 267,
+                                            lineNumber: 270,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 265,
+                                    lineNumber: 268,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -700,7 +701,7 @@ function LeadsPage() {
                                                     children: "City"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 280,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -712,13 +713,13 @@ function LeadsPage() {
                                                     placeholder: "Los Angeles"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 278,
+                                                    lineNumber: 281,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 276,
+                                            lineNumber: 279,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -728,7 +729,7 @@ function LeadsPage() {
                                                     children: "Lead value ($)"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 285,
+                                                    lineNumber: 288,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -742,19 +743,19 @@ function LeadsPage() {
                                                     placeholder: "1500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 286,
+                                                    lineNumber: 289,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 284,
+                                            lineNumber: 287,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 275,
+                                    lineNumber: 278,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
@@ -764,104 +765,141 @@ function LeadsPage() {
                                             children: "Status"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 297,
+                                            lineNumber: 300,
                                             columnNumber: 17
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                                            value: newLead.status,
-                                            onChange: (e)=>setNewLead((prev)=>({
-                                                        ...prev,
-                                                        status: e.target.value
-                                                    })),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                            className: "relative",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "New",
-                                                    children: "New"
-                                                }, void 0, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                                                    value: newLead.status,
+                                                    onChange: (e)=>setNewLead((prev)=>({
+                                                                ...prev,
+                                                                status: e.target.value
+                                                            })),
+                                                    className: "appearance-none w-full bg-black/40 border border-white/15 rounded-[12px] px-3 py-2 pr-8 text-sm text-white/80 focus:border-white/30 transition",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "New",
+                                                            children: "New"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                            lineNumber: 312,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "Contacted",
+                                                            children: "Contacted"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                            lineNumber: 313,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "Booked",
+                                                            children: "Booked"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                            lineNumber: 314,
+                                                            columnNumber: 21
+                                                        }, this),
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                                            value: "Closed",
+                                                            children: "Closed"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                            lineNumber: 315,
+                                                            columnNumber: 21
+                                                        }, this)
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 304,
+                                                    lineNumber: 302,
                                                     columnNumber: 19
                                                 }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "Contacted",
-                                                    children: "Contacted"
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: "pointer-events-none absolute inset-y-0 right-3 flex items-center text-white/60",
+                                                    children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("svg", {
+                                                        className: "h-3.5 w-3.5",
+                                                        viewBox: "0 0 24 24",
+                                                        stroke: "currentColor",
+                                                        strokeWidth: "1.7",
+                                                        fill: "none",
+                                                        strokeLinecap: "round",
+                                                        strokeLinejoin: "round",
+                                                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
+                                                            d: "m6 9 6 6 6-6"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                            lineNumber: 327,
+                                                            columnNumber: 23
+                                                        }, this)
+                                                    }, void 0, false, {
+                                                        fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
+                                                        lineNumber: 318,
+                                                        columnNumber: 21
+                                                    }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 305,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "Booked",
-                                                    children: "Booked"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 306,
-                                                    columnNumber: 19
-                                                }, this),
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                                    value: "Closed",
-                                                    children: "Closed"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                                    lineNumber: 307,
+                                                    lineNumber: 317,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 298,
+                                            lineNumber: 301,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 296,
+                                    lineNumber: 299,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "flex justify-end gap-3 pt-2",
                                     children: [
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$components$2f$dashboard$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DashboardButton"], {
                                             type: "button",
                                             onClick: ()=>setIsAddOpen(false),
-                                            className: "btn-ghost",
+                                            className: "w-28 justify-center rounded-[10px]",
                                             children: "Cancel"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 312,
+                                            lineNumber: 334,
                                             columnNumber: 17
                                         }, this),
-                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$Desktop$2f$sylor$2d$ai$2f$src$2f$components$2f$dashboard$2d$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DashboardButton"], {
                                             type: "submit",
                                             disabled: saving,
-                                            className: "btn-primary",
+                                            className: "w-28 justify-center rounded-[10px]",
                                             children: saving ? "Saving..." : "Save lead"
                                         }, void 0, false, {
                                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                            lineNumber: 315,
+                                            lineNumber: 341,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                                    lineNumber: 311,
+                                    lineNumber: 333,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                            lineNumber: 244,
+                            lineNumber: 247,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                    lineNumber: 225,
+                    lineNumber: 228,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/Desktop/sylor-ai/src/app/(dashboard)/leads/page.tsx",
-                lineNumber: 219,
+                lineNumber: 222,
                 columnNumber: 9
             }, this) : null
         ]
