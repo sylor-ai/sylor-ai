@@ -70,31 +70,31 @@ export function Hero() {
 
             {/* desktop ctas */}
             <div className="hidden items-center gap-3 sm:flex">
-              <Link
+              <a
                 href="/login"
                 className="btn-pill-outline min-w-[0] !h-7 w-28 px-0 text-[12px] text-white/80"
                 onClick={closeMobileNav}
               >
                 Log in
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/signup"
                 className="btn-pill-primary min-w-[0] !h-7 w-28 px-0 text-[12px]"
                 onClick={closeMobileNav}
               >
                 Get started
-              </Link>
+              </a>
             </div>
 
             {/* mobile cta + hamburger */}
             <div className="flex items-center gap-2 sm:hidden">
-              <Link
+              <a
                 href="/signup"
                 className="rounded-full border border-white/20 px-3 py-1 text-[13px] text-white transition hover:border-white/60"
                 onClick={closeMobileNav}
               >
                 Join
-              </Link>
+              </a>
               <button
                 type="button"
                 aria-label="Open menu"
@@ -155,20 +155,20 @@ export function Hero() {
               ))}
             </nav>
             <div className="mt-4 flex flex-col gap-2">
-              <Link
+              <a
                 href="/login"
                 className="w-full rounded-2xl border border-white/25 px-4 py-2 text-center text-base text-white/80 transition hover:border-white/60"
                 onClick={closeMobileNav}
               >
                 Log in
-              </Link>
-              <Link
+              </a>
+              <a
                 href="/signup"
                 className="w-full rounded-2xl bg-white px-4 py-2 text-center text-base font-semibold text-black transition hover:bg-white/90"
                 onClick={closeMobileNav}
               >
                 Get started
-              </Link>
+              </a>
             </div>
           </div>
         </div>
@@ -193,14 +193,14 @@ export function Hero() {
             qualifies prospects, and fills your calendar. No playbooks, no ops
             team -- just one platform designed for modern service brands.
           </p>
-          <div className="flex flex-wrap items-center gap-3">
-            <Link href="/signup" className="btn-pill-primary">
-              Start free trial
-            </Link>
-            <Link href="/pricing" className="btn-pill-outline">
-              See pricing
-            </Link>
-          </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <a href="/signup" className="btn-pill-primary">
+                Start free trial
+              </a>
+              <a href="/pricing" className="btn-pill-outline">
+                See pricing
+              </a>
+            </div>
           <div className="flex flex-wrap items-center gap-6 pt-6 text-sm text-white/50">
             <div>
               <p className="text-xl font-semibold text-white">2m+</p>
