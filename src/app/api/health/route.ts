@@ -24,7 +24,7 @@ export async function GET() {
     results.stripe = missing("STRIPE_SECRET_KEY missing");
   } else {
     try {
-      const stripe = new Stripe(stripeKey, { apiVersion: "2024-06-20" });
+      const stripe = new Stripe(stripeKey, { apiVersion: "2025-10-29.clover" });
       await stripe.accounts.retrieve();
       results.stripe.ok = true;
     } catch (err: any) {
