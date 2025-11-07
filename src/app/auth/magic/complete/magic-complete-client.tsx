@@ -10,17 +10,15 @@ type Status = "idle" | "working" | "success" | "error";
 
 export default function MagicCompleteClient() {
   const router = useRouter();
-
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Parse token from URL query string on the client
-    let token: string | null = null;
+    let parsedToken: string | null = null;
 
     try {
       const url = new URL(window.location.href);
-      token =
+      parsedToken =
         url.searchParams.get("token") ??
         url.searchParams.get("t") ??
         url.searchParams.get("code");
@@ -28,26 +26,23 @@ export default function MagicCompleteClient() {
       console.error("[magic-complete] failed to parse URL", err);
     }
 
-    if (!token) {
+    if (!parsedToken) {
       setStatus("error");
       setMessage("Missing or invalid magic link.");
       return;
     }
 
-    const safeToken = token;
     let cancelled = false;
+    const token = parsedToken;
 
     async function run() {
       try {
         setStatus("working");
-        setMessage("Completing your login…");
+        setMessage("Completing your login...");
 
-        // Call magic verify endpoint to get a Firebase custom token
         const res = await fetch(
-          `/api/auth/magic/verify?token=${encodeURIComponent(safeToken)}`,
-          {
-            method: "GET",
-          }
+          `/api/auth/magic/verify?token=${encodeURIComponent(token)}`,
+          { method: "GET" }
         );
 
         if (!res.ok) {
@@ -83,13 +78,13 @@ export default function MagicCompleteClient() {
           setStatus("error");
           setMessage(
             err?.message ??
-              "We couldn’t complete your magic link login. Please try again."
+              "We could not complete your magic link login. Please try again."
           );
         }
       }
     }
 
-    void run();
+    run().catch(() => {});
 
     return () => {
       cancelled = true;
@@ -97,14 +92,14 @@ export default function MagicCompleteClient() {
   }, [router]);
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center">
-      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/40 p-6 shadow-xl">
+    <div className="min-h-[60vh] flex items-center justify-center px-4">
+      <div className="w-full max-w-md rounded-2xl border border-white/10 bg-black/40 p-6 shadow-xl text-white">
         <h1 className="text-lg font-semibold mb-2">
-          Completing your login&hellip;
+          Completing your login...
         </h1>
 
         {status === "working" && (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-white/70">
             Please wait a moment while we verify your magic link.
           </p>
         )}
@@ -115,7 +110,7 @@ export default function MagicCompleteClient() {
               {message ??
                 "Something went wrong while completing your login. Your link may have expired."}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-white/50">
               You can close this tab and request a new magic link.
             </p>
           </div>
@@ -123,13 +118,13 @@ export default function MagicCompleteClient() {
 
         {status === "success" && (
           <p className="text-sm text-emerald-400">
-            Logged in successfully. Redirecting to your dashboard&hellip;
+            Logged in successfully. Redirecting to your dashboard...
           </p>
         )}
 
         {status === "idle" && (
-          <p className="text-sm text-muted-foreground">
-            Preparing to complete your login&hellip;
+          <p className="text-sm text-white/70">
+            Preparing to complete your login...
           </p>
         )}
       </div>
