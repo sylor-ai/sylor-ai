@@ -137,6 +137,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../src/app/api/auth/magic/complete/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/api/auth/magic/complete">> = Specific
+  const handler = {} as typeof import("../../../src/app/api/auth/magic/complete/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../src/app/auth/magic/complete/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/auth/magic/complete">> = Specific
