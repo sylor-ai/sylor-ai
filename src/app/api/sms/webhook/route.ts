@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { sendSms } from "@/lib/twilio";
-import { generateAiSmsReply } from "@/lib/ai-bot";
+import { generateAiSmsReply, type ConversationTurn } from "@/lib/ai-bot";
 import { FieldValue } from "firebase-admin/firestore";
 
 function normalizePhone(raw: string): string {
@@ -60,13 +60,15 @@ export async function POST(req: NextRequest) {
 
     const tenantDoc = tenantMatch.docs[0];
     const tenantId = tenantDoc.id;
-    
     const tenantData = tenantDoc.data() as any;
     const aiEnabled = tenantData?.aiSmsEnabled ?? true;
 
     // Find or create lead for fromNorm
     const leadsCol = db.collection("tenants").doc(tenantId).collection("leads");
-    const leadQuery = await leadsCol.where("phone", "==", fromNorm).limit(1).get();
+    const leadQuery = await leadsCol
+      .where("phone", "==", fromNorm)
+      .limit(1)
+      .get();
 
     let leadId: string;
     let leadName: string;
@@ -88,7 +90,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Find or create conversation for this lead
-    const convoCol = db.collection("tenants").doc(tenantId).collection("conversations");
+    const convoCol = db
+      .collection("tenants")
+      .doc(tenantId)
+      .collection("conversations");
     const convoQuery = await convoCol.where("leadId", "==", leadId).limit(1).get();
 
     let convoRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
@@ -126,22 +131,36 @@ export async function POST(req: NextRequest) {
     if (wantsStop) {
       await leadsCol
         .doc(leadId)
-        .set({ unsubscribed: true, unsubscribedAt: FieldValue.serverTimestamp() }, { merge: true });
+        .set(
+          { unsubscribed: true, unsubscribedAt: FieldValue.serverTimestamp() },
+          { merge: true }
+        );
       // Send a single confirmation SMS and stop further processing
       try {
-        await sendSms({ to: fromNorm, body: "You have been unsubscribed and will no longer receive messages. Reply START to resubscribe." });
+        await sendSms({
+          to: fromNorm,
+          body:
+            "You have been unsubscribed and will no longer receive messages. Reply START to resubscribe.",
+        });
       } catch {}
       return NextResponse.json({ ok: true });
     }
+
     // START / resubscribe handling (must not call AI)
     const upperBody = body.toUpperCase();
     if (["START", "UNSTOP"].includes(upperBody)) {
       await leadsCol
         .doc(leadId)
         .set({ unsubscribed: false, unsubscribedAt: null }, { merge: true });
-      const biz = (tenantData?.aiProfile?.businessName as string) || tenantData?.businessName || "our team";
+      const biz =
+        (tenantData?.aiProfile?.businessName as string) ||
+        tenantData?.businessName ||
+        "our team";
       try {
-        await sendSms({ to: fromNorm, body: `You’re now resubscribed to messages from ${biz}. Reply STOP to opt out again.` });
+        await sendSms({
+          to: fromNorm,
+          body: `You’re now resubscribed to messages from ${biz}. Reply STOP to opt out again.`,
+        });
       } catch {}
       await convoRef.collection("messages").add({
         from: "system",
@@ -160,7 +179,9 @@ export async function POST(req: NextRequest) {
 
     // If conversation has AI paused, skip auto-reply entirely
     if (convoData?.aiPaused) {
-      console.log(`[sms-webhook] AI paused for conversation ${convoRef.id}, skipping auto-reply`);
+      console.log(
+        `[sms-webhook] AI paused for conversation ${convoRef.id}, skipping auto-reply`
+      );
       await convoRef.set({ aiLastStatus: "off" }, { merge: true });
       return NextResponse.json({ ok: true });
     }
@@ -173,24 +194,42 @@ export async function POST(req: NextRequest) {
 
     // Build short history (last 12 messages)
     const msgsCol = convoRef.collection("messages");
-    const historySnap = await msgsCol.orderBy("createdAt", "asc").limitToLast(12).get();
-    const history = historySnap.docs.map((d) => {
+    const historySnap = await msgsCol
+      .orderBy("createdAt", "asc")
+      .limitToLast(12)
+      .get();
+
+    const history: ConversationTurn[] = historySnap.docs.map((d) => {
       const data = d.data() as any;
-      return { from: data.from === "lead" ? "lead" : "agent", body: String(data.body || "") };
+
+      // Anything not explicitly from the lead is treated as agent
+      const from: ConversationTurn["from"] =
+        data.from === "lead" ? "lead" : "agent";
+
+      return {
+        from,
+        body: String(data.body || ""),
+      };
     });
 
     // Guardrails to avoid spam/loops
     // 1) Cooldown: skip AI reply if previous AI message was <5 minutes ago
-    const recentSnap = await msgsCol.orderBy("createdAt", "desc").limit(20).get();
+    const recentSnap = await msgsCol
+      .orderBy("createdAt", "desc")
+      .limit(20)
+      .get();
     const now = Date.now();
     let lastAiTs: number | null = null;
     let lastHumanAgentTs: number | null = null;
     for (const m of recentSnap.docs) {
       const data = m.data() as any;
-      const ts = (data.createdAt?.toDate?.() as Date | undefined)?.getTime?.() ?? null;
+      const ts =
+        (data.createdAt?.toDate?.() as Date | undefined)?.getTime?.() ?? null;
       if (ts) {
-        if (!lastAiTs && data.from === "agent" && data.via === "ai") lastAiTs = ts;
-        if (!lastHumanAgentTs && data.from === "agent" && data.via !== "ai") lastHumanAgentTs = ts;
+        if (!lastAiTs && data.from === "agent" && data.via === "ai")
+          lastAiTs = ts;
+        if (!lastHumanAgentTs && data.from === "agent" && data.via !== "ai")
+          lastHumanAgentTs = ts;
       }
       if (lastAiTs && lastHumanAgentTs) break;
     }
@@ -224,16 +263,24 @@ export async function POST(req: NextRequest) {
     const tenantProfile = {
       businessName: ai.businessName ?? tenantData?.businessName,
       businessPhone: ai.bookingPhone ?? tenantData?.businessPhone,
-      services: (ai.services || "").split(",").map((s: string) => s.trim()).filter(Boolean),
+      services: (ai.services || "")
+        .split(",")
+        .map((s: string) => s.trim())
+        .filter(Boolean),
       serviceArea: ai.serviceArea ?? "",
       workingHours: ai.hours ?? tenantData?.hours ?? "",
       tone: ai.tone ?? "friendly",
       bookingStyle: ai.bookingStyle ?? "phone_call",
       extraNotes: ai.extraNotes ?? "",
     } as any;
+
     const leadInfo = { name: leadName, phone: fromNorm };
 
-    const replyText = await generateAiSmsReply(tenantProfile, leadInfo, history);
+    const replyText = await generateAiSmsReply(
+      tenantProfile,
+      leadInfo,
+      history
+    );
 
     if (!replyText) {
       await convoRef.set({ aiLastStatus: "blocked" }, { merge: true });
@@ -257,7 +304,9 @@ export async function POST(req: NextRequest) {
     // Send SMS
     // Skip sending if lead unsubscribed between steps
     const latestLead = await leadsCol.doc(leadId).get();
-    const latestLeadData = latestLead.exists ? (latestLead.data() as any) : null;
+    const latestLeadData = latestLead.exists
+      ? (latestLead.data() as any)
+      : null;
     if (latestLeadData?.unsubscribed) {
       return NextResponse.json({ ok: true });
     }
@@ -273,4 +322,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false }, { status: 500 });
   }
 }
-

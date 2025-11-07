@@ -61,9 +61,10 @@ export async function generateAiSmsReply(
       `Lead name (if known): ${leadName}.\n` +
       `Respond as a human agent of the business.`;
 
-    const messages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
-      { role: "system", content: systemPrompt },
-    ];
+    const messages: Array<{
+      role: "system" | "user" | "assistant";
+      content: string;
+    }> = [{ role: "system", content: systemPrompt }];
 
     for (const turn of history) {
       messages.push({
