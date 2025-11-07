@@ -4,7 +4,6 @@
 import OnboardingClient from "@/app/onboarding/onboarding-client";
 
 export default function OnboardingPage() {
-  // Again, no Suspense/fallback – show real errors if something breaks
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white">
       <OnboardingClient />

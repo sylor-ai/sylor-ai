@@ -1,17 +1,24 @@
 // FILE: src/app/onboarding/onboarding-client.tsx
 "use client";
 
-import { useSearchParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 export default function OnboardingClient() {
-  const searchParams = useSearchParams();
   const router = useRouter();
 
+  // Local searchParams state (replaces useSearchParams)
+  const [searchParams, setSearchParams] = useState<URLSearchParams | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setSearchParams(new URLSearchParams(window.location.search));
+  }, []);
+
   // plan from URL (?plan=starter|pro) – fallback to starter (used only for copy + redirect)
-  const selectedPlan = (searchParams.get("plan") || "starter").toLowerCase();
+  const selectedPlan = (searchParams?.get("plan") || "starter").toLowerCase();
 
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
