@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { signInWithCustomToken } from "firebase/auth";
 import { logLoginToServer } from "@/lib/api";
@@ -11,16 +11,23 @@ type Status = "idle" | "working" | "success" | "error";
 
 export default function MagicCompleteClient() {
   const router = useRouter();
-  const searchParams = useSearchParams();
 
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const token =
-      searchParams.get("token") ??
-      searchParams.get("t") ??
-      searchParams.get("code");
+    // Parse token from URL query on the client
+    let token: string | null = null;
+
+    try {
+      const url = new URL(window.location.href);
+      token =
+        url.searchParams.get("token") ??
+        url.searchParams.get("t") ??
+        url.searchParams.get("code");
+    } catch (err) {
+      console.error("[magic-complete] failed to parse URL", err);
+    }
 
     if (!token) {
       setStatus("error");
@@ -28,8 +35,7 @@ export default function MagicCompleteClient() {
       return;
     }
 
-    const safeToken = token; // now treated as string
-
+    const safeToken = token;
     let cancelled = false;
 
     async function run() {
@@ -70,7 +76,7 @@ export default function MagicCompleteClient() {
         if (!cancelled) {
           setStatus("success");
           setMessage(null);
-          // Redirect to dashboard (or redirectTo param if you support that)
+          // Redirect to dashboard (or redirectTo param if you add that later)
           router.replace("/dashboard");
         }
       } catch (err: any) {
@@ -90,7 +96,7 @@ export default function MagicCompleteClient() {
     return () => {
       cancelled = true;
     };
-  }, [router, searchParams]);
+  }, [router]);
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center">
