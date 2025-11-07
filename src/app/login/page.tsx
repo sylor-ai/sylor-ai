@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { api } from "@/lib/api";
+import { useRouter, useSearchParams } from "next/navigation";
+import { api, logLoginToServer } from "@/lib/api";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
   const [sendingReset, setSendingReset] = useState(false);
+  const redirectTo = searchParams.get("redirectTo") || "/dashboard";
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -20,7 +22,17 @@ export default function LoginPage() {
         setErr("Invalid email or password.");
         return;
       }
-      router.push("/dashboard");
+      try {
+        const idToken = await user.getIdToken();
+        if (idToken) {
+          void logLoginToServer(idToken).catch((error) => {
+            console.error("Failed to log login", error);
+          });
+        }
+      } catch (tokenErr) {
+        console.error("Failed to get ID token", tokenErr);
+      }
+      router.replace(redirectTo);
     } catch (error: any) {
       setErr("Invalid email or password.");
     }

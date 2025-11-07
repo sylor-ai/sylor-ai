@@ -3,7 +3,10 @@
 
 type SendSmsArgs = { to: string; body: string };
 
-export async function sendSms({ to, body }: SendSmsArgs): Promise<{ ok: boolean; error?: string }> {
+export async function sendSms({
+  to,
+  body,
+}: SendSmsArgs): Promise<{ ok: boolean; error?: string; sid?: string }> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const fromNumber = process.env.TWILIO_FROM_NUMBER;
@@ -29,16 +32,23 @@ export async function sendSms({ to, body }: SendSmsArgs): Promise<{ ok: boolean;
       body: params.toString(),
     });
 
+    const text = await res.text();
     if (!res.ok) {
-      const text = await res.text();
       console.error("[twilio] send failed:", text);
       return { ok: false, error: "twilio-send-failed" };
     }
 
-    return { ok: true };
+    let sid: string | undefined;
+    try {
+      const json = JSON.parse(text);
+      sid = json?.sid;
+    } catch {
+      sid = undefined;
+    }
+
+    return { ok: true, sid };
   } catch (e: any) {
     console.error("[twilio] send error", e);
     return { ok: false, error: "twilio-error" };
   }
 }
-

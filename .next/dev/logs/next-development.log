@@ -1,29 +1,11 @@
-[00:00:03.478] Server  LOG      ✓ Ready in 3s
-[00:00:06.552] Server  LOG      ○ Compiling /dashboard ...
-[00:00:10.304] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:50.725] Browser ERROR   {}
-[00:00:50.725] Browser ERROR   {}
-[00:56:37.520] Server  LOG        Reload env: .env.local
-[00:56:57.566] Server  LOG        Reload env: .env.local
-[00:56:58.568] Server  LOG        Reload env: .env.local
-[01:01:13.150] Server  LOG        Reload env: .env.local
-[01:01:39.727] Server  LOG        Reload env: .env.local
-[01:01:41.152] Server  LOG        Reload env: .env.local
-[01:03:43.379] Server  LOG        Reload env: .env.local
-[01:03:44.739] Server  LOG        Reload env: .env.local
-[01:03:50.948] Server  LOG        Reload env: .env.local
-[01:04:03.095] Server  LOG        Reload env: .env.local
-[01:04:04.175] Server  LOG        Reload env: .env.local
-[01:04:11.227] Server  LOG        Reload env: .env.local
-[01:10:01.407] Server  LOG        Reload env: .env.local
-[01:10:06.060] Server  LOG        Reload env: .env.local
-[01:10:46.402] Server  LOG        Reload env: .env.local
-[01:10:46.731] Server  LOG      ✓ Compiled in 143ms
-[01:11:44.642] Server  LOG        Reload env: .env.local
-[01:11:44.838] Server  LOG      ✓ Compiled in 74ms
-[01:11:50.126] Server  LOG        Reload env: .env.local
-[01:27:41.108] Server  LOG      ✓ Compiled in 43ms
-[01:35:47.036] Server  LOG      ✓ Compiled in 60ms
-[01:40:26.152] Server  LOG      ✓ Compiled in 41ms
-[01:42:29.806] Server  LOG      ✓ Compiled in 39ms
-[01:42:38.814] Server  LOG      ✓ Compiled in 114ms
+[00:00:02.017] Server  LOG      ✓ Ready in 1733ms
+[00:00:05.364] Server  LOG      ○ Compiling /dashboard ...
+[00:00:05.824] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:05.895] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:27.471] Server  LOG        Reload env: .env.local
+[00:03:29.729] Server  LOG        Reload env: .env.local
+[00:04:15.538] Server  LOG        Reload env: .env.local
+[00:04:23.050] Server  LOG        Reload env: .env.local
+[00:35:35.748] Server  LOG        Reload env: .env.local
+[03:06:23.014] Server  LOG      ✓ Compiled in 223ms
+[03:06:36.132] Server  LOG      ✓ Compiled in 190ms

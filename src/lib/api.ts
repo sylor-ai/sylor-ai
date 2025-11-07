@@ -48,22 +48,31 @@ const PLANS: Record<string, Plan> = {
 };
 
 // Log login + set sylor_session cookie on the server
-export async function logLoginToServer(idToken: string) {
+export async function logLoginToServer(idToken: string): Promise<{
+  ok: boolean;
+  status?: number;
+  error?: string;
+}> {
   try {
     const res = await fetch("/api/auth/log-login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${idToken}`,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ idToken }),
     });
 
     if (!res.ok) {
-      console.error("Failed to log login:", await res.text());
+      const text = await res.text().catch(() => "");
+      console.error("[logLoginToServer] non-OK", res.status, text);
+      return { ok: false, status: res.status, error: text || "non-ok" };
     }
-  } catch (err) {
-    console.error("Error calling /api/auth/log-login:", err);
+
+    const data = await res.json().catch(() => ({ ok: true }));
+    return data?.ok === false ? data : { ok: true, ...data };
+  } catch (err: any) {
+    console.error("[logLoginToServer] error", err);
+    return { ok: false, error: err?.message || String(err) };
   }
 }
 
@@ -155,12 +164,7 @@ export const api = {
   login: async (email: string, password: string): Promise<FirebaseUser | null> => {
     const auth = getFirebaseAuth();
     const cred = await signInWithEmailAndPassword(auth, email, password);
-    const user = cred.user;
-    try {
-      const idToken = await user.getIdToken();
-      await logLoginToServer(idToken);
-    } catch {}
-    return user ?? null;
+    return cred.user ?? null;
   },
   // Send signup code to email and stash pending signup
   requestSignupCode: async (opts: {
