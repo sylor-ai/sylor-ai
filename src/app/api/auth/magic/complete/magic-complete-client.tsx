@@ -1,4 +1,3 @@
-// FILE: src/app/auth/magic/complete/magic-complete-client.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -16,7 +15,7 @@ export default function MagicCompleteClient() {
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Parse token from URL query on the client
+    // Parse token from URL query string on the client
     let token: string | null = null;
 
     try {
@@ -76,7 +75,6 @@ export default function MagicCompleteClient() {
         if (!cancelled) {
           setStatus("success");
           setMessage(null);
-          // Redirect to dashboard (or redirectTo param if you add that later)
           router.replace("/dashboard");
         }
       } catch (err: any) {

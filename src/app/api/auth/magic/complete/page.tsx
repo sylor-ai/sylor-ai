@@ -1,4 +1,3 @@
-// FILE: src/app/auth/magic/complete/page.tsx
 "use client";
 
 import MagicCompleteClient from "./magic-complete-client";
