@@ -183,15 +183,13 @@ export function Hero() {
             Live
           </span>
           <h1 className="text-4xl font-semibold tracking-tight md:text-6xl">
-            AI that greets every lead, books the job,{" "}
+            Your AI Dispatcher That,{" "}
             <span className="bg-gradient-to-r from-[#9a88ff] to-[#6ef1e3] bg-clip-text text-transparent">
-              and never sleeps.
+              Never Sleeps.
             </span>
           </h1>
           <p className="text-[0.95rem] leading-relaxed text-white/65 md:text-[1.05rem] md:max-w-2xl">
-            Sylor automates intake, replies instantly across SMS and web,
-            qualifies prospects, and fills your calendar. No playbooks, no ops
-            team -- just one platform designed for modern service brands.
+            Sylor is your 24/7 AI Sales Assistant for Contractors — it instantly answers leads, books jobs, and fills your calendar while you sleep.
           </p>
             <div className="flex flex-wrap items-center gap-3">
               <a href="/signup" className="btn-pill-primary">
