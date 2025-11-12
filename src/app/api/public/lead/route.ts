@@ -13,41 +13,36 @@ export async function POST(req: NextRequest) {
     const json = await req.json().catch(() => ({} as any));
     const {
       to: rawTo,
-      body: rawBody,          // incoming payload may call this "body"
-      text: rawText,          // allow "text" as well
-      from: explicitFrom,     // optional override
+      body: rawBody,      // allow callers to send "body"
+      text: rawText,      // or "text"
+      from: explicitFrom, // optional override
       tenantId,
       slug,
     } = json || {};
 
-    // ----------------------------
-    // Validate inputs
-    // ----------------------------
+    // Validate & prepare
     const to = normalizePhone(rawTo ?? "");
     if (!to) {
       return NextResponse.json({ ok: false, error: "missing-to" }, { status: 400 });
     }
-
     const message = (rawText ?? rawBody ?? "").toString().trim();
     if (!message) {
       return NextResponse.json({ ok: false, error: "missing-message" }, { status: 400 });
     }
 
-    // ----------------------------
-    // Resolve tenant (for from-number)
-    // ----------------------------
+    // Resolve tenant (to get default from-number)
     const db = getAdminFirestore();
     let tenantData:
       | { telnyxNumber?: string | null; twilioNumber?: string | null; businessName?: string | null }
       | null = null;
 
     if (typeof slug === "string" && slug.trim()) {
-      const tenant = await getTenantBySlug(slug.trim().toLowerCase());
-      if (tenant) {
+      const t = await getTenantBySlug(slug.trim().toLowerCase());
+      if (t) {
         tenantData = {
-          telnyxNumber: tenant.telnyxNumber ?? null,
-          twilioNumber: tenant.twilioNumber ?? null,
-          businessName: tenant.businessName ?? null,
+          telnyxNumber: t.telnyxNumber ?? null,
+          twilioNumber: t.twilioNumber ?? null,
+          businessName: t.businessName ?? null,
         };
       }
     } else if (typeof tenantId === "string" && tenantId.trim()) {
@@ -62,7 +57,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Determine sender number: explicit override > tenant numbers > env default
+    // Determine "from"
     const from =
       explicitFrom ||
       tenantData?.telnyxNumber ||
@@ -71,19 +66,20 @@ export async function POST(req: NextRequest) {
       null;
 
     if (!from) {
-      return NextResponse.json({ ok: false, error: "no-from-configured" }, { status: 400 });
+      return NextResponse.json(
+        { ok: false, error: "no-from-configured" },
+        { status: 400 }
+      );
     }
 
-    // ----------------------------
     // Send SMS (✅ use `text`, not `body`)
-    // ----------------------------
     const telnyxResp = await sendSms({
       to,
       from,
       text: message,
     });
 
-    // Optionally: persist a log document if tenantId provided
+    // Optional: log to Firestore if tenantId provided
     try {
       if (tenantId) {
         await db
