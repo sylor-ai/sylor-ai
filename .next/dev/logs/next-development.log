@@ -1,8 +1,19 @@
-[00:00:02.495] Server  LOG      ✓ Ready in 1668ms
-[00:00:05.659] Server  LOG      ○ Compiling / ...
-[00:03:27.620] Server  LOG      ✓ Compiled in 136ms
-[00:03:41.179] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:42.788] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:03:50.135] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:04:09.222] Server  WARN    [dashboard] No tenant id available, using empty stats
-[00:04:09.506] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:00:02.891] Server  LOG      ✓ Ready in 2.3s
+[00:00:08.882] Server  LOG      ○ Compiling / ...
+[00:00:10.287] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:06:52.779] Server  LOG      ✓ Compiled in 320ms
+[00:07:06.756] Server  LOG      ✓ Compiled in 158ms
+[00:07:24.524] Server  LOG      ✓ Compiled in 212ms
+[00:09:35.688] Server  LOG      ✓ Compiled in 128ms
+[00:10:13.163] Server  LOG      ✓ Compiled in 99ms
+[00:15:06.361] Server  LOG      ✓ Compiled in 95ms
+[00:15:07.078] Browser ERROR   uncaughtError: ReferenceError: MobileNavIcon is not defined
+[00:15:29.294] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:15:29.304] Server  LOG      ✓ Compiled in 124ms
+[00:15:29.497] Server  ERROR    ⨯ ReferenceError: MobileNavIcon is not defined
+[00:15:31.079] Browser ERROR   uncaughtError: ReferenceError: MobileNavIcon is not defined
+[00:16:21.235] Server  WARN     ⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[00:16:21.248] Server  LOG      ✓ Compiled in 115ms
+[00:16:54.296] Server  LOG      ✓ Compiled in 110ms
+[00:19:36.088] Server  LOG      ✓ Compiled in 173ms
+[00:20:11.657] Server  LOG      ✓ Compiled in 201ms
