@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 
     const telnyx = await sendSms({
       to,
-      body,
+      text: body,
       from:
         tenantData?.telnyxNumber ||
         tenantData?.twilioNumber ||

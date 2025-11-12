@@ -3,13 +3,16 @@ export async function sendSms({
   from,
   to,
   text,
+  messagingProfileId,
 }: {
   from: string;
   to: string;
   text: string;
+  messagingProfileId?: string | null;
 }) {
   const apiKey = process.env.TELNYX_API_KEY;
-  const profileId = process.env.TELNYX_MESSAGING_PROFILE_ID;
+  const fallbackProfileId = process.env.TELNYX_MESSAGING_PROFILE_ID;
+  const profileId = messagingProfileId || fallbackProfileId;
 
   if (!apiKey || !profileId) {
     throw new Error("Telnyx env vars missing");
