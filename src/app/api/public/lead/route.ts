@@ -1,182 +1,111 @@
+// FILE: src/app/api/sms/send/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { getTenantBySlug } from "@/lib/tenant-server";
 import { sendSms } from "@/lib/telnyx";
 
 function normalizePhone(raw: string): string {
-  return raw.replace(/[^0-9+]/g, "");
+  return (raw || "").replace(/[^0-9+]/g, "");
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({} as any));
-    const { slug, name, phone, message } = body;
+    const json = await req.json().catch(() => ({} as any));
+    const {
+      to: rawTo,
+      body: rawBody,          // incoming payload may call this "body"
+      text: rawText,          // allow "text" as well
+      from: explicitFrom,     // optional override
+      tenantId,
+      slug,
+    } = json || {};
 
-    if (typeof slug !== "string" || !slug.trim()) {
-      return NextResponse.json(
-        { ok: false, error: "missing-slug" },
-        { status: 400 }
-      );
-    }
-    if (typeof name !== "string" || !name.trim()) {
-      return NextResponse.json(
-        { ok: false, error: "missing-name" },
-        { status: 400 }
-      );
-    }
-    if (typeof phone !== "string" || !phone.trim()) {
-      return NextResponse.json(
-        { ok: false, error: "missing-phone" },
-        { status: 400 }
-      );
+    // ----------------------------
+    // Validate inputs
+    // ----------------------------
+    const to = normalizePhone(rawTo ?? "");
+    if (!to) {
+      return NextResponse.json({ ok: false, error: "missing-to" }, { status: 400 });
     }
 
-    const tenant = await getTenantBySlug(slug.trim().toLowerCase());
-    if (!tenant) {
-      return NextResponse.json(
-        { ok: false, error: "invalid-slug" },
-        { status: 404 }
-      );
-    }
-    if (!tenant.publicCaptureEnabled) {
-      return NextResponse.json(
-        { ok: false, error: "public-capture-disabled" },
-        { status: 403 }
-      );
+    const message = (rawText ?? rawBody ?? "").toString().trim();
+    if (!message) {
+      return NextResponse.json({ ok: false, error: "missing-message" }, { status: 400 });
     }
 
-    const tenantId = tenant.id as string;
+    // ----------------------------
+    // Resolve tenant (for from-number)
+    // ----------------------------
     const db = getAdminFirestore();
+    let tenantData:
+      | { telnyxNumber?: string | null; twilioNumber?: string | null; businessName?: string | null }
+      | null = null;
 
-    const normalizedPhone = normalizePhone(phone);
-    const initialMessage =
-      typeof message === "string" && message.trim()
-        ? message.trim()
-        : "Hi, I'm interested in your services.";
-
-    // 1) Create or find lead by phone
-    const leadsCol = db.collection("tenants").doc(tenantId).collection("leads");
-    const existingLeadSnap = await leadsCol
-      .where("phone", "==", normalizedPhone)
-      .limit(1)
-      .get();
-
-    let leadRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
-    let leadId: string;
-
-    if (!existingLeadSnap.empty) {
-      leadRef = existingLeadSnap.docs[0].ref;
-      leadId = existingLeadSnap.docs[0].id;
-      await leadRef.set(
-        {
-          name,
-          phone: normalizedPhone,
-          updatedAt: Date.now(),
-        },
-        { merge: true }
-      );
-    } else {
-      leadRef = leadsCol.doc();
-      leadId = leadRef.id;
-      await leadRef.set({
-        name,
-        phone: normalizedPhone,
-        source: "public-form",
-        createdAt: Date.now(),
-        unsubscribed: false,
-        unsubscribedAt: null,
-      });
+    if (typeof slug === "string" && slug.trim()) {
+      const tenant = await getTenantBySlug(slug.trim().toLowerCase());
+      if (tenant) {
+        tenantData = {
+          telnyxNumber: tenant.telnyxNumber ?? null,
+          twilioNumber: tenant.twilioNumber ?? null,
+          businessName: tenant.businessName ?? null,
+        };
+      }
+    } else if (typeof tenantId === "string" && tenantId.trim()) {
+      const snap = await db.collection("tenants").doc(tenantId.trim()).get();
+      if (snap.exists) {
+        const t = snap.data() as any;
+        tenantData = {
+          telnyxNumber: t?.telnyxNumber ?? null,
+          twilioNumber: t?.twilioNumber ?? null,
+          businessName: t?.businessName ?? null,
+        };
+      }
     }
 
-    // 2) Create conversation (or reuse existing one for that lead)
-    const convCol = db
-      .collection("tenants")
-      .doc(tenantId)
-      .collection("conversations");
-
-    const existingConvSnap = await convCol
-      .where("leadId", "==", leadId)
-      .limit(1)
-      .get();
-
-    let convRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
-    let conversationId: string;
-
-    if (!existingConvSnap.empty) {
-      convRef = existingConvSnap.docs[0].ref;
-      conversationId = existingConvSnap.docs[0].id;
-    } else {
-      convRef = convCol.doc();
-      conversationId = convRef.id;
-      await convRef.set({
-        leadId,
-        leadName: name,
-        channel: "sms",
-        leadAvatarUrl: null,
-        lastMessage: "",
-        lastMessageAt: Date.now(),
-        aiPaused: false,
-        aiLastStatus: null,
-      });
-    }
-
-    // 3) Write an inbound-style message from the lead (shows in UI)
-    const messagesCol = convRef.collection("messages");
-    await messagesCol.add({
-      from: "lead",
-      direction: "inbound",
-      body: initialMessage,
-      createdAt: new Date(),
-    });
-
-    await convRef.set(
-      {
-        leadName: name,
-        lastMessage: initialMessage,
-        lastMessageAt: new Date(),
-      },
-      { merge: true }
-    );
-
-    // 4) Send an SMS reply from the business number (simple welcome)
-    const to = normalizedPhone;
+    // Determine sender number: explicit override > tenant numbers > env default
     const from =
-      tenant.telnyxNumber ||
-      tenant.twilioNumber ||
+      explicitFrom ||
+      tenantData?.telnyxNumber ||
+      tenantData?.twilioNumber ||
       process.env.TELNYX_DEFAULT_FROM ||
       null;
 
-    if (from) {
-      const first = name.split(" ")[0] || "there";
-      const biz = tenant.businessName || "us";
-      const smsBody = `Hi ${first}, thanks for contacting ${biz}! We'll get back to you shortly. Reply STOP to opt out.`;
-
-      // ✅ FIX: Telnyx helper expects `text`, not `body`
-      await sendSms({ to, from, text: smsBody });
-
-      // store outbound message too
-      await messagesCol.add({
-        from: "agent",
-        via: "human",
-        direction: "outbound",
-        body: smsBody,
-        createdAt: new Date(),
-      });
-
-      await convRef.set(
-        {
-          lastMessage: smsBody,
-          lastMessageAt: new Date(),
-        },
-        { merge: true }
-      );
-    } else {
-      console.warn("[public/lead] No Telnyx from-number configured for tenant", tenantId);
+    if (!from) {
+      return NextResponse.json({ ok: false, error: "no-from-configured" }, { status: 400 });
     }
 
-    return NextResponse.json({ ok: true });
+    // ----------------------------
+    // Send SMS (✅ use `text`, not `body`)
+    // ----------------------------
+    const telnyxResp = await sendSms({
+      to,
+      from,
+      text: message,
+    });
+
+    // Optionally: persist a log document if tenantId provided
+    try {
+      if (tenantId) {
+        await db
+          .collection("tenants")
+          .doc(tenantId)
+          .collection("outboundSms")
+          .add({
+            to,
+            from,
+            body: message,
+            provider: "telnyx",
+            providerResponse: telnyxResp ?? null,
+            createdAt: new Date(),
+          });
+      }
+    } catch (logErr) {
+      console.warn("[sms/send] failed to log outbound sms", logErr);
+    }
+
+    return NextResponse.json({ ok: true, id: (telnyxResp as any)?.id ?? null });
   } catch (err) {
-    console.error("[public/lead] error", err);
+    console.error("[sms/send] error", err);
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
   }
 }
