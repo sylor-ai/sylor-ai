@@ -1,6 +1,13 @@
 {
-  "/api/health/route": "app/api/health/route.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/(dashboard)/billing/page": "app/(dashboard)/billing/page.js",
+  "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
+  "/(dashboard)/leads/page": "app/(dashboard)/leads/page.js",
+  "/(dashboard)/messages/page": "app/(dashboard)/messages/page.js",
+  "/(dashboard)/settings/ai/page": "app/(dashboard)/settings/ai/page.js",
+  "/(dashboard)/settings/public-link/page": "app/(dashboard)/settings/public-link/page.js",
+  "/api/ai/profile/route": "app/api/ai/profile/route.js",
+  "/api/auth/log-login/route": "app/api/auth/log-login/route.js",
+  "/api/settings/public-link/route": "app/api/settings/public-link/route.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }

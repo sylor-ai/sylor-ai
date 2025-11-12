@@ -203,7 +203,7 @@ export default function SignupClient() {
               >
                 <svg className="h-4 w-4" viewBox="0 0 24 24" aria-hidden>
                   <path
-                    fill="#EA4335"
+                    fill="#FFFFFF"
                     d="M12 10.2v3.6h5.1c-.2 1.2-1.4 3.6-5.1 3.6-3 0-5.4-2.5-5.4-5.5s2.4-5.5 5.4-5.5c1.7 0 2.9.7 3.6 1.4l2.4-2.4C16.4 3.7 14.4 3 12 3 6.9 3 2.7 7.1 2.7 12.3S6.9 21.6 12 21.6c6 0 9.9-4.2 9.9-10.2 0-.7-.1-1.2-.2-1.8H12z"
                   />
                 </svg>

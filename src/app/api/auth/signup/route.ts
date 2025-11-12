@@ -81,7 +81,8 @@ export async function POST(req: NextRequest) {
       businessPhone: "",
       planId: null,
       stripeCustomerId: `cus_${Date.now()}`,
-      twilioNumber: null,
+      telnyxNumber: null,
+      telnyxMessagingProfileId: null,
       createdAt: Date.now(),
     });
 

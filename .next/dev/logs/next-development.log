@@ -1,17 +1,8 @@
-[00:00:01.189] Server  LOG      ✓ Ready in 889ms
-[00:00:09.199] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:13.448] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:01:38.664] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
-[09:02:30.451] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[20:59:04.226] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[34:31:28.665] Server  LOG      ✓ Compiled in 711ms
-[34:31:43.455] Server  LOG      ✓ Compiled in 216ms
-[34:31:45.518] Server  LOG      ✓ Compiled in 314ms
-[34:32:12.187] Server  LOG      ✓ Compiled in 232ms
-[34:33:19.441] Server  LOG      ✓ Compiled in 258ms
-[34:33:22.898] Server  LOG      ✓ Compiled in 186ms
-[34:44:11.576] Server  LOG      ✓ Compiled in 164ms
-[34:44:21.401] Server  LOG      ✓ Compiled in 102ms
-[34:49:10.442] Server  LOG      ✓ Compiled in 244ms
-[34:50:33.388] Server  LOG      ✓ Compiled in 213ms
-[34:50:36.840] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:02.495] Server  LOG      ✓ Ready in 1668ms
+[00:00:05.659] Server  LOG      ○ Compiling / ...
+[00:03:27.620] Server  LOG      ✓ Compiled in 136ms
+[00:03:41.179] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:42.788] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:03:50.135] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:09.222] Server  WARN    [dashboard] No tenant id available, using empty stats
+[00:04:09.506] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior

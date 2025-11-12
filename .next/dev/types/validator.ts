@@ -479,6 +479,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../../src/app/api/sms/inbound/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/sms/inbound">> = Specific
+  const handler = {} as typeof import("../../../src/app/api/sms/inbound/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../../src/app/api/sms/send/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/sms/send">> = Specific
@@ -501,6 +510,15 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/system/summary">> = Specific
   const handler = {} as typeof import("../../../src/app/api/system/summary/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../../src/app/api/tenants/assign-number/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/tenants/assign-number">> = Specific
+  const handler = {} as typeof import("../../../src/app/api/tenants/assign-number/route.js")
   type __Check = __IsExpected<typeof handler>
   // @ts-ignore
   type __Unused = __Check

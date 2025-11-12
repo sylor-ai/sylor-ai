@@ -13,7 +13,8 @@ export type Tenant = {
   businessPhone: string;
   stripeCustomerId?: string | null;
   planId?: string | null;
-  twilioNumber?: string | null;
+  telnyxNumber?: string | null;
+  telnyxMessagingProfileId?: string | null;
   createdAt?: any | null;
 
   // Public lead capture slug (tenants can have a public URL)

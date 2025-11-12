@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
-import { sendSms } from "@/lib/twilio";
+import { sendSms } from "@/lib/telnyx";
 
 export async function POST(req: Request) {
   try {
@@ -13,6 +13,8 @@ export async function POST(req: Request) {
     const userDoc = await db.collection("users").doc(decoded.uid).get();
     const userData = userDoc.exists ? (userDoc.data() as any) : null;
     const tenantId = userData?.tenantId || decoded.uid;
+    const tenantDoc = await db.collection("tenants").doc(tenantId).get();
+    const tenantData = tenantDoc.exists ? (tenantDoc.data() as any) : null;
 
     const bodyJson = await req.json().catch(() => ({} as any));
     const { conversationId, to, body } = bodyJson || {};
@@ -80,8 +82,24 @@ export async function POST(req: Request) {
     // update conversation
     await convoRef.set({ lastMessage: body, lastMessageAt: FieldValue.serverTimestamp() }, { merge: true });
 
-    const twilio = await sendSms({ to, body });
-    if (!twilio.ok) {
+    if (!tenantData?.telnyxNumber && !tenantData?.twilioNumber && !process.env.TELNYX_DEFAULT_FROM) {
+      return NextResponse.json(
+        { ok: false, error: "no-from-number" },
+        { status: 400 }
+      );
+    }
+
+    const telnyx = await sendSms({
+      to,
+      body,
+      from:
+        tenantData?.telnyxNumber ||
+        tenantData?.twilioNumber ||
+        process.env.TELNYX_DEFAULT_FROM ||
+        null,
+      messagingProfileId: tenantData?.telnyxMessagingProfileId ?? null,
+    });
+    if (!telnyx.ok) {
       return NextResponse.json({ ok: false, error: "sms-failed" }, { status: 200 });
     }
 

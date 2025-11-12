@@ -1,7 +1,7 @@
 // FILE: src/app/api/sms/webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { sendSms } from "@/lib/twilio";
+import { sendSms } from "@/lib/telnyx";
 import { generateAiSmsReply, type ConversationTurn } from "@/lib/ai-bot";
 import { FieldValue } from "firebase-admin/firestore";
 
@@ -9,30 +9,65 @@ function normalizePhone(raw: string): string {
   return raw.replace(/[^0-9+]/g, "");
 }
 
+async function extractInboundPayload(req: NextRequest) {
+  const contentType = req.headers.get("content-type") || "";
+
+  // Telnyx JSON (or generic JSON) payloads
+  if (contentType.includes("application/json")) {
+    const json: any = await req.json().catch(() => null);
+    const payload = json?.data?.payload ?? json?.payload ?? json;
+    if (!payload) return null;
+
+    const from =
+      payload?.from?.phone_number ??
+      payload?.from?.phone_number_string ??
+      payload?.from;
+
+    let to: string | null = null;
+    if (Array.isArray(payload?.to) && payload.to.length > 0) {
+      to =
+        payload.to[0]?.phone_number ??
+        payload.to[0]?.phone_number_string ??
+        payload.to[0];
+    } else if (typeof payload?.to === "string") {
+      to = payload.to;
+    } else if (typeof payload?.to?.phone_number === "string") {
+      to = payload.to.phone_number;
+    }
+
+    const body =
+      payload?.text ?? payload?.body ?? payload?.message ?? payload?.data;
+
+    return { from, to, body };
+  }
+
+  // Legacy Twilio-style form-encoded payloads
+  if (contentType.includes("application/x-www-form-urlencoded")) {
+    const text = await req.text();
+    const params = new URLSearchParams(text);
+    return {
+      from: params.get("From"),
+      to: params.get("To"),
+      body: params.get("Body"),
+    };
+  }
+
+  return null;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const contentType = req.headers.get("content-type") || "";
-    let params: URLSearchParams | null = null;
-
-    if (contentType.includes("application/x-www-form-urlencoded")) {
-      const text = await req.text();
-      params = new URLSearchParams(text);
-    } else if (contentType.includes("application/json")) {
-      const json: any = await req.json().catch(() => ({}));
-      params = new URLSearchParams();
-      if (json.From) params.set("From", json.From);
-      if (json.To) params.set("To", json.To);
-      if (json.Body) params.set("Body", json.Body);
-    } else {
+    const payload = await extractInboundPayload(req);
+    if (!payload?.from || !payload?.to || !payload?.body) {
       return NextResponse.json(
-        { ok: false, error: "Unsupported content type" },
+        { ok: false, error: "Missing fields" },
         { status: 400 }
       );
     }
 
-    const from = params.get("From");
-    const to = params.get("To");
-    const body = params.get("Body");
+    const from = payload.from;
+    const to = payload.to;
+    const body = payload.body;
 
     if (!from || !to || !body) {
       return NextResponse.json(
@@ -46,12 +81,20 @@ export async function POST(req: NextRequest) {
 
     const db = getAdminFirestore();
 
-    // Find tenant by its Twilio number
-    const tenantMatch = await db
+    // Find tenant by its Telnyx number (fallback to legacy twilio field)
+    let tenantMatch = await db
       .collection("tenants")
-      .where("twilioNumber", "==", toNorm)
+      .where("telnyxNumber", "==", toNorm)
       .limit(1)
       .get();
+
+    if (tenantMatch.empty) {
+      tenantMatch = await db
+        .collection("tenants")
+        .where("twilioNumber", "==", toNorm)
+        .limit(1)
+        .get();
+    }
 
     if (tenantMatch.empty) {
       console.warn("[sms-webhook] No tenant for To=", toNorm);
@@ -62,6 +105,11 @@ export async function POST(req: NextRequest) {
     const tenantId = tenantDoc.id;
     const tenantData = tenantDoc.data() as any;
     const aiEnabled = tenantData?.aiSmsEnabled ?? true;
+    const tenantNumber =
+      tenantData?.telnyxNumber ||
+      tenantData?.twilioNumber ||
+      process.env.TELNYX_DEFAULT_FROM ||
+      null;
 
     // Find or create lead for fromNorm
     const leadsCol = db.collection("tenants").doc(tenantId).collection("leads");
@@ -136,13 +184,20 @@ export async function POST(req: NextRequest) {
           { merge: true }
         );
       // Send a single confirmation SMS and stop further processing
-      try {
-        await sendSms({
-          to: fromNorm,
-          body:
-            "You have been unsubscribed and will no longer receive messages. Reply START to resubscribe.",
-        });
-      } catch {}
+      if (tenantNumber) {
+        try {
+          await sendSms({
+            to: fromNorm,
+            from: tenantNumber,
+            text:
+              "You have been unsubscribed and will no longer receive messages. Reply START to resubscribe.",
+          });
+        } catch {}
+      } else {
+        console.warn(
+          "[sms-webhook] Cannot send STOP confirmation, no Telnyx number configured"
+        );
+      }
       return NextResponse.json({ ok: true });
     }
 
@@ -156,12 +211,19 @@ export async function POST(req: NextRequest) {
         (tenantData?.aiProfile?.businessName as string) ||
         tenantData?.businessName ||
         "our team";
-      try {
-        await sendSms({
-          to: fromNorm,
-          body: `You’re now resubscribed to messages from ${biz}. Reply STOP to opt out again.`,
-        });
-      } catch {}
+      if (tenantNumber) {
+        try {
+          await sendSms({
+            to: fromNorm,
+            from: tenantNumber,
+            text: `You're now resubscribed to messages from ${biz}. Reply STOP to opt out again.`,
+          });
+        } catch {}
+      } else {
+        console.warn(
+          "[sms-webhook] Cannot send START confirmation, no Telnyx number configured"
+        );
+      }
       await convoRef.collection("messages").add({
         from: "system",
         direction: "outbound",
@@ -301,7 +363,6 @@ export async function POST(req: NextRequest) {
     );
     await convoRef.set({ aiLastStatus: "on" }, { merge: true });
 
-    // Send SMS
     // Skip sending if lead unsubscribed between steps
     const latestLead = await leadsCol.doc(leadId).get();
     const latestLeadData = latestLead.exists
@@ -311,10 +372,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
-    const smsRes = await sendSms({ to: fromNorm, body: replyText });
-    if (!smsRes.ok) {
-      console.error("[sms-webhook] AI SMS send failed", smsRes.error);
+    if (!tenantNumber) {
+      console.warn(
+        "[sms-webhook] Cannot send AI reply, no Telnyx number configured"
+      );
+      return NextResponse.json({ ok: true });
     }
+
+    // Send SMS via Telnyx helper
+    await sendSms({
+      to: fromNorm,
+      from: tenantNumber,
+      text: replyText,
+    });
 
     return NextResponse.json({ ok: true });
   } catch (e) {

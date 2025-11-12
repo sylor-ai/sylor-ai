@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-type ServiceName = "stripe" | "openai" | "redis" | "twilio";
+type ServiceName = "stripe" | "openai" | "redis" | "telnyx";
 
 type ServiceStatus = {
   ok: boolean;
@@ -64,7 +64,7 @@ export default function SystemClient() {
       <div>
         <h1 className="text-xl font-semibold mb-1">System status</h1>
         <p className="text-sm text-white/40">
-          Internal diagnostics for Stripe, OpenAI, Redis, and Twilio.
+          Internal diagnostics for Stripe, OpenAI, Redis, and Telnyx.
         </p>
       </div>
 
@@ -83,7 +83,7 @@ export default function SystemClient() {
           <StatusCard label="Stripe" status={services("stripe")} />
           <StatusCard label="OpenAI" status={services("openai")} />
           <StatusCard label="Redis" status={services("redis")} />
-          <StatusCard label="Twilio" status={services("twilio")} />
+          <StatusCard label="Telnyx" status={services("telnyx")} />
         </div>
       )}
 

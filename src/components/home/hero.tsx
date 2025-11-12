@@ -21,7 +21,7 @@ export function Hero() {
   const closeMobileNav = () => setMobileOpen(false);
 
   return (
-    <section className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(114,99,255,0.35),transparent_55%),linear-gradient(120deg,#05050a,#04040a_45%,#05050a)] px-4 pb-16 pt-24 sm:px-6 md:px-12 md:pt-28">
+    <section className="relative w-full overflow-hidden bg-[radial-gradient(circle_at_top,_rgba(114,99,255,0.35),transparent_75%),linear-gradient(120deg,#05050a,#04040a_45%,#05050a)] px-4 pb-96 pt-24 sm:px-6 md:px-12 md:pt-28">
       {/* glowing background bits */}
       {sparks.map((spark, idx) => (
         <span

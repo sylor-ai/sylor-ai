@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { getTenantBySlug } from "@/lib/tenant-server";
-import { sendSms } from "@/lib/twilio";
+import { sendSms } from "@/lib/telnyx";
 
 function normalizePhone(raw: string): string {
   return raw.replace(/[^0-9+]/g, "");
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     const initialMessage =
       typeof message === "string" && message.trim()
         ? message.trim()
-        : "Hi, I’m interested in your services.";
+        : "Hi, I'm interested in your services.";
 
     // 1) Create or find lead by phone
     const leadsCol = db.collection("tenants").doc(tenantId).collection("leads");
@@ -140,14 +140,18 @@ export async function POST(req: NextRequest) {
 
     // 4) Send an SMS reply from the business number (simple welcome)
     const to = normalizedPhone;
-    const from = tenant.twilioNumber || process.env.TWILIO_FROM_NUMBER || null;
+    const from =
+      tenant.telnyxNumber ||
+      tenant.twilioNumber ||
+      process.env.TELNYX_DEFAULT_FROM ||
+      null;
 
     if (from) {
       const first = name.split(" ")[0] || "there";
       const biz = tenant.businessName || "us";
-      const smsBody = `Hi ${first}, thanks for contacting ${biz}! We’ll get back to you shortly. Reply STOP to opt out.`;
+      const smsBody = `Hi ${first}, thanks for contacting ${biz}! We'll get back to you shortly. Reply STOP to opt out.`;
 
-      await sendSms({ to, body: smsBody });
+      await sendSms({ to, body: smsBody, from });
 
       // store outbound message too
       await messagesCol.add({
@@ -166,7 +170,7 @@ export async function POST(req: NextRequest) {
         { merge: true }
       );
     } else {
-      console.warn("[public/lead] No Twilio from-number configured for tenant", tenantId);
+      console.warn("[public/lead] No Telnyx from-number configured for tenant", tenantId);
     }
 
     return NextResponse.json({ ok: true });
@@ -175,3 +179,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
   }
 }
+
+

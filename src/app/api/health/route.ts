@@ -16,7 +16,7 @@ export async function GET() {
     stripe: { ok: false },
     openai: { ok: false },
     redis: { ok: false },
-    twilio: { ok: false },
+    telnyx: { ok: false },
   };
 
   const stripeKey = process.env.STRIPE_SECRET_KEY || "";
@@ -50,13 +50,13 @@ export async function GET() {
     results.redis.ok = true;
   }
 
-  const twilioSid = process.env.TWILIO_ACCOUNT_SID || "";
-  const twilioToken = process.env.TWILIO_AUTH_TOKEN || "";
-  const twilioFrom = process.env.TWILIO_FROM_NUMBER || "";
-  if (!twilioSid || !twilioToken || !twilioFrom) {
-    results.twilio = missing("Twilio envs missing");
+  const telnyxKey = process.env.TELNYX_API_KEY || "";
+  const telnyxProfile = process.env.TELNYX_MESSAGING_PROFILE_ID || "";
+  const telnyxFrom = process.env.TELNYX_DEFAULT_FROM || "";
+  if (!telnyxKey || !telnyxProfile || !telnyxFrom) {
+    results.telnyx = missing("Telnyx envs missing");
   } else {
-    results.twilio.ok = true;
+    results.telnyx.ok = true;
   }
 
   const ok = Object.values(results).every((svc) => svc.ok);
