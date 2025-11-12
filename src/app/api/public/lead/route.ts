@@ -151,7 +151,8 @@ export async function POST(req: NextRequest) {
       const biz = tenant.businessName || "us";
       const smsBody = `Hi ${first}, thanks for contacting ${biz}! We'll get back to you shortly. Reply STOP to opt out.`;
 
-      await sendSms({ to, body: smsBody, from });
+      // ✅ FIX: Telnyx helper expects `text`, not `body`
+      await sendSms({ to, from, text: smsBody });
 
       // store outbound message too
       await messagesCol.add({
@@ -179,5 +180,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
   }
 }
-
-
