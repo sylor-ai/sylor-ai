@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import type { FirebaseFirestore } from "firebase-admin/firestore";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { getAuthContext } from "@/lib/auth-server";
 
@@ -91,10 +90,8 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function mergeSnapshots(
-  ...snaps: Array<FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> | null>
-) {
-  const map = new Map<string, FirebaseFirestore.QueryDocumentSnapshot>();
+function mergeSnapshots(...snaps: Array<any | null>) {
+  const map = new Map<string, any>();
   snaps.forEach((snap) => {
     snap?.forEach((doc) => {
       map.set(doc.id, doc);
@@ -115,11 +112,7 @@ function resolveDate(value: any): Date | null {
   return null;
 }
 
-function buildLeadsSeries(
-  docs: FirebaseFirestore.QueryDocumentSnapshot[],
-  windowStart: Date,
-  todayStart: Date
-) {
+function buildLeadsSeries(docs: any[], windowStart: Date, todayStart: Date) {
   const buckets = new Map<string, { count: number; label: string }>();
   for (let i = 13; i >= 0; i--) {
     const date = new Date(todayStart.getTime() - i * DAY_MS);
