@@ -79,6 +79,13 @@ export async function POST(req: NextRequest) {
       text: message,
     });
 
+    if (!telnyxResp.success) {
+      return NextResponse.json(
+        { ok: false, error: telnyxResp.error || "sms-failed" },
+        { status: 400 }
+      );
+    }
+
     // Optional: log to Firestore if tenantId provided
     try {
       if (tenantId) {
@@ -99,7 +106,7 @@ export async function POST(req: NextRequest) {
       console.warn("[sms/send] failed to log outbound sms", logErr);
     }
 
-    return NextResponse.json({ ok: true, id: (telnyxResp as any)?.id ?? null });
+    return NextResponse.json({ ok: true });
   } catch (err) {
     console.error("[sms/send] error", err);
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });

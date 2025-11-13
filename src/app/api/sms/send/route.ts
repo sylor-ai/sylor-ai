@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       );
     }
 
-    const telnyx = await sendSms({
+    const telnyxResult = await sendSms({
       to,
       text: body,
       from:
@@ -101,8 +101,11 @@ export async function POST(req: Request) {
         null,
       messagingProfileId: tenantData?.telnyxMessagingProfileId ?? null,
     });
-    if (!telnyx.ok) {
-      return NextResponse.json({ ok: false, error: "sms-failed" }, { status: 200 });
+    if (!telnyxResult.success) {
+      return NextResponse.json(
+        { ok: false, error: telnyxResult.error || "sms-failed" },
+        { status: 200 }
+      );
     }
 
     return NextResponse.json({ ok: true });

@@ -1,20 +1,27 @@
 // FILE: src/app/api/sms/webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { sendSms } from "@/lib/telnyx";
 import { generateAiSmsReply, type ConversationTurn } from "@/lib/ai-bot";
 import { FieldValue } from "firebase-admin/firestore";
 
+const TELNYX_WEBHOOK_SIGNING_SECRET =
+  process.env.TELNYX_WEBHOOK_SIGNING_SECRET || "";
+
 function normalizePhone(raw: string): string {
   return raw.replace(/[^0-9+]/g, "");
 }
 
-async function extractInboundPayload(req: NextRequest) {
-  const contentType = req.headers.get("content-type") || "";
-
+function extractInboundPayload(contentType: string, rawBody: string) {
   // Telnyx JSON (or generic JSON) payloads
   if (contentType.includes("application/json")) {
-    const json: any = await req.json().catch(() => null);
+    let json: any = null;
+    try {
+      json = JSON.parse(rawBody);
+    } catch {
+      json = null;
+    }
     const payload = json?.data?.payload ?? json?.payload ?? json;
     if (!payload) return null;
 
@@ -43,8 +50,7 @@ async function extractInboundPayload(req: NextRequest) {
 
   // Legacy Twilio-style form-encoded payloads
   if (contentType.includes("application/x-www-form-urlencoded")) {
-    const text = await req.text();
-    const params = new URLSearchParams(text);
+    const params = new URLSearchParams(rawBody);
     return {
       from: params.get("From"),
       to: params.get("To"),
@@ -55,9 +61,49 @@ async function extractInboundPayload(req: NextRequest) {
   return null;
 }
 
+function verifyTelnyxSignature(req: NextRequest, rawBody: string) {
+  const signature = req.headers.get("telnyx-signature-ed25519");
+  const timestamp = req.headers.get("telnyx-timestamp");
+  if (!signature || !timestamp || !TELNYX_WEBHOOK_SIGNING_SECRET) {
+    return false;
+  }
+  try {
+    const payload = `${timestamp}${rawBody}`;
+    const expected = crypto
+      .createHmac("sha256", TELNYX_WEBHOOK_SIGNING_SECRET)
+      .update(payload)
+      .digest("hex");
+    const sigBuffer = Buffer.from(signature, "hex");
+    const expectedBuffer = Buffer.from(expected, "hex");
+    return (
+      sigBuffer.length === expectedBuffer.length &&
+      crypto.timingSafeEqual(sigBuffer, expectedBuffer)
+    );
+  } catch (err) {
+    console.error("[sms-webhook] signature verify failed", err);
+    return false;
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const payload = await extractInboundPayload(req);
+    const contentType = req.headers.get("content-type") || "";
+    const rawBody = await req.text();
+
+    const hasTelnyxHeaders =
+      !!req.headers.get("telnyx-signature-ed25519") &&
+      !!req.headers.get("telnyx-timestamp");
+    if (hasTelnyxHeaders && TELNYX_WEBHOOK_SIGNING_SECRET) {
+      const valid = verifyTelnyxSignature(req, rawBody);
+      if (!valid) {
+        return NextResponse.json(
+          { ok: false, error: "invalid-signature" },
+          { status: 401 }
+        );
+      }
+    }
+
+    const payload = extractInboundPayload(contentType, rawBody);
     if (!payload?.from || !payload?.to || !payload?.body) {
       return NextResponse.json(
         { ok: false, error: "Missing fields" },
@@ -187,13 +233,21 @@ export async function POST(req: NextRequest) {
       // Send a single confirmation SMS and stop further processing
       if (tenantNumber) {
         try {
-          await sendSms({
+          const stopConfirmation = await sendSms({
             to: fromNorm,
             from: tenantNumber,
             text:
               "You have been unsubscribed and will no longer receive messages. Reply START to resubscribe.",
           });
-        } catch {}
+          if (!stopConfirmation.success) {
+            console.error(
+              "[sms-webhook] STOP confirmation send failed",
+              stopConfirmation.error
+            );
+          }
+        } catch (err) {
+          console.error("[sms-webhook] STOP confirmation error", err);
+        }
       } else {
         console.warn(
           "[sms-webhook] Cannot send STOP confirmation, no Telnyx number configured"
@@ -214,12 +268,20 @@ export async function POST(req: NextRequest) {
         "our team";
       if (tenantNumber) {
         try {
-          await sendSms({
+          const startConfirmation = await sendSms({
             to: fromNorm,
             from: tenantNumber,
             text: `You're now resubscribed to messages from ${biz}. Reply STOP to opt out again.`,
           });
-        } catch {}
+          if (!startConfirmation.success) {
+            console.error(
+              "[sms-webhook] START confirmation send failed",
+              startConfirmation.error
+            );
+          }
+        } catch (err) {
+          console.error("[sms-webhook] START confirmation error", err);
+        }
       } else {
         console.warn(
           "[sms-webhook] Cannot send START confirmation, no Telnyx number configured"
@@ -383,11 +445,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Send SMS via Telnyx helper
-    await sendSms({
+    const sendResult = await sendSms({
       to: fromNorm,
       from: tenantNumber,
       text: replyText,
     });
+    if (!sendResult.success) {
+      console.error("[sms-webhook] Failed to send AI reply", sendResult.error);
+    }
 
     return NextResponse.json({ ok: true });
   } catch (e) {

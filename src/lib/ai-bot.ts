@@ -1,6 +1,6 @@
 "use server";
 
-import OpenAI from "openai";
+import { generateAiSmsReply as requestAiReply } from "@/lib/openai";
 
 export type ConversationTurn = { from: "lead" | "agent"; body: string };
 
@@ -17,9 +17,7 @@ type TenantProfile = {
 
 type LeadInfo = { name?: string; phone?: string };
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const STOP_KEYWORD_REGEX = /\b(stop|unsubscribe|cancel|end)\b/i;
 
 export async function generateAiSmsReply(
   tenant: TenantProfile,
@@ -30,11 +28,16 @@ export async function generateAiSmsReply(
     console.warn("[ai-bot] OPENAI_API_KEY missing - AI SMS agent disabled");
     return null;
   }
+  if (!process.env.OPENAI_MODEL) {
+    console.warn("[ai-bot] OPENAI_MODEL missing - AI SMS agent disabled");
+    return null;
+  }
 
   const safeHistory = Array.isArray(history) ? history : [];
-  const lastMessage = safeHistory.at(-1)?.body ?? "";
-  const lowered = lastMessage.toLowerCase();
-  if (/(stop|unsubscribe|cancel|end)\b/.test(lowered)) return null;
+  const lastLeadMessage =
+    [...safeHistory].reverse().find((turn) => turn.from === "lead")?.body ??
+    "";
+  if (STOP_KEYWORD_REGEX.test(lastLeadMessage)) return null;
 
   const biz = tenant.businessName || "our company";
   const tone = tenant.tone || "friendly";
@@ -70,6 +73,7 @@ export async function generateAiSmsReply(
     .join("\n");
 
   const prompt = [
+    `Instructions for the assistant:\n${system}`,
     `Business Context:\n${businessNotes}`,
     `Lead: ${lead.name || lead.phone || "Unknown"}`,
     `Conversation:\n${convo || "Lead: (first message)"}\n`,
@@ -77,26 +81,30 @@ export async function generateAiSmsReply(
   ].join("\n\n");
 
   try {
-    const res = await client.chat.completions.create({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      temperature: 0.4,
-      max_tokens: 120,
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: prompt },
-      ],
-    });
+    const raw = (await requestAiReply(prompt)) ?? "";
+    let reply =
+      typeof raw === "string"
+        ? raw
+        : Array.isArray(raw)
+        ? raw
+            .map((part) =>
+              typeof part === "string" ? part : part?.text ?? ""
+            )
+            .join(" ")
+        : "";
 
-    let out = res.choices?.[0]?.message?.content?.trim() || null;
-    if (!out) return null;
+    reply = reply.replace(/\s*\n+\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+    if (!reply) return null;
 
-    if (out.length > 480) {
-      out = out.slice(0, 477).trimEnd() + "...";
+    if (reply.length > 480) {
+      reply = reply.slice(0, 480).trim();
     }
 
-    return out;
+    if (!reply) return null;
+
+    return reply;
   } catch (err) {
-    console.error("[ai-bot] generateAiSmsReply error", err);
+    console.error("[ai-bot] OpenAI SMS reply failed:", err);
     return null;
   }
 }
