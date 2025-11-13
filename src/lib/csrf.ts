@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 const NAME = "sylor_csrf";
 
-export function issueCsrf() {
+export async function issueCsrf() {
   const token = crypto.randomBytes(16).toString("hex");
   const cookieStore = cookies();
   cookieStore.set(NAME, token, {
