@@ -3,6 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { authRatelimit } from "@/lib/rate-limit";
 import { getClientIp } from "@/lib/request-ip";
 import { createSessionForUser } from "@/lib/auth-server";
+import {
+  createSessionCookie,
+  SESSION_COOKIE,
+  ABSOLUTE_TIMEOUT_MS,
+} from "@/lib/session";
 
 // NOTE: Right now your real login is done client-side with Firebase
 // (see src/lib/api.ts -> api.login). This route is optional and currently
@@ -50,13 +55,15 @@ export async function POST(req: NextRequest) {
 
   const session = await createSessionForUser(user.id);
 
+  const now = Date.now();
+  const payload = createSessionCookie(user.id, undefined, session.token);
   const res = NextResponse.json({ ok: true, user: { id: user.id, email } });
-  res.cookies.set("sylor_session", session.token, {
+  res.cookies.set(SESSION_COOKIE, payload, {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
-    maxAge: session.maxAgeSeconds,
+    maxAge: Math.floor(ABSOLUTE_TIMEOUT_MS / 1000),
   });
 
   return res;

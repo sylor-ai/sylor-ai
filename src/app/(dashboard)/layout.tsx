@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { api } from "@/lib/api";
 import { DashboardButton } from "@/components/dashboard-button";
 import { getFirebaseAuth } from "@/lib/firebase";
@@ -175,6 +175,248 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  function TenantSwitcher() {
+    const router = useRouter();
+    const [tenants, setTenants] = useState<
+      Array<{ tenantId: string; name: string; role: string; active?: boolean }>
+    >([]);
+    const [currentTenant, setCurrentTenant] = useState<{
+      tenantId: string;
+      name: string;
+      role: string;
+    } | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [menuOpen, setMenuOpen] = useState(false);
+    const [csrfToken, setCsrfToken] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isCreating, setIsCreating] = useState(false);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const mountedRef = useRef(true);
+
+    useEffect(() => {
+      return () => {
+        mountedRef.current = false;
+      };
+    }, []);
+
+    const fetchTenants = useCallback(async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/tenants/list", {
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+        });
+        const data = await res.json().catch(() => null);
+        if (!mountedRef.current) return;
+        if (data?.ok && Array.isArray(data.tenants)) {
+          const normalized = data.tenants.map((tenant: any) => ({
+            tenantId: tenant.tenantId || tenant.id,
+            name: tenant.name || "Workspace",
+            role: tenant.role || "member",
+            active: !!tenant.active,
+          }));
+          setTenants(normalized);
+          const activeTenant =
+            normalized.find((tenant) => tenant.active) || normalized[0] || null;
+          setCurrentTenant(activeTenant);
+        } else {
+          setTenants([]);
+          setCurrentTenant(null);
+          setError(data?.error || "Unable to load workspaces");
+        }
+      } catch {
+        if (mountedRef.current) {
+          setTenants([]);
+          setCurrentTenant(null);
+          setError("Unable to load workspaces");
+        }
+      } finally {
+        if (mountedRef.current) {
+          setLoading(false);
+        }
+      }
+    }, []);
+
+    useEffect(() => {
+      fetchTenants();
+    }, [fetchTenants]);
+
+    useEffect(() => {
+      if (!menuOpen) return;
+      const handler = (event: MouseEvent) => {
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setMenuOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handler);
+      return () => document.removeEventListener("mousedown", handler);
+    }, [menuOpen]);
+
+    const ensureCsrf = useCallback(async () => {
+      if (csrfToken) return csrfToken;
+      const res = await fetch("/api/auth/csrf");
+      const data = await res.json().catch(() => null);
+      if (!data?.token) {
+        throw new Error("Unable to verify workspace change.");
+      }
+      if (mountedRef.current) {
+        setCsrfToken(data.token);
+      }
+      return data.token;
+    }, [csrfToken]);
+
+    const handleTenantSwitch = async (tenantId: string) => {
+      if (tenantId === currentTenant?.tenantId) {
+        setMenuOpen(false);
+        return;
+      }
+
+      try {
+        setIsProcessing(true);
+        const token = await ensureCsrf();
+        const res = await fetch("/api/tenants/switch", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": token,
+          },
+          body: JSON.stringify({ tenantId }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || data?.ok === false) {
+          throw new Error(data?.error || "Failed to switch workspace");
+        }
+        await fetchTenants();
+        setMenuOpen(false);
+        router.refresh();
+      } catch (err) {
+        if (mountedRef.current) {
+          setError(
+            err instanceof Error ? err.message : "Failed to switch workspace"
+          );
+        }
+      } finally {
+        if (mountedRef.current) {
+          setIsProcessing(false);
+        }
+      }
+    };
+
+    const handleCreateWorkspace = async () => {
+      const name = window.prompt("Workspace name");
+      if (!name) return;
+      const trimmed = name.trim();
+      if (!trimmed) return;
+
+      try {
+        setIsCreating(true);
+        const token = await ensureCsrf();
+        const res = await fetch("/api/tenants/create", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-csrf-token": token,
+          },
+          body: JSON.stringify({ name: trimmed }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || data?.ok === false) {
+          throw new Error(data?.error || "Failed to create workspace");
+        }
+        await fetchTenants();
+        setMenuOpen(false);
+        router.refresh();
+      } catch (err) {
+        if (mountedRef.current) {
+          setError(
+            err instanceof Error ? err.message : "Failed to create workspace"
+          );
+        }
+      } finally {
+        if (mountedRef.current) {
+          setIsCreating(false);
+        }
+      }
+    };
+
+    return (
+      <div className="relative hidden md:block" ref={containerRef}>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => setMenuOpen((prev) => !prev)}
+          className="inline-flex items-center gap-2 rounded-2xl border border-white/12 bg-white/5 px-4 py-2 text-xs font-medium text-white/80 hover:bg-white/10"
+        >
+          <span>
+            {loading
+              ? "Loading workspaces..."
+              : currentTenant?.name || "Select workspace"}
+          </span>
+          <svg
+            className={`h-3 w-3 transition ${
+              menuOpen ? "rotate-180" : ""
+            }`}
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+
+        {menuOpen && (
+          <div className="absolute right-0 z-50 mt-2 w-72 rounded-2xl border border-white/10 bg-[#090a12]/95 p-3 shadow-2xl backdrop-blur">
+            <div className="max-h-64 overflow-y-auto space-y-1">
+              {tenants.map((tenant) => {
+                const active = tenant.tenantId === currentTenant?.tenantId;
+                return (
+                  <button
+                    key={tenant.tenantId}
+                    className={`flex w-full items-center justify-between rounded-xl border px-3 py-2 text-left text-sm transition ${
+                      active
+                        ? "border-white/40 bg-white/10 text-white"
+                        : "border-white/10 text-white/75 hover:border-white/30 hover:bg-white/5"
+                    }`}
+                    disabled={isProcessing && !active}
+                    onClick={() => handleTenantSwitch(tenant.tenantId)}
+                  >
+                    <div className="flex flex-col">
+                      <span className="font-medium">{tenant.name}</span>
+                      <span className="text-xs text-white/50">
+                        {tenant.role}
+                      </span>
+                    </div>
+                    {active ? (
+                      <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              className="mt-3 flex w-full items-center justify-center rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-sm text-white/80 hover:border-white/40 hover:bg-white/10"
+              onClick={handleCreateWorkspace}
+              disabled={isCreating}
+            >
+              {isCreating ? "Creating..." : "Create workspace"}
+            </button>
+          </div>
+        )}
+        {error ? (
+          <p className="mt-1 text-[11px] text-rose-300">{error}</p>
+        ) : null}
+      </div>
+    );
+  }
+
   const SidebarContent = (
     <>
       <div className="h-16 flex items-center gap-3 px-5 border-b border-white/10">
@@ -298,6 +540,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                 className="flex-1 bg-transparent text-sm text-white/70 placeholder:text-white/40 outline-none border-none p-0"
               />
             </div>
+            <TenantSwitcher />
           </div>
 
           <div className="hidden md:flex gap-2">

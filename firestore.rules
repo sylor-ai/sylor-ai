@@ -1,31 +1,43 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+
+    function userTenant() {
+      return request.auth.token.tenantId != null
+        ? request.auth.token.tenantId
+        : userDoc().data.tenantId;
+    }
+
+    function hasRole(role) {
+      return (request.auth.token.roles != null &&
+          request.auth.token.roles.hasAny([role])) ||
+        (userDoc().data.role == role) ||
+        (userDoc().data.roles != null &&
+          userDoc().data.roles.hasAny([role]));
+    }
+
     match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
     }
 
     match /tenants/{tenantId} {
-      allow read, write: if request.auth != null && (
-        resource == null || request.auth.uid == tenantId ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == tenantId
-      );
+      allow read: if isSignedIn() && tenantId == userTenant();
+      allow write: if isSignedIn() && tenantId == userTenant() && hasRole("owner");
 
-      match /leads/{leadId} {
-        allow read, write: if request.auth != null &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == tenantId;
-      }
-
-      match /conversations/{convId} {
-        allow read, write: if request.auth != null &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == tenantId;
-
-        match /messages/{msgId} {
-          allow read, write: if request.auth != null &&
-            get(/databases/$(database)/documents/users/$(request.auth.uid)).data.tenantId == tenantId;
-        }
+      match /{collection=**}/{docId} {
+        allow read: if isSignedIn() && tenantId == userTenant();
+        allow write: if isSignedIn() &&
+          tenantId == userTenant() &&
+          (hasRole("owner") || hasRole("admin"));
       }
     }
   }
 }
-

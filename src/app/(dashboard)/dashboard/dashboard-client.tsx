@@ -1,6 +1,16 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  ResponsiveContainer,
+  LineChart,
+  CartesianGrid,
+  Line,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 import { DashboardButton } from "@/components/dashboard-button";
 
 type DashboardStats = {
@@ -24,6 +34,14 @@ type Props = {
   recentLeads: RecentLead[];
 };
 
+type AnalyticsOverview = {
+  leadsCountToday: number;
+  leadsCountLast7Days: number;
+  appointmentsLast7Days: number;
+  aiMessagesLast7Days: number;
+  leadsByDay: Array<{ date: string; label?: string; count: number }>;
+};
+
 type TimelineEvent = {
   id: string;
   label: string;
@@ -37,6 +55,75 @@ const statCardClass =
 
 export default function DashboardClient({ stats, recentLeads }: Props) {
   const router = useRouter();
+  const [analytics, setAnalytics] = useState<AnalyticsOverview | null>(null);
+  const [analyticsLoading, setAnalyticsLoading] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/analytics/overview", {
+          cache: "no-store",
+        });
+        const data = await res.json().catch(() => null);
+        if (!active) return;
+        if (!res.ok || data?.ok === false) {
+          setAnalytics(null);
+          setAnalyticsError(data?.error || "Failed to load analytics");
+        } else {
+          setAnalytics({
+            leadsCountToday: data.leadsCountToday ?? 0,
+            leadsCountLast7Days: data.leadsCountLast7Days ?? 0,
+            appointmentsLast7Days: data.appointmentsLast7Days ?? 0,
+            aiMessagesLast7Days: data.aiMessagesLast7Days ?? 0,
+            leadsByDay: Array.isArray(data.leadsByDay)
+              ? data.leadsByDay
+              : [],
+          });
+          setAnalyticsError(null);
+        }
+      } catch {
+        if (!active) return;
+        setAnalytics(null);
+        setAnalyticsError("Failed to load analytics");
+      } finally {
+        if (active) {
+          setAnalyticsLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const formatNumber = (value: number) =>
+    Number.isFinite(value) ? value.toLocaleString() : "0";
+
+  const analyticsCards = [
+    {
+      label: "Leads Today",
+      subtitle: "Captured since midnight",
+      value: analytics?.leadsCountToday ?? 0,
+    },
+    {
+      label: "Leads (7d)",
+      subtitle: "Across every source",
+      value: analytics?.leadsCountLast7Days ?? 0,
+    },
+    {
+      label: "Appointments (7d)",
+      subtitle: "Booked via AI + humans",
+      value: analytics?.appointmentsLast7Days ?? 0,
+    },
+    {
+      label: "AI Messages (7d)",
+      subtitle: "Automated SMS replies",
+      value: analytics?.aiMessagesLast7Days ?? 0,
+    },
+  ];
 
   const metrics = [
     {
@@ -128,6 +215,82 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
           Your home services command center.
         </h1>
       </header>
+
+      <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {analyticsCards.map((card) => (
+          <article key={card.label} className={statCardClass}>
+            <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/15 opacity-40" />
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/9 to-transparent" />
+            <div className="relative flex flex-col gap-2">
+              <p className="text-[11px] uppercase tracking-[0.18em] text-white/50">
+                {card.label}
+              </p>
+              <p className="text-4xl font-semibold text-white">
+                {analyticsLoading ? "—" : formatNumber(card.value)}
+              </p>
+              <p className="text-[11px] text-white/40">{card.subtitle}</p>
+            </div>
+          </article>
+        ))}
+      </section>
+
+      <section className="rounded-[28px] border border-white/15 bg-[#090a10]/80 px-6 py-6 shadow-[0_32px_60px_rgba(0,0,0,0.55)] backdrop-blur">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <div>
+            <h2 className="text-sm font-medium text-white/90">
+              Lead flow (last 14 days)
+            </h2>
+            <p className="text-xs text-white/55">
+              Daily leads captured across all channels.
+            </p>
+          </div>
+          {analyticsLoading ? (
+            <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">
+              Loading
+            </span>
+          ) : null}
+        </div>
+        <div className="h-48">
+          {analyticsError && !analyticsLoading ? (
+            <p className="text-sm text-rose-300">{analyticsError}</p>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={analytics?.leadsByDay ?? []}>
+                <CartesianGrid
+                  stroke="rgba(255,255,255,0.08)"
+                  strokeDasharray="3 3"
+                />
+                <XAxis
+                  dataKey="label"
+                  stroke="rgba(255,255,255,0.4)"
+                  tick={{ fontSize: 11 }}
+                />
+                <YAxis
+                  stroke="rgba(255,255,255,0.4)"
+                  tick={{ fontSize: 11 }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#0f0f16",
+                    borderRadius: 12,
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    color: "#fff",
+                  }}
+                  labelStyle={{ color: "rgba(255,255,255,0.8)" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="count"
+                  stroke="#ffffff"
+                  strokeWidth={2}
+                  dot={false}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+      </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((card) => (

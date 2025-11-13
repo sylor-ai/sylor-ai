@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyIdToken, getAdminFirestore } from "@/lib/firebase-admin";
+import { getSessionToken } from "@/lib/session";
 
 function normalizeSlug(raw: string): string {
   return raw
@@ -20,12 +21,13 @@ async function getTenantIdForUid(uid: string): Promise<string> {
 
 export async function GET(req: NextRequest) {
   try {
-    const session = req.cookies.get("sylor_session")?.value;
-    if (!session) {
+    const rawSession = req.cookies.get("sylor_session")?.value;
+    const token = getSessionToken(rawSession);
+    if (!token) {
       return NextResponse.json({ ok: false, error: "not-authenticated" }, { status: 401 });
     }
 
-    const decoded = await verifyIdToken(session);
+    const decoded = await verifyIdToken(token);
     const uid = decoded.uid;
     const db = getAdminFirestore();
     const tenantId = await getTenantIdForUid(uid);
@@ -50,12 +52,13 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const session = req.cookies.get("sylor_session")?.value;
-    if (!session) {
+    const rawSession = req.cookies.get("sylor_session")?.value;
+    const token = getSessionToken(rawSession);
+    if (!token) {
       return NextResponse.json({ ok: false, error: "not-authenticated" }, { status: 401 });
     }
 
-    const decoded = await verifyIdToken(session);
+    const decoded = await verifyIdToken(token);
     const uid = decoded.uid;
     const db = getAdminFirestore();
     const tenantId = await getTenantIdForUid(uid);
@@ -105,4 +108,3 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
   }
 }
-

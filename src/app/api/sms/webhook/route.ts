@@ -170,6 +170,7 @@ export async function POST(req: NextRequest) {
       direction: "inbound",
       body,
       createdAt: FieldValue.serverTimestamp(),
+      tenantId,
     });
 
     // STOP words / unsubscribe handling
@@ -230,6 +231,7 @@ export async function POST(req: NextRequest) {
         via: "system",
         body: "[Lead resubscribed via START keyword]",
         createdAt: FieldValue.serverTimestamp(),
+        tenantId,
       });
       return NextResponse.json({ ok: true });
     }
@@ -356,6 +358,7 @@ export async function POST(req: NextRequest) {
       direction: "outbound",
       body: replyText,
       createdAt: FieldValue.serverTimestamp(),
+      tenantId,
     });
     await convoRef.set(
       { lastMessage: replyText, lastMessageAt: FieldValue.serverTimestamp() },

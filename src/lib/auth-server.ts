@@ -4,7 +4,19 @@
 // You are using Firebase client auth as the main auth system.
 // These helpers are a thin server-side layer on top of Firebase Admin.
 
-import { verifyIdToken, getAdminAuth } from "@/lib/firebase-admin";
+import { NextRequest } from "next/server";
+import {
+  verifyIdToken,
+  getAdminAuth,
+  getAdminFirestore,
+} from "@/lib/firebase-admin";
+import type { Role } from "@/lib/rbac";
+import {
+  getSessionToken,
+  parseSessionCookie,
+  SESSION_COOKIE,
+  type Session,
+} from "@/lib/session";
 
 export type SylorSession = {
   userId: string;
@@ -17,9 +29,11 @@ export type SylorSession = {
  * and return the user if valid.
  */
 export async function verifySylorSession(
-  token: string
+  rawToken: string
 ): Promise<{ id: string; email: string | null } | null> {
   try {
+    const token = getSessionToken(rawToken);
+    if (!token) return null;
     const decoded = await verifyIdToken(token);
     return {
       id: decoded.uid,
@@ -129,4 +143,73 @@ export async function verifyUserPassword(
   } catch {
     return false;
   }
+}
+
+export type AuthContext = {
+  uid: string;
+  email: string | null;
+  tenantId: string;
+  role: Role;
+  token: string | null;
+  session: Session;
+};
+
+export async function getAuthContext(
+  req: NextRequest
+): Promise<AuthContext | null> {
+  const raw = req.cookies.get(SESSION_COOKIE)?.value ?? null;
+  const { session, isExpired } = parseSessionCookie(raw);
+  if (!session || isExpired) return null;
+
+  let decodedEmail: string | null = null;
+  if (session.token) {
+    try {
+      const decoded = await verifyIdToken(session.token);
+      decodedEmail = decoded.email ?? null;
+    } catch (err) {
+      console.warn("[auth-context] verifyIdToken failed", err);
+      return null;
+    }
+  }
+
+  const db = getAdminFirestore();
+  let tenantId = session.tenantId || session.uid;
+  if (!session.tenantId) {
+    try {
+      const userSnap = await db.collection("users").doc(session.uid).get();
+      const claimedTenant = userSnap.data()?.tenantId;
+      if (typeof claimedTenant === "string" && claimedTenant.trim()) {
+        tenantId = claimedTenant.trim();
+      }
+    } catch (err) {
+      console.warn("[auth-context] failed to load user tenant", err);
+    }
+  }
+
+  let role: Role = "member";
+  try {
+    const memberSnap = await db
+      .collection("tenants")
+      .doc(tenantId)
+      .collection("members")
+      .doc(session.uid)
+      .get();
+    role = (memberSnap.data()?.role as Role) || role;
+  } catch (err) {
+    console.warn("[auth-context] failed to load role", err);
+  }
+
+  return {
+    uid: session.uid,
+    email: decodedEmail,
+    tenantId,
+    role,
+    token: session.token ?? null,
+    session,
+  };
+}
+
+export async function getUidFromRequest(req: NextRequest) {
+  const ctx = await getAuthContext(req);
+  return ctx?.uid ?? null;
 }

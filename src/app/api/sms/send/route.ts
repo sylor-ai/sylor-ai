@@ -66,6 +66,7 @@ export async function POST(req: Request) {
         via: "system",
         body: "[Attempted send blocked: lead unsubscribed]",
         createdAt: FieldValue.serverTimestamp(),
+        tenantId,
       });
       return NextResponse.json({ ok: false, error: "lead-unsubscribed" }, { status: 403 });
     }
@@ -77,6 +78,7 @@ export async function POST(req: Request) {
       direction: "outbound",
       body,
       createdAt: FieldValue.serverTimestamp(),
+      tenantId,
     });
 
     // update conversation

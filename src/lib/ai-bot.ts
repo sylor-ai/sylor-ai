@@ -1,103 +1,102 @@
-// FILE: src/lib/ai-bot.ts
-// Minimal OpenAI chat caller via REST to avoid extra deps.
+"use server";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+import OpenAI from "openai";
 
-export type TenantProfile = {
+export type ConversationTurn = { from: "lead" | "agent"; body: string };
+
+type TenantProfile = {
   businessName?: string;
   businessPhone?: string;
   services?: string[];
   serviceArea?: string;
   workingHours?: string;
-  tone?: "friendly" | "direct" | "luxury" | "casual";
-  bookingStyle?: "phone_call" | "site_visit" | "video_call";
+  tone?: "friendly" | "professional" | "casual";
+  bookingStyle?: "phone_call" | "calendar_link";
   extraNotes?: string;
 };
 
-export type LeadInfo = {
-  name?: string | null;
-  phone?: string | null;
-};
+type LeadInfo = { name?: string; phone?: string };
 
-export type ConversationTurn = {
-  from: "agent" | "lead";
-  body: string;
-};
+const client = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
 export async function generateAiSmsReply(
   tenant: TenantProfile,
   lead: LeadInfo,
   history: ConversationTurn[]
 ): Promise<string | null> {
-  if (!OPENAI_API_KEY) {
-    console.warn("[ai-bot] OPENAI_API_KEY missing – AI SMS agent disabled");
+  if (!process.env.OPENAI_API_KEY) {
+    console.warn("[ai-bot] OPENAI_API_KEY missing - AI SMS agent disabled");
     return null;
   }
 
+  const safeHistory = Array.isArray(history) ? history : [];
+  const lastMessage = safeHistory.at(-1)?.body ?? "";
+  const lowered = lastMessage.toLowerCase();
+  if (/(stop|unsubscribe|cancel|end)\b/.test(lowered)) return null;
+
+  const biz = tenant.businessName || "our company";
+  const tone = tenant.tone || "friendly";
+  const services =
+    (tenant.services || []).map((s) => s.trim()).filter(Boolean).join(", ") ||
+    "our services";
+  const businessNotes =
+    [
+      tenant.workingHours ? `Hours: ${tenant.workingHours}` : "",
+      tenant.serviceArea ? `Area: ${tenant.serviceArea}` : "",
+      services ? `Services: ${services}` : "",
+      tenant.extraNotes ? `Notes: ${tenant.extraNotes}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n") || "No extra notes.";
+
+  const system = [
+    `You are an SMS scheduling assistant for ${biz}.`,
+    `Tone: ${tone}. Only 1 concise SMS message. 160 characters target.`,
+    `Never send links unless the businessPhone or calendar is explicitly provided.`,
+    `If the user asks for price or service not offered, offer a quick call.`,
+    tenant.bookingStyle === "calendar_link"
+      ? `If appointment booking is requested, provide the calendar link if available; otherwise ask for a preferred date/time.`
+      : `If appointment booking is requested, ask for two time windows then confirm the office will call from ${
+          tenant.businessPhone || "the office"
+        }.`,
+    `If the message is aggressive or irrelevant, politely de-escalate and offer to continue by phone.`,
+  ].join("\n");
+
+  const convo = safeHistory
+    .slice(-12)
+    .map((t) => `${t.from === "lead" ? "Lead" : "Agent"}: ${t.body}`)
+    .join("\n");
+
+  const prompt = [
+    `Business Context:\n${businessNotes}`,
+    `Lead: ${lead.name || lead.phone || "Unknown"}`,
+    `Conversation:\n${convo || "Lead: (first message)"}\n`,
+    `Your task: reply with ONE SMS (no headers).`,
+  ].join("\n\n");
+
   try {
-    const bizName = tenant.businessName || "your business";
-    const bizPhone = tenant.businessPhone || "your business phone";
-    const leadName = lead.name || "the lead";
-
-    const services = (tenant.services || []).join(", ") || "home improvement";
-    const serviceArea = tenant.serviceArea || "your local area";
-    const workingHours = tenant.workingHours || "Mon–Fri 9am–5pm";
-
-    const systemPrompt =
-      `You are an SMS assistant for a home services contractor.\n` +
-      `You reply ONLY by SMS. Keep each reply to 1–2 short SMS messages max.\n` +
-      `Avoid links unless absolutely necessary. Do not mention you are an AI.\n` +
-      `Business name: ${bizName}.\n` +
-      `Service area: ${serviceArea}.\n` +
-      `Services: ${services}.\n` +
-      `Working hours: ${workingHours}.\n` +
-      `Business phone: ${bizPhone}.\n` +
-      `Goals:\n` +
-      `- Be friendly, concise, and professional.\n` +
-      `- Understand the project (roofing, remodeling, etc.).\n` +
-      `- Ask brief follow-up questions if needed.\n` +
-      `- Move toward booking a call/visit when appropriate.\n` +
-      `- Assume the person is the homeowner/decision maker.\n` +
-      `Lead name (if known): ${leadName}.\n` +
-      `Respond as a human agent of the business.`;
-
-    const messages: Array<{
-      role: "system" | "user" | "assistant";
-      content: string;
-    }> = [{ role: "system", content: systemPrompt }];
-
-    for (const turn of history) {
-      messages.push({
-        role: turn.from === "lead" ? "user" : "assistant",
-        content: turn.body,
-      });
-    }
-
-    const resp = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${OPENAI_API_KEY}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-4.1-mini",
-        messages,
-        max_tokens: 160,
-        temperature: 0.7,
-      }),
+    const res = await client.chat.completions.create({
+      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+      temperature: 0.4,
+      max_tokens: 120,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: prompt },
+      ],
     });
 
-    if (!resp.ok) {
-      const txt = await resp.text();
-      console.warn("[ai-bot] OpenAI error:", txt);
-      return null;
+    let out = res.choices?.[0]?.message?.content?.trim() || null;
+    if (!out) return null;
+
+    if (out.length > 480) {
+      out = out.slice(0, 477).trimEnd() + "...";
     }
 
-    const data = (await resp.json()) as any;
-    const text = data?.choices?.[0]?.message?.content?.toString()?.trim();
-    return text || null;
-  } catch (e) {
-    console.error("[ai-bot] generateAiSmsReply error", e);
+    return out;
+  } catch (err) {
+    console.error("[ai-bot] generateAiSmsReply error", err);
     return null;
   }
 }
