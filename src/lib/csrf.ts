@@ -7,7 +7,7 @@ const NAME = "sylor_csrf";
 
 export async function issueCsrf() {
   const token = crypto.randomBytes(16).toString("hex");
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   cookieStore.set(NAME, token, {
     httpOnly: true,
     sameSite: "strict",
@@ -18,7 +18,7 @@ export async function issueCsrf() {
 }
 
 export async function assertCsrf() {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const cookie = cookieStore.get(NAME)?.value;
   const header = headers().get("x-csrf-token");
   if (!cookie || !header || cookie !== header) {
