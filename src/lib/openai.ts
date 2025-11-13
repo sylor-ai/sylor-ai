@@ -33,7 +33,8 @@ export async function generateAiSmsReply(
       return trimmed || null;
     }
     if (Array.isArray(raw)) {
-      const text = raw
+      const parts = raw as Array<string | { text?: string } | null | undefined>;
+      const text = parts
         .map((part) =>
           typeof part === "string"
             ? part
@@ -41,9 +42,8 @@ export async function generateAiSmsReply(
             ? part.text
             : ""
         )
-        .join(" ")
-        .trim();
-      return text || null;
+        .join(" ");
+      return text.trim() || null;
     }
     return null;
   } catch (err) {
