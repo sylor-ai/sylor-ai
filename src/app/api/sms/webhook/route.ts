@@ -1,26 +1,28 @@
 // FILE: src/app/api/sms/webhook/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { sendSms } from "@/lib/telnyx";
 import { generateAiSmsReply, type ConversationTurn } from "@/lib/ai-bot";
 import { FieldValue } from "firebase-admin/firestore";
 
-const TELNYX_WEBHOOK_SIGNING_SECRET =
-  process.env.TELNYX_WEBHOOK_SIGNING_SECRET || "";
-
 function normalizePhone(raw: string): string {
   return raw.replace(/[^0-9+]/g, "");
 }
 
-function extractInboundPayload(contentType: string, rawBody: string) {
+function extractInboundPayload(
+  contentType: string,
+  rawBody: string,
+  parsedJson?: any
+) {
   // Telnyx JSON (or generic JSON) payloads
   if (contentType.includes("application/json")) {
-    let json: any = null;
-    try {
-      json = JSON.parse(rawBody);
-    } catch {
-      json = null;
+    let json: any = parsedJson ?? null;
+    if (!json) {
+      try {
+        json = JSON.parse(rawBody);
+      } catch {
+        json = null;
+      }
     }
     const payload = json?.data?.payload ?? json?.payload ?? json;
     if (!payload) return null;
@@ -61,49 +63,29 @@ function extractInboundPayload(contentType: string, rawBody: string) {
   return null;
 }
 
-function verifyTelnyxSignature(req: NextRequest, rawBody: string) {
-  const signature = req.headers.get("telnyx-signature-ed25519");
-  const timestamp = req.headers.get("telnyx-timestamp");
-  if (!signature || !timestamp || !TELNYX_WEBHOOK_SIGNING_SECRET) {
-    return false;
-  }
-  try {
-    const payload = `${timestamp}${rawBody}`;
-    const expected = crypto
-      .createHmac("sha256", TELNYX_WEBHOOK_SIGNING_SECRET)
-      .update(payload)
-      .digest("hex");
-    const sigBuffer = Buffer.from(signature, "hex");
-    const expectedBuffer = Buffer.from(expected, "hex");
-    return (
-      sigBuffer.length === expectedBuffer.length &&
-      crypto.timingSafeEqual(sigBuffer, expectedBuffer)
-    );
-  } catch (err) {
-    console.error("[sms-webhook] signature verify failed", err);
-    return false;
-  }
-}
-
 export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get("content-type") || "";
     const rawBody = await req.text();
 
-    const hasTelnyxHeaders =
-      !!req.headers.get("telnyx-signature-ed25519") &&
-      !!req.headers.get("telnyx-timestamp");
-    if (hasTelnyxHeaders && TELNYX_WEBHOOK_SIGNING_SECRET) {
-      const valid = verifyTelnyxSignature(req, rawBody);
-      if (!valid) {
-        return NextResponse.json(
-          { ok: false, error: "invalid-signature" },
-          { status: 401 }
-        );
+    let parsedJson: any = null;
+    if (contentType.includes("application/json")) {
+      try {
+        parsedJson = JSON.parse(rawBody);
+      } catch {
+        parsedJson = null;
+      }
+      const eventType =
+        parsedJson?.data?.event_type ??
+        parsedJson?.data?.type ??
+        parsedJson?.event_type ??
+        parsedJson?.type;
+      if (eventType && eventType !== "message.received") {
+        return NextResponse.json({ ok: true });
       }
     }
 
-    const payload = extractInboundPayload(contentType, rawBody);
+    const payload = extractInboundPayload(contentType, rawBody, parsedJson);
     if (!payload?.from || !payload?.to || !payload?.body) {
       return NextResponse.json(
         { ok: false, error: "Missing fields" },
