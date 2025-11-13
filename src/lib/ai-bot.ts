@@ -86,7 +86,7 @@ export async function generateAiSmsReply(
       typeof raw === "string"
         ? raw
         : Array.isArray(raw)
-        ? raw
+        ? (raw as Array<string | { text?: string } | null | undefined>)
             .map((part) =>
               typeof part === "string" ? part : part?.text ?? ""
             )
