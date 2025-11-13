@@ -5,7 +5,7 @@ import crypto from "crypto";
 
 const NAME = "sylor_csrf";
 
-export function issueCsrf() {
+export async function issueCsrf() {
   const token = crypto.randomBytes(16).toString("hex");
   cookies().set(NAME, token, {
     httpOnly: true,
@@ -16,7 +16,7 @@ export function issueCsrf() {
   return token;
 }
 
-export function assertCsrf() {
+export async function assertCsrf() {
   const cookie = cookies().get(NAME)?.value;
   const header = headers().get("x-csrf-token");
   if (!cookie || !header || cookie !== header) {

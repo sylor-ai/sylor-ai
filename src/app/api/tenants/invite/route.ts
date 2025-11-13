@@ -9,7 +9,7 @@ const ALLOWED_ROLES: Role[] = ["owner", "admin", "member", "viewer"];
 
 export async function POST(req: NextRequest) {
   try {
-    assertCsrf();
+    await assertCsrf();
   } catch {
     return NextResponse.json({ ok: false, error: "csrf" }, { status: 403 });
   }

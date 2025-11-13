@@ -7,7 +7,7 @@ import { authRatelimit } from "@/lib/rate-limit";
 
 export async function POST(req: NextRequest) {
   try {
-    assertCsrf();
+    await assertCsrf();
   } catch {
     return NextResponse.json({ ok: false, error: "csrf" }, { status: 403 });
   }

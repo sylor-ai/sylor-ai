@@ -6,7 +6,7 @@ import { setTenantCookie } from "@/lib/session";
 
 export async function POST(req: NextRequest) {
   try {
-    assertCsrf();
+    await assertCsrf();
   } catch {
     return NextResponse.json({ ok: false, error: "csrf" }, { status: 403 });
   }
