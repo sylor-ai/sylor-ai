@@ -96,6 +96,7 @@ export async function POST(req: NextRequest) {
     const from = payload.from;
     const to = payload.to;
     const body = payload.body;
+    console.log("[sms-webhook] raw body:", body);
 
     if (!from || !to || !body) {
       return NextResponse.json(
@@ -110,11 +111,16 @@ export async function POST(req: NextRequest) {
     const db = getAdminFirestore();
 
     // Find tenant by its Telnyx number (fallback to legacy twilio field)
+    console.log("[sms-webhook] looking for tenant with phoneNumber:", to);
     let tenantMatch = await db
       .collection("tenants")
       .where("telnyxNumber", "==", toNorm)
       .limit(1)
       .get();
+    console.log(
+      "[sms-webhook] telnyxNumber query size:",
+      tenantMatch.size ?? 0
+    );
 
     if (tenantMatch.empty) {
       tenantMatch = await db
@@ -122,10 +128,14 @@ export async function POST(req: NextRequest) {
         .where("twilioNumber", "==", toNorm)
         .limit(1)
         .get();
+      console.log(
+        "[sms-webhook] twilioNumber query size:",
+        tenantMatch.size ?? 0
+      );
     }
 
     if (tenantMatch.empty) {
-      console.warn("[sms-webhook] No tenant for To=", toNorm);
+      console.warn("[sms-webhook] STILL no tenant for To=", to);
       return NextResponse.json({ ok: true });
     }
 
