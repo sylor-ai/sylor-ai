@@ -14,7 +14,7 @@ if (!model) {
 }
 
 /**
- * Generate a short SMS reply for Sylor.
+ * Generate a short SMS reply for Sylor using the Responses API.
  * Returns a trimmed string, or null if anything fails.
  */
 export async function generateAiSmsReply(
@@ -26,26 +26,29 @@ export async function generateAiSmsReply(
   }
 
   try {
-    const completion = await client.chat.completions.create({
+    const response = await client.responses.create({
       model,
-      max_completion_tokens: 120,
-      messages: [
-        {
-          role: "system",
-          content:
-            "You are Sylor AI, an SMS assistant for home-service businesses. " +
-            "Answer briefly, like a human, and always try to move toward booking an appointment.",
-        },
-        {
-          role: "user",
-          content: prompt,
-        },
-      ],
+      max_output_tokens: 120,
+      input:
+        "You are Sylor AI, an SMS assistant for home-service businesses. " +
+        "Answer briefly (1–3 sentences), like a human, and always try to move toward booking an appointment.\n\n" +
+        `Customer message: "${prompt}"`,
     });
 
-    const raw = completion.choices?.[0]?.message?.content ?? "";
-    const text = (raw || "").trim();
+    let text = "";
 
+    for (const item of response.output ?? []) {
+      if (item.type === "message") {
+        for (const c of item.content ?? []) {
+          if (c.type === "output_text") {
+            const value = c.text?.value ?? "";
+            text += value;
+          }
+        }
+      }
+    }
+
+    text = (text || "").trim();
     console.log("[openai] sms raw reply text:", text || "<empty>");
 
     if (!text) {
