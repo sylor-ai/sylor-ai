@@ -14,43 +14,6 @@ if (!model) {
 }
 
 /**
- * Recursively search for the first non-empty string in a nested structure.
- */
-function findFirstString(value: any): string | null {
-  if (value == null) return null;
-
-  if (typeof value === "string") {
-    const trimmed = value.trim();
-    return trimmed.length ? trimmed : null;
-  }
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      const found = findFirstString(item);
-      if (found) return found;
-    }
-    return null;
-  }
-
-  if (typeof value === "object") {
-    const preferredKeys = ["value", "text", "content", "output_text"];
-    for (const key of preferredKeys) {
-      if (key in value) {
-        const found = findFirstString((value as any)[key]);
-        if (found) return found;
-      }
-    }
-    for (const key of Object.keys(value)) {
-      if (preferredKeys.includes(key)) continue;
-      const found = findFirstString((value as any)[key]);
-      if (found) return found;
-    }
-  }
-
-  return null;
-}
-
-/**
  * Generate a short SMS reply for Sylor using the Responses API.
  * Returns a trimmed string, or null if anything fails.
  */
@@ -65,38 +28,50 @@ export async function generateAiSmsReply(
   try {
     const response = await client.responses.create({
       model,
-      max_output_tokens: 120,
+      max_output_tokens: 120, // ✅ correct field for Responses API
       input:
         "You are Sylor AI, an SMS assistant for home-service businesses. " +
         "Answer briefly (1–3 sentences), like a human, and always try to move toward booking an appointment.\n\n" +
         `Customer message: "${prompt}"`,
     });
 
-    const rawOutput = (response as any).output;
+    console.log("[openai] raw response.output:", response.output);
 
-    try {
-      const debug = JSON.stringify(rawOutput, null, 2);
-      console.log(
-        "[openai] raw response.output:",
-        debug.slice(0, 2000)
-      );
-    } catch {
-      console.log("[openai] raw response.output (non-serializable)");
+    let text = "";
+    const outputs = (response.output ?? []) as any[];
+
+    for (const item of outputs) {
+      if (!item || !Array.isArray(item.content)) continue;
+
+      for (const c of item.content) {
+        if (c?.type === "output_text") {
+          let value = "";
+
+          if (typeof c.text === "string") {
+            value = c.text;
+          } else if (c.text && typeof c.text === "object" && "value" in c.text) {
+            value = (c.text as any).value ?? "";
+          }
+
+          text += value;
+        }
+      }
     }
 
-    let text = findFirstString(rawOutput) ?? "";
-    text = text.trim();
-
-    console.log("[openai] sms raw reply text:", text || "<empty>");
-
     if (!text) {
+      const out = (response as any).output_text;
+      if (typeof out === "string") {
+        text = out;
+      }
+    }
+
+    if (!text.trim()) {
+      console.warn("[openai] no usable text in response.output");
       return null;
     }
 
-    const smsText = text.replace(/\s+/g, " ").trim();
-    console.log("[openai] sms reply text:", smsText);
-
-    return smsText;
+    console.log("[openai] sms raw reply text:", text);
+    return text.trim();
   } catch (err) {
     console.error("[openai] generateAiSmsReply error", err);
     return null;
