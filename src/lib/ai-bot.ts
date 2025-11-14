@@ -88,28 +88,13 @@ export async function generateAiSmsReply(
       return null;
     }
 
-    let reply =
-      typeof raw === "string"
-        ? raw
-        : Array.isArray(raw)
-        ? (raw as Array<string | { text?: string } | null | undefined>)
-            .map((part) =>
-              typeof part === "string" ? part : part?.text ?? ""
-            )
-            .join(" ")
-        : "";
-
-    reply = reply.replace(/\s*\n+\s*/g, " ").replace(/\s{2,}/g, " ").trim();
+    const reply = raw.replace(/\s*\n+\s*/g, " ").replace(/\s{2,}/g, " ").trim();
     if (!reply) {
       console.warn("[openai] reply was only whitespace, skipping Telnyx send");
       return null;
     }
 
-    if (reply.length > 480) {
-      reply = reply.slice(0, 480);
-    }
-
-    return reply;
+    return reply.length > 480 ? reply.slice(0, 480) : reply;
   } catch (err) {
     console.error("[ai-bot] OpenAI SMS reply failed:", err);
     return null;
