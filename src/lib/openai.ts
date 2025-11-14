@@ -19,7 +19,6 @@ export async function generateAiSmsReply(
   try {
     const res = await client.chat.completions.create({
       model,
-      temperature: 0.5,
       max_completion_tokens: 120,
       messages: [
         { role: "system", content: SYSTEM_MESSAGE },
