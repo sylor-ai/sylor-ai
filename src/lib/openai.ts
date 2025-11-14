@@ -2,7 +2,7 @@
 import OpenAI from "openai";
 
 const apiKey = process.env.OPENAI_API_KEY;
-const model = process.env.OPENAI_MODEL;
+const model = process.env.OPENAI_MODEL; // e.g. "gpt-4.1-mini"
 
 const client = apiKey ? new OpenAI({ apiKey }) : null;
 
@@ -28,7 +28,7 @@ export async function generateAiSmsReply(
   try {
     const response = await client.responses.create({
       model,
-      max_output_tokens: 120,
+      max_output_tokens: 120, // ✅ correct field for Responses API
       input:
         "You are Sylor AI, an SMS assistant for home-service businesses. " +
         "Answer briefly (1–3 sentences), like a human, and always try to move toward booking an appointment.\n\n" +
@@ -37,11 +37,15 @@ export async function generateAiSmsReply(
 
     let text = "";
 
-    for (const item of response.output ?? []) {
+    for (const item of (response as any).output ?? []) {
       if (item.type === "message") {
         for (const c of item.content ?? []) {
           if (c.type === "output_text") {
-            const value = c.text?.value ?? "";
+            const rawText = (c as any).text;
+            const value =
+              typeof rawText === "string"
+                ? rawText
+                : (rawText?.value as string | undefined) ?? "";
             text += value;
           }
         }
@@ -51,10 +55,9 @@ export async function generateAiSmsReply(
     text = (text || "").trim();
     console.log("[openai] sms raw reply text:", text || "<empty>");
 
-    if (!text) {
-      return null;
-    }
+    if (!text) return null;
 
+    // collapse whitespace for SMS
     return text.replace(/\s+/g, " ").trim();
   } catch (err) {
     console.error("[openai] generateAiSmsReply error", err);
