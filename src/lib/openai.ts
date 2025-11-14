@@ -2,55 +2,57 @@
 import OpenAI from "openai";
 
 const apiKey = process.env.OPENAI_API_KEY;
-const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
-
-if (!apiKey) {
-  console.warn(
-    "[openai] OPENAI_API_KEY is not set – AI SMS replies are disabled"
-  );
-}
+const model = process.env.OPENAI_MODEL;
 
 const client = apiKey ? new OpenAI({ apiKey }) : null;
 
+if (!apiKey) {
+  console.warn("[openai] OPENAI_API_KEY is missing");
+}
+if (!model) {
+  console.warn("[openai] OPENAI_MODEL is missing");
+}
+
 /**
- * Generate a short SMS reply for a lead conversation.
+ * Generate a short SMS reply for Sylor.
  * Returns a trimmed string, or null if anything fails.
  */
 export async function generateAiSmsReply(
   prompt: string
 ): Promise<string | null> {
-  if (!client) return null;
+  if (!client || !model) {
+    console.warn("[openai] client or model not configured, skipping AI reply");
+    return null;
+  }
 
   try {
     const completion = await client.chat.completions.create({
       model,
+      max_completion_tokens: 120,
       messages: [
         {
           role: "system",
           content:
-            "You are Sylor, an AI assistant for home-improvement and construction contractors. " +
-            "Reply by SMS, max 400 characters, friendly, clear, and helpful. " +
-            "Ask for missing details if needed. Answer in the same language as the customer.",
+            "You are Sylor AI, an SMS assistant for home-service businesses. " +
+            "Answer briefly, like a human, and always try to move toward booking an appointment.",
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      max_tokens: 120,
-      temperature: 0.7,
     });
 
-    const text = completion.choices?.[0]?.message?.content?.trim() ?? "";
+    const raw = completion.choices?.[0]?.message?.content ?? "";
+    const text = (raw || "").trim();
 
     console.log("[openai] sms raw reply text:", text || "<empty>");
 
     if (!text) {
-      console.warn("[openai] empty SMS reply, returning null");
       return null;
     }
 
-    return text;
+    return text.replace(/\s+/g, " ").trim();
   } catch (err) {
     console.error("[openai] generateAiSmsReply error", err);
     return null;
