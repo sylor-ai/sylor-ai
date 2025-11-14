@@ -351,11 +351,12 @@ export async function POST(req: NextRequest) {
       }
       if (lastAiTs && lastHumanAgentTs) break;
     }
-    if (lastAiTs && now - lastAiTs < 5 * 60 * 1000) {
-      console.log("[ai-sms] Skipping AI reply due to cooldown");
-      await convoRef.set({ aiLastStatus: "blocked" }, { merge: true });
-      return NextResponse.json({ ok: true });
-    }
+    // TEMP: disable cooldown so every SMS gets an AI reply
+    // if (lastAiTs && now - lastAiTs < 5 * 60 * 1000) {
+    //   console.log("[ai-sms] Skipping AI reply due to cooldown");
+    //   await convoRef.set({ aiLastStatus: "blocked" }, { merge: true });
+    //   return NextResponse.json({ ok: true });
+    // }
     // 2) Human takeover: if human agent replied in last 15 minutes, skip AI
     if (lastHumanAgentTs && now - lastHumanAgentTs < 15 * 60 * 1000) {
       console.log("[ai-sms] Skipping AI reply due to recent human message");
