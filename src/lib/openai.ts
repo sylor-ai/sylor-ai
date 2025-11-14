@@ -1,72 +1,56 @@
+// FILE: src/lib/openai.ts
 import OpenAI from "openai";
 
-const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_MODEL = process.env.OPENAI_MODEL;
+const apiKey = process.env.OPENAI_API_KEY;
+const model = process.env.OPENAI_MODEL || "gpt-4.1-mini";
 
-let openai: OpenAI | null = null;
-
-if (OPENAI_API_KEY && OPENAI_MODEL) {
-  openai = new OpenAI({ apiKey: OPENAI_API_KEY });
-} else {
+if (!apiKey) {
   console.warn(
-    "[openai] missing OPENAI_API_KEY or OPENAI_MODEL - SMS AI disabled"
+    "[openai] OPENAI_API_KEY is not set – AI SMS replies are disabled"
   );
 }
 
+const client = apiKey ? new OpenAI({ apiKey }) : null;
+
+/**
+ * Generate a short SMS reply for a lead conversation.
+ * Returns a trimmed string, or null if anything fails.
+ */
 export async function generateAiSmsReply(
   prompt: string
 ): Promise<string | null> {
-  if (!openai || !OPENAI_MODEL) {
-    console.warn("[openai] client or model not configured, returning null");
-    return null;
-  }
+  if (!client) return null;
 
   try {
-    const response = await openai.responses.create({
-      model: OPENAI_MODEL,
-      input: [
+    const completion = await client.chat.completions.create({
+      model,
+      messages: [
         {
           role: "system",
           content:
-            "You are Sylor AI's SMS assistant for home services contractors. " +
-            "Reply in under 400 characters, friendly, clear, and always try to " +
-            "move toward booking an appointment. Never mention that you are an AI.",
+            "You are Sylor, an AI assistant for home-improvement and construction contractors. " +
+            "Reply by SMS, max 400 characters, friendly, clear, and helpful. " +
+            "Ask for missing details if needed. Answer in the same language as the customer.",
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      max_output_tokens: 120,
+      max_tokens: 120,
+      temperature: 0.7,
     });
 
-    const outputs = (response as any)?.output ?? [];
-    const textParts: string[] = [];
+    const text = completion.choices?.[0]?.message?.content?.trim() ?? "";
 
-    for (const item of outputs) {
-      if (item?.type === "message" && Array.isArray(item.content)) {
-        for (const part of item.content) {
-          if (typeof part?.text === "string") {
-            textParts.push(part.text);
-          } else if (
-            part?.type === "output_text" &&
-            typeof part?.text === "string"
-          ) {
-            textParts.push(part.text);
-          }
-        }
-      }
-    }
+    console.log("[openai] sms raw reply text:", text || "<empty>");
 
-    const finalText = textParts.join(" ").trim();
-    console.log("[openai] sms raw reply text:", finalText || "<empty>");
-
-    if (!finalText) {
-      console.warn("[openai] no text content in response.output");
+    if (!text) {
+      console.warn("[openai] empty SMS reply, returning null");
       return null;
     }
 
-    return finalText;
+    return text;
   } catch (err) {
     console.error("[openai] generateAiSmsReply error", err);
     return null;
