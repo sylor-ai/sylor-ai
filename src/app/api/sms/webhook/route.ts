@@ -401,8 +401,9 @@ export async function POST(req: NextRequest) {
     );
 
     if (!replyText) {
+      console.warn("[sms-webhook] no AI reply, not sending SMS");
       await convoRef.set({ aiLastStatus: "blocked" }, { merge: true });
-      return NextResponse.json({ ok: true });
+      return NextResponse.json({ ok: true, reason: "no-ai-reply" });
     }
 
     // Persist AI outbound
@@ -437,13 +438,24 @@ export async function POST(req: NextRequest) {
     }
 
     // Send SMS via Telnyx helper
+    console.log("[sms-webhook] sending AI reply via Telnyx", {
+      to: fromNorm,
+      preview: replyText.slice(0, 80),
+    });
     const sendResult = await sendSms({
       to: fromNorm,
       from: tenantNumber,
       text: replyText,
     });
     if (!sendResult.success) {
-      console.error("[sms-webhook] Failed to send AI reply", sendResult.error);
+      console.error("[sms-webhook] Telnyx send failed", sendResult.error);
+    }
+    if (sendResult.success) {
+      console.log("[sms-webhook] Telnyx send ok", {
+        to: fromNorm,
+        id: sendResult.id,
+        status: sendResult.status,
+      });
     }
 
     return NextResponse.json({ ok: true });

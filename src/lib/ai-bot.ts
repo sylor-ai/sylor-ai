@@ -81,7 +81,13 @@ export async function generateAiSmsReply(
   ].join("\n\n");
 
   try {
-    const raw = (await requestAiReply(prompt)) ?? "";
+    const raw = await requestAiReply(prompt);
+    console.log("[openai] sms reply text:", raw ?? null);
+    if (!raw) {
+      console.warn("[openai] empty or null SMS reply, skipping Telnyx send");
+      return null;
+    }
+
     let reply =
       typeof raw === "string"
         ? raw
@@ -94,13 +100,14 @@ export async function generateAiSmsReply(
         : "";
 
     reply = reply.replace(/\s*\n+\s*/g, " ").replace(/\s{2,}/g, " ").trim();
-    if (!reply) return null;
-
-    if (reply.length > 480) {
-      reply = reply.slice(0, 480).trim();
+    if (!reply) {
+      console.warn("[openai] reply was only whitespace, skipping Telnyx send");
+      return null;
     }
 
-    if (!reply) return null;
+    if (reply.length > 480) {
+      reply = reply.slice(0, 480);
+    }
 
     return reply;
   } catch (err) {

@@ -1,9 +1,4 @@
 // src/lib/telnyx.ts
-const TELNYX_API_KEY = process.env.TELNYX_API_KEY || null;
-const TELNYX_MESSAGING_PROFILE_ID =
-  process.env.TELNYX_MESSAGING_PROFILE_ID || null;
-const TELNYX_DEFAULT_FROM = process.env.TELNYX_DEFAULT_FROM || null;
-
 type SendSmsParams = {
   from?: string | null;
   to: string;
@@ -13,8 +8,30 @@ type SendSmsParams = {
 
 type SendSmsResult = {
   success: boolean;
-  error?: string;
+  id?: string;
+  status?: string;
+  error?: unknown;
 };
+
+type TelnyxConfig =
+  | {
+      ok: true;
+      apiKey: string;
+      defaultFrom: string;
+      messagingProfileId: string;
+    }
+  | { ok: false; error: string };
+
+function getTelnyxConfig(): TelnyxConfig {
+  const apiKey = process.env.TELNYX_API_KEY;
+  const defaultFrom = process.env.TELNYX_DEFAULT_FROM;
+  const messagingProfileId = process.env.TELNYX_MESSAGING_PROFILE_ID;
+  if (!apiKey) return { ok: false, error: "missing-api-key" };
+  if (!defaultFrom) return { ok: false, error: "missing-default-from" };
+  if (!messagingProfileId)
+    return { ok: false, error: "missing-messaging-profile-id" };
+  return { ok: true, apiKey, defaultFrom, messagingProfileId };
+}
 
 export async function sendSms({
   from,
@@ -22,28 +39,20 @@ export async function sendSms({
   text,
   messagingProfileId,
 }: SendSmsParams): Promise<SendSmsResult> {
-  if (!TELNYX_API_KEY) {
-    console.error("[telnyx] Missing TELNYX_API_KEY");
-    return { success: false, error: "missing-api-key" };
+  const cfg = getTelnyxConfig();
+  if (!cfg.ok) {
+    console.error("[telnyx-send] config error:", cfg.error);
+    return { success: false, error: cfg.error };
   }
 
-  const resolvedFrom = from ?? TELNYX_DEFAULT_FROM;
-  if (!resolvedFrom) {
-    console.error("[telnyx] Missing from number");
-    return { success: false, error: "missing-from-number" };
-  }
-
-  const profileId = messagingProfileId ?? TELNYX_MESSAGING_PROFILE_ID;
-  if (!profileId) {
-    console.error("[telnyx] Missing messaging profile ID");
-    return { success: false, error: "missing-profile-id" };
-  }
+  const resolvedFrom = from ?? cfg.defaultFrom;
+  const profileId = messagingProfileId ?? cfg.messagingProfileId;
 
   try {
     const res = await fetch("https://api.telnyx.com/v2/messages", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${TELNYX_API_KEY}`,
+        Authorization: `Bearer ${cfg.apiKey}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -54,15 +63,20 @@ export async function sendSms({
       }),
     });
 
+    const json = await res.json().catch(() => ({} as any));
+
     if (!res.ok) {
-      const err = await res.text().catch(() => "");
-      console.error("sendSms Telnyx error:", res.status, err);
-      return { success: false, error: `http-${res.status}` };
+      console.error("[telnyx-send] HTTP error", res.status, json);
+      return { success: false, error: json };
     }
 
-    return { success: true };
+    const id = json?.data?.id;
+    const status = json?.data?.status;
+    console.log("[telnyx-send] success", { to, id, status });
+
+    return { success: true, id, status };
   } catch (error) {
-    console.error("[telnyx] sendSms failed", error);
-    return { success: false, error: "network-error" };
+    console.error("[telnyx-send] exception", error);
+    return { success: false, error };
   }
 }
