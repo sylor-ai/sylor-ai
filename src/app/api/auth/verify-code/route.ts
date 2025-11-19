@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
+import type { UserRecord } from "firebase-admin/auth";
 import { getAdminAuth, getAdminFirestore } from "@/lib/firebase-admin";
 import { initTenantUsageIfMissing } from "@/lib/usage";
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    let existing = null;
+    let existing: UserRecord | null = null;
     try {
       existing = await adminAuth.getUserByEmail(normalizedEmail);
     } catch {
