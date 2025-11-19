@@ -1,19 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 const TELNYX_BASE = "https://api.telnyx.com/v2";
 
 export async function POST(req: NextRequest) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) {
-      return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
-    }
-
-    const { tenantId = decoded.uid, areaCode = "818" } = await req
-      .json()
-      .catch(() => ({ tenantId: decoded.uid, areaCode: "818" }));
+    const { tenantId } = await assertTenantMembership(req as any);
+    const { areaCode = "818" } = await req.json().catch(() => ({ areaCode: "818" }));
 
     const apiKey = process.env.TELNYX_API_KEY;
     const messagingProfileId = process.env.TELNYX_MESSAGING_PROFILE_ID;
@@ -78,21 +74,17 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getAdminFirestore();
-    await db
-      .collection("tenants")
-      .doc(tenantId)
-      .set(
-        {
-          telnyxNumber: number,
-          telnyxMessagingProfileId: messagingProfileId,
-          updatedAt: FieldValue.serverTimestamp(),
-        },
-        { merge: true }
-      );
+    await db.collection("tenants").doc(tenantId).set(
+      {
+        telnyxNumber: number,
+        telnyxMessagingProfileId: messagingProfileId,
+        updatedAt: FieldValue.serverTimestamp(),
+      },
+      { merge: true }
+    );
 
     return NextResponse.json({ ok: true, assignedNumber: number });
   } catch (error) {
-    console.error("[assign-number] error", error);
-    return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
+    return handleTenantApiError(error, "[tenants/assign-number] error");
   }
 }

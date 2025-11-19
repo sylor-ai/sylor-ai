@@ -1,20 +1,28 @@
 // FILE: src/app/api/sms/send/route.ts
 import { NextResponse } from "next/server";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { sendSms } from "@/lib/telnyx";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 export async function POST(req: Request) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    const { tenantId } = await assertTenantMembership(req as any);
 
     const db = getAdminFirestore();
-    const userDoc = await db.collection("users").doc(decoded.uid).get();
-    const userData = userDoc.exists ? (userDoc.data() as any) : null;
-    const tenantId = userData?.tenantId || decoded.uid;
     const tenantDoc = await db.collection("tenants").doc(tenantId).get();
     const tenantData = tenantDoc.exists ? (tenantDoc.data() as any) : null;
+    if (!tenantData?.telnyxNumber || !tenantData?.telnyxMessagingProfileId) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "sms-not-configured",
+          message: "Your SMS number is not configured. Please complete phone setup in Settings.",
+        },
+        { status: 400 }
+      );
+    }
 
     const bodyJson = await req.json().catch(() => ({} as any));
     const { conversationId, to, body } = bodyJson || {};
@@ -100,6 +108,7 @@ export async function POST(req: Request) {
         process.env.TELNYX_DEFAULT_FROM ||
         null,
       messagingProfileId: tenantData?.telnyxMessagingProfileId ?? null,
+      tenantId,
     });
     if (!telnyxResult.success) {
       return NextResponse.json(
@@ -110,7 +119,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("[sms/send] error", e);
-    return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
+    return handleTenantApiError(e, "[sms/send] error");
   }
 }

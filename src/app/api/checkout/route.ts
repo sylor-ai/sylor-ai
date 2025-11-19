@@ -1,32 +1,42 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
-import { verifyIdTokenFromRequest, getAdminFirestore } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { getActiveTenantForRequest } from "@/lib/tenant-context";
+import type { PlanId } from "@/types";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
-
-// you *can* still set it in Vercel → Environment Variables
-// e.g. NEXT_PUBLIC_APP_URL=https://sylor.ai
 const envAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
 if (!stripeSecret) {
-  console.warn("⚠️ STRIPE_SECRET_KEY is missing in .env.local / env");
+  console.warn("[checkout] STRIPE_SECRET_KEY is missing in env");
 }
 
 const stripe = new Stripe(stripeSecret || "", {
   apiVersion: "2025-10-29.clover",
 });
 
+const PLAN_TO_PRICE: Record<PlanId, string | undefined> = {
+  agency_core: process.env.STRIPE_AGENCY_CORE_PRICE_ID,
+  agency_scale: process.env.STRIPE_AGENCY_SCALE_PRICE_ID,
+};
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
-    const requestedPlan = (body.plan || body.planId || "").toLowerCase();
-    const proPrice = "price_1SN3RrHBRIMb0ChwjSIbQaYn";
-    const starterPrice = "price_1SN3ReHBRIMb0ChwEPz1g2w5";
-    const priceId =
-      body.priceId ||
-      (requestedPlan === "pro" ? proPrice : starterPrice);
-    // Infer plan from priceId if not provided
-    const plan = requestedPlan || (priceId === proPrice ? "pro" : "starter");
+    const { tenantId, tenant, user } = await getActiveTenantForRequest(req as any);
+    if (!user) {
+      throw Object.assign(new Error("unauthorized"), { status: 401 });
+    }
+    if (!tenantId || !tenant) {
+      throw Object.assign(new Error("no-tenant"), { status: 400 });
+    }
+
+    const body = await req.json().catch(() => ({}));
+    const plan = (body.planId || body.plan || "") as PlanId;
+    if (!plan || !["agency_core", "agency_scale"].includes(plan)) {
+      return NextResponse.json({ ok: false, error: "Invalid plan" }, { status: 400 });
+    }
+
+    const priceId = PLAN_TO_PRICE[plan];
 
     if (!stripeSecret) {
       return NextResponse.json(
@@ -37,40 +47,56 @@ export async function POST(req: NextRequest) {
 
     if (!priceId) {
       return NextResponse.json(
-        { error: "Missing priceId" },
+        { ok: false, error: "Plan not configured" },
         { status: 400 }
       );
     }
 
-    // 🔥 build baseUrl from the request if env not set
     const forwardedProto = req.headers.get("x-forwarded-proto");
     const forwardedHost = req.headers.get("x-forwarded-host");
     const host = req.headers.get("host");
 
-    // priority:
-    // 1. NEXT_PUBLIC_APP_URL (explicit)
-    // 2. x-forwarded-proto + x-forwarded-host (Vercel/proxy)
-    // 3. host (fallback)
-    // 4. localhost (final fallback)
-    const baseUrl =
-      envAppUrl && envAppUrl.startsWith("http")
-        ? envAppUrl
-        : forwardedProto && forwardedHost
+    const headerUrl =
+      forwardedProto && forwardedHost
         ? `${forwardedProto}://${forwardedHost}`
         : host
-        ? `https://${host}`
+        ? `${req.nextUrl.protocol}//${host}`
+        : null;
+
+    // Prefer the current request host (important for localhost) and fallback to NEXT_PUBLIC_APP_URL.
+    const baseUrl =
+      headerUrl && headerUrl.startsWith("http")
+        ? headerUrl
+        : envAppUrl && envAppUrl.startsWith("http")
+        ? envAppUrl
         : "http://localhost:3000";
 
-    // optional auth: associate checkout to current user for webhook handling
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) {
-      return NextResponse.json({ error: "Missing auth" }, { status: 401 });
-    }
-    const uid = decoded.uid;
     const db = getAdminFirestore();
-    const userSnap = await db.collection("users").doc(uid).get();
-    const userData = userSnap.exists ? (userSnap.data() as any) : null;
-    const tenantId = userData?.tenantId || uid;
+    const tenantSnap = await db.collection("tenants").doc(tenantId).get();
+    const tenantData = tenantSnap.exists ? (tenantSnap.data() as any) : null;
+    let stripeCustomerId = tenantData?.stripeCustomerId || null;
+
+    if (stripeCustomerId) {
+      // Validate existing customer; if it no longer exists, create a fresh one.
+      try {
+        await stripe.customers.retrieve(stripeCustomerId);
+      } catch (err: any) {
+        const code = err?.code || err?.raw?.code;
+        if (code === "resource_missing") {
+          stripeCustomerId = null;
+        } else {
+          throw err;
+        }
+      }
+    }
+
+    if (!stripeCustomerId) {
+      const customer = await stripe.customers.create({
+        metadata: { tenantId },
+      });
+      stripeCustomerId = customer.id;
+      await db.collection("tenants").doc(tenantId).set({ stripeCustomerId }, { merge: true });
+    }
 
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
@@ -80,22 +106,34 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      // ✅ our new flow ends in dashboard
-      success_url: `${baseUrl}/billing?checkout=success&plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
-      // if user cancels on Stripe → back to pricing with the chosen plan
-      cancel_url: `${baseUrl}/billing?checkout=canceled&reason=user`,
+      customer: stripeCustomerId || undefined,
+      success_url: `${baseUrl}/signup/success?plan=${plan}&session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${baseUrl}/billing/activate?plan=${plan}&status=cancelled`,
       client_reference_id: tenantId,
-      metadata: { sylor_plan: plan, sylor_tenant_id: tenantId, planId: plan, tenantId },
+      metadata: {
+        sylor_plan: plan,
+        sylor_tenant_id: tenantId,
+        planId: plan,
+        tenantId,
+        priceId,
+      },
     });
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ ok: true, url: session.url, sessionId: session.id });
   } catch (err: any) {
-    console.error("💥 Stripe error:", err);
+    console.error("[checkout] Stripe error:", err);
+    const status =
+      typeof err?.status === "number"
+        ? err.status
+        : err?.message === "unauthorized"
+        ? 401
+        : err?.message === "no-tenant"
+        ? 400
+        : 500;
+
     return NextResponse.json(
-      { error: err.message ?? "Stripe error" },
-      { status: 500 }
+      { ok: false, error: err?.message ?? "internal-error" },
+      { status }
     );
   }
 }
-
-

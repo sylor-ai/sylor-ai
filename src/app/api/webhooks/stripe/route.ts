@@ -36,7 +36,7 @@ export async function POST(req: Request) {
         const plan = (
           (session.metadata?.planId as string) ||
           (session.metadata?.sylor_plan as string) ||
-          "starter"
+          "agency_core"
         ).toLowerCase();
         const tenantId = (
           (session.metadata?.tenantId as string) ||

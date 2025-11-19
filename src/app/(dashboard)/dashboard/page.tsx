@@ -3,7 +3,7 @@ import DashboardClient from "./dashboard-client";
 import { getTenantStats, type DashboardStats } from "@/lib/tenant-stats";
 import { getRecentLeads } from "@/lib/recent-leads";
 import { verifySylorSession } from "@/lib/auth-server";
-import { getAdminFirestore } from "@/lib/firebase-admin";
+import { getActiveTenantIdForUser } from "@/lib/tenant-context";
 
 export const dynamic = "force-dynamic";
 
@@ -23,36 +23,21 @@ async function resolveTenantId(): Promise<string | null> {
     const firebaseUser = await verifySylorSession(session);
     if (!firebaseUser?.id) return null;
 
-    const db = getAdminFirestore();
-    const userSnap = await db.collection("users").doc(firebaseUser.id).get();
-    const tenantId = userSnap.get("tenantId");
-    if (typeof tenantId === "string" && tenantId.trim().length > 0) {
-      return tenantId.trim();
+    const resolved = await getActiveTenantIdForUser(firebaseUser.id);
+    if (resolved) {
+      return resolved;
     }
-
-    const tenantDoc = await db.collection("tenants").doc(firebaseUser.id).get();
-    if (tenantDoc.exists) {
-      return tenantDoc.id;
-    }
-
-    return firebaseUser.id;
   } catch (err) {
     console.warn("[dashboard] resolveTenantId failed", err);
   }
-
-  return (
-    process.env.DEMO_TENANT_ID ||
-    process.env.DEFAULT_TENANT_ID ||
-    process.env.NEXT_PUBLIC_DEMO_TENANT_ID ||
-    null
-  );
+  return null;
 }
 
 export default async function DashboardPage() {
   const tenantId = await resolveTenantId();
 
   if (!tenantId) {
-    console.warn("[dashboard] No tenant id available, using empty stats");
+    // No tenant yet (no memberships) -- render empty stats quietly.
     return <DashboardClient stats={EMPTY_STATS} recentLeads={[]} />;
   }
 

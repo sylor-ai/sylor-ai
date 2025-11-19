@@ -39,7 +39,7 @@ export function ProductPreview() {
         <ul className="space-y-2 text-white/70">
           <li>- Live presence + typing indicators for AI vs. human.</li>
           <li>- Bring your CRM via API -- Sylor syncs context instantly.</li>
-          <li>- Command palette for "pause AI", "send proposal", "collect payment".</li>
+          <li>- Command palette for &quot;pause AI&quot;, &quot;send proposal&quot;, &quot;collect payment&quot;.</li>
         </ul>
       </div>
 

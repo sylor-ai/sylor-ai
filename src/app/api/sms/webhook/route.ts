@@ -148,6 +148,10 @@ export async function POST(req: NextRequest) {
       tenantData?.twilioNumber ||
       process.env.TELNYX_DEFAULT_FROM ||
       null;
+    if (!tenantData?.telnyxNumber || !tenantData?.telnyxMessagingProfileId) {
+      console.warn("[sms-webhook] Missing tenant SMS configuration", { tenantId });
+      return NextResponse.json({ ok: false, error: "tenant-sms-not-configured" }, { status: 400 });
+    }
 
     // Find or create lead for fromNorm
     const leadsCol = db.collection("tenants").doc(tenantId).collection("leads");
@@ -377,6 +381,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ ok: true });
     }
 
+    // New AI guardrails: message count + token cap per message
+    // Count messages in this conversation for maxMessagesPerConversation check
+    const totalMsgSnap = await msgsCol.get().catch(() => null as any);
+    const totalMessages = totalMsgSnap?.size ?? history.length;
+    const { checkAiGuardrails } = await import("@/lib/usage");
+    const aiGuard = await checkAiGuardrails(tenantId, {
+      tokensExpected: 120, // matches max_output_tokens
+      messageCount: totalMessages,
+    });
+    if (!aiGuard.allowed) {
+      console.warn("[ai-sms] AI blocked by guardrails", aiGuard.reason);
+      await convoRef.set({ aiLastStatus: "blocked" }, { merge: true });
+      return NextResponse.json({ ok: true });
+    }
+
     // Compose tenant AI profile with defaults
     const ai = (tenantData?.aiProfile as any) || {};
     const tenantProfile = {
@@ -447,6 +466,7 @@ export async function POST(req: NextRequest) {
       to: fromNorm,
       from: tenantNumber,
       text: replyText,
+      tenantId,
     });
     if (!sendResult.success) {
       console.error("[sms-webhook] Telnyx send failed", sendResult.error);
@@ -457,6 +477,10 @@ export async function POST(req: NextRequest) {
         id: sendResult.id,
         status: sendResult.status,
       });
+      // Record AI token usage (rough estimate from reply length)
+      const { recordAiTokens } = await import("@/lib/usage");
+      const estimatedTokens = Math.max(1, Math.ceil(replyText.length / 4));
+      await recordAiTokens(tenantId, estimatedTokens).catch(() => null);
     }
 
     return NextResponse.json({ ok: true });

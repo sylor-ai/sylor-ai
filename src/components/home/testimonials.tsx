@@ -26,7 +26,7 @@ export function Testimonials() {
           Teams scaling with Sylor
         </span>
         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
-          "We finally automate the boring stuff without compromising the brand."
+          &quot;We finally automate the boring stuff without compromising the brand.&quot;
         </h2>
       </div>
 
@@ -36,7 +36,7 @@ export function Testimonials() {
             key={item.author}
             className="rounded-[26px] border border-white/10 bg-gradient-to-br from-white/5 to-white/0 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.45)]"
           >
-            <p className="text-lg text-white/80 leading-relaxed">"{item.quote}"</p>
+            <p className="text-lg text-white/80 leading-relaxed">&quot;{item.quote}&quot;</p>
             <div className="mt-6">
               <p className="text-white font-semibold">{item.author}</p>
               <p className="text-white/50 text-sm">{item.role}</p>

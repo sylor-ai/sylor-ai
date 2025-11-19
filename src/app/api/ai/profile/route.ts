@@ -1,6 +1,8 @@
 // FILE: src/app/api/ai/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 type AiProfilePayload = {
   enabled?: boolean;
@@ -32,27 +34,17 @@ function withDefaults(tenant: any) {
 
 export async function GET(req: NextRequest) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
-    const db = getAdminFirestore();
-    const userSnap = await db.collection("users").doc(decoded.uid).get();
-    const user = userSnap.exists ? (userSnap.data() as any) : null;
-    const tenantId = user?.tenantId || decoded.uid;
-    const tenantSnap = await db.collection("tenants").doc(tenantId).get();
-    const tenant = tenantSnap.exists ? tenantSnap.data() : null;
+    const { tenant } = await assertTenantMembership(req);
 
     return NextResponse.json({ ok: true, profile: withDefaults(tenant) });
   } catch (e) {
-    console.error("[ai/profile GET]", e);
-    return NextResponse.json({ error: "server-error" }, { status: 500 });
+    return handleTenantApiError(e, "[ai/profile] GET error");
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const { tenantId } = await assertTenantMembership(req);
 
     const body = (await req.json().catch(() => ({}))) as AiProfilePayload;
     // basic validation & normalization
@@ -77,9 +69,6 @@ export async function POST(req: NextRequest) {
     };
 
     const db = getAdminFirestore();
-    const userSnap = await db.collection("users").doc(decoded.uid).get();
-    const user = userSnap.exists ? (userSnap.data() as any) : null;
-    const tenantId = user?.tenantId || decoded.uid;
 
     await db
       .collection("tenants")
@@ -90,8 +79,6 @@ export async function POST(req: NextRequest) {
     const updated = await db.collection("tenants").doc(tenantId).get();
     return NextResponse.json({ ok: true, profile: withDefaults(updated.data()) });
   } catch (e) {
-    console.error("[ai/profile POST]", e);
-    return NextResponse.json({ error: "server-error" }, { status: 500 });
+    return handleTenantApiError(e, "[ai/profile] POST error");
   }
 }
-

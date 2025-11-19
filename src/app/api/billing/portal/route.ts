@@ -1,9 +1,11 @@
 // FILE: src/app/api/billing/portal/route.ts
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const stripeSecret = process.env.STRIPE_SECRET_KEY || "";
     if (!stripeSecret) {
@@ -11,13 +13,12 @@ export async function POST(req: Request) {
     }
     const stripe = new Stripe(stripeSecret, { apiVersion: "2025-10-29.clover" });
 
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    const { tenantId } = await assertTenantMembership(req as any);
 
     const db = getAdminFirestore();
-    const tenantSnap = await db.collection("tenants").doc(decoded.uid).get();
-    const tenant = tenantSnap.exists ? (tenantSnap.data() as any) : null;
-    const customerId = tenant?.stripeCustomerId;
+    const tenantSnap = await db.collection("tenants").doc(tenantId).get();
+    const tenantData = tenantSnap.exists ? (tenantSnap.data() as any) : null;
+    const customerId = tenantData?.stripeCustomerId || null;
     if (!customerId) {
       return NextResponse.json({ error: "No Stripe customer for this account." }, { status: 400 });
     }
@@ -30,8 +31,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ url: session.url });
   } catch (err: any) {
-    console.error("[billing portal] error", err);
-    return NextResponse.json({ error: err?.message || "server-error" }, { status: 500 });
+    return handleTenantApiError(err, "[billing portal] error");
   }
 }
-

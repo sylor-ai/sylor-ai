@@ -3,9 +3,20 @@
   "middleware": {
     "/": {
       "files": [
-        "server/edge/chunks/Desktop_sylor-ai_3a1cb3f9._.js",
-        "server/edge/chunks/[root-of-the-server]__1e4aa4f1._.js",
-        "server/edge/chunks/turbopack-Desktop_sylor-ai_edge-wrapper_2a903ba8.js"
+        "server/edge/chunks/_2add7826._.js",
+        "server/edge/chunks/node_modules_@opentelemetry_api_build_esm_4557a825._.js",
+        "server/edge/chunks/node_modules_google-auth-library_7d4634c3._.js",
+        "server/edge/chunks/node_modules_firebase-admin_372bbfeb._.js",
+        "server/edge/chunks/node_modules_node-forge_lib_597c1f86._.js",
+        "server/edge/chunks/node_modules_jose_dist_browser_a09b9a69._.js",
+        "server/edge/chunks/node_modules_@google-cloud_firestore_build_src_fb01402a._.js",
+        "server/edge/chunks/node_modules_@google-cloud_firestore_build_protos_8150380c._.js",
+        "server/edge/chunks/node_modules_@google-cloud_firestore_package_json_3baf4ebe._.js",
+        "server/edge/chunks/node_modules_protobufjs_87699129._.js",
+        "server/edge/chunks/node_modules_google-gax_a1f7cd41._.js",
+        "server/edge/chunks/node_modules_e9b7fe67._.js",
+        "server/edge/chunks/[root-of-the-server]__f07832eb._.js",
+        "server/edge/chunks/turbopack-edge-wrapper_a0dcf15e.js"
       ],
       "name": "middleware",
       "page": "/",
@@ -20,9 +31,9 @@
       "env": {
         "__NEXT_BUILD_ID": "development",
         "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "l789wHj7MCKV3ptTHx7RVLjTpz5iEToxahYoYh6jH+8=",
-        "__NEXT_PREVIEW_MODE_ID": "82b8156932b8c71174a89d7249ffed65",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "22b0369f89af0041a166c8d2e9d9a47086d3f8fa325dccc4129cfa2ab1aac4d5",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "e3b58f0ab0c43796d6cbdba2e5c431f9a6f988a72c0927ea03be08cb6463575c"
+        "__NEXT_PREVIEW_MODE_ID": "a2b984f59b856acd56ce44f917ff03d9",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "77cc938c8ae1538b4435dba4c6359415f9c096eb4e5d2a0b90b876aeac53e580",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "1e6fbf2aa0254f5bd534633f786a531594e7e80634ab4a86e8a46e02a191b9d6"
       }
     }
   },

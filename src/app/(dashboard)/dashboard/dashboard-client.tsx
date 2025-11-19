@@ -12,6 +12,8 @@ import {
   YAxis,
 } from "recharts";
 import { DashboardButton } from "@/components/dashboard-button";
+import { authedFetch } from "@/lib/authed-fetch";
+import { useCurrentUser } from "@/hooks/use-current-user";
 
 type DashboardStats = {
   totalLeads: number;
@@ -55,38 +57,56 @@ const statCardClass =
 
 export default function DashboardClient({ stats, recentLeads }: Props) {
   const router = useRouter();
+  const { currentUser, loading: userLoading } = useCurrentUser();
+
   const [analytics, setAnalytics] = useState<AnalyticsOverview | null>(null);
   const [analyticsLoading, setAnalyticsLoading] = useState(true);
   const [analyticsError, setAnalyticsError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (userLoading) return;
+    if (!currentUser) {
+      router.push("/login");
+      return;
+    }
+
     let active = true;
+
     (async () => {
       try {
-        const res = await fetch("/api/analytics/overview", {
+        const res = await authedFetch("/api/analytics/overview", {
           cache: "no-store",
         });
+
+        if (res.status === 401) {
+          router.push("/login");
+          return;
+        }
+
         const data = await res.json().catch(() => null);
         if (!active) return;
-        if (!res.ok || data?.ok === false) {
-          setAnalytics(null);
-          setAnalyticsError(data?.error || "Failed to load analytics");
-        } else {
-          setAnalytics({
-            leadsCountToday: data.leadsCountToday ?? 0,
-            leadsCountLast7Days: data.leadsCountLast7Days ?? 0,
-            appointmentsLast7Days: data.appointmentsLast7Days ?? 0,
-            aiMessagesLast7Days: data.aiMessagesLast7Days ?? 0,
-            leadsByDay: Array.isArray(data.leadsByDay)
-              ? data.leadsByDay
-              : [],
-          });
-          setAnalyticsError(null);
+
+        if (data?.ok === false) {
+          throw new Error(data?.error || "Failed to load analytics");
         }
-      } catch {
+
+        setAnalytics({
+          leadsCountToday: data?.leadsCountToday ?? 0,
+          leadsCountLast7Days: data?.leadsCountLast7Days ?? 0,
+          appointmentsLast7Days: data?.appointmentsLast7Days ?? 0,
+          aiMessagesLast7Days: data?.aiMessagesLast7Days ?? 0,
+          leadsByDay: Array.isArray(data?.leadsByDay) ? data.leadsByDay : [],
+        });
+        setAnalyticsError(null);
+      } catch (err: any) {
         if (!active) return;
         setAnalytics(null);
-        setAnalyticsError("Failed to load analytics");
+        const msg = err?.message || "";
+        setAnalyticsError(
+          msg.includes("401")
+            ? "Please sign in again."
+            : "Could not load metrics."
+        );
       } finally {
         if (active) {
           setAnalyticsLoading(false);
@@ -97,7 +117,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
     return () => {
       active = false;
     };
-  }, []);
+  }, [userLoading, currentUser, router]);
 
   const formatNumber = (value: number) =>
     Number.isFinite(value) ? value.toLocaleString() : "0";
@@ -149,6 +169,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
   ];
 
   const goNewLead = () => router.push("/leads?new=1");
+
   const goShareLeadLink = async () => {
     try {
       const res = await fetch("/api/settings/public-link", {
@@ -174,6 +195,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
       router.push("/settings/public-link");
     }
   };
+
   const goAiSettings = () => router.push("/settings/ai");
   const goMessages = () => router.push("/messages");
 
@@ -207,8 +229,8 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
   const timelineEvents = [...derivedLeadEvents, ...fallbackEvents].slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#050509] text-white px-4 py-6 md:px-8 md:py-8 space-y-8">
-
+    <div className="space-y-8 text-white">
+      {/* Page header */}
       <header className="space-y-2">
         <p className="text-sm text-white/60">Dashboard</p>
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -216,6 +238,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
         </h1>
       </header>
 
+      {/* Top stats */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {analyticsCards.map((card) => (
           <article key={card.label} className={statCardClass}>
@@ -234,6 +257,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
         ))}
       </section>
 
+      {/* Chart */}
       <section className="rounded-[28px] border border-white/15 bg-[#090a10]/80 px-6 py-6 shadow-[0_32px_60px_rgba(0,0,0,0.55)] backdrop-blur">
         <div className="flex items-center justify-between gap-2 mb-4">
           <div>
@@ -292,6 +316,7 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
         </div>
       </section>
 
+      {/* Lower metrics */}
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {metrics.map((card) => (
           <article key={card.label} className={statCardClass}>
@@ -310,13 +335,21 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
         ))}
       </section>
 
+      {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
         <DashboardButton onClick={goNewLead}>Add lead</DashboardButton>
         <DashboardButton variant="ghost" onClick={goMessages}>
           View messages
         </DashboardButton>
+        <DashboardButton variant="ghost" onClick={goShareLeadLink}>
+          Share lead link
+        </DashboardButton>
+        <DashboardButton variant="ghost" onClick={goAiSettings}>
+          AI Settings
+        </DashboardButton>
       </div>
 
+      {/* Bottom cards */}
       <section className="grid gap-6 lg:grid-cols-2">
         <article className="rounded-[28px] border border-white/15 bg-[#090a10]/80 px-6 py-6 space-y-5 shadow-[0_18px_40px_rgba(0,0,0,0.55)] backdrop-blur h-full">
           <div className="flex items-center justify-between gap-2">
@@ -360,12 +393,14 @@ export default function DashboardClient({ stats, recentLeads }: Props) {
         </article>
 
         <article className="rounded-[28px] border border-white/15 bg-[#090a10]/80 px-6 py-6 space-y-4 shadow-[0_18px_40px_rgba(0,0,0,0.55)] backdrop-blur h-full">
-          <h2 className="text-sm font-medium text-white/90">Launch checklist</h2>
+          <h2 className="text-sm font-medium text-white/90">
+            Launch checklist
+          </h2>
           <ul className="space-y-2 text-sm text-white/65 list-disc list-inside">
             <li>Confirm your business profile in Settings.</li>
             <li>Share your public lead link with customers.</li>
             <li>Send a test conversation to ensure AI responses.</li>
-            <li>Connect billing when you're ready to scale.</li>
+            <li>Connect billing when you&apos;re ready to scale.</li>
           </ul>
           <DashboardButton
             variant="ghost"

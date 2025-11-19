@@ -8,37 +8,44 @@ const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
 
 export async function sendVerificationEmail(to: string, code: string) {
   if (!resend) {
-    console.log("[mail] resend not configured, skip verification email");
-    return;
+    throw new Error("resend-not-configured");
   }
 
-  await resend.emails.send({
-    from: FROM_EMAIL,
-    to,
-    subject: "Your Sylor.ai verification code",
-    html: `
-      <p>Hi 👋</p>
-      <p>Your Sylor.ai code is:</p>
-      <p style="font-size: 24px; font-weight: 700; letter-spacing: 6px;">${code}</p>
-      <p>This code will expire in 10 minutes.</p>
-    `,
-  });
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "Your Sylor.ai verification code",
+      html: `
+        <p>Your Sylor.ai code is:</p>
+        <p style="font-size: 24px; font-weight: 700; letter-spacing: 6px;">${code}</p>
+        <p>This code will expire in 10 minutes.</p>
+      `,
+    });
+  } catch (err) {
+    console.error("[mail] failed to send verification email", err);
+    throw err;
+  }
 }
 
 export async function sendPasswordResetEmail(to: string, link: string) {
   if (!resend) {
-    console.log("[mail] resend not configured, skip password reset email");
-    return;
+    throw new Error("resend-not-configured");
   }
 
-  await resend.emails.send({
-    from: FROM_EMAIL,
-    to,
-    subject: "Reset your Sylor.ai password",
-    html: `
-      <p>You asked to reset your Sylor.ai password.</p>
-      <p><a href="${link}">Click here to reset it</a></p>
-      <p>If you didn't request this, you can ignore this email.</p>
-    `,
-  });
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to,
+      subject: "Reset your Sylor.ai password",
+      html: `
+        <p>You asked to reset your Sylor.ai password.</p>
+        <p><a href="${link}">Click here to reset it</a></p>
+        <p>If you didn't request this, you can ignore this email.</p>
+      `,
+    });
+  } catch (err) {
+    console.error("[mail] failed to send password reset email", err);
+    throw err;
+  }
 }

@@ -1,11 +1,12 @@
 // FILE: src/app/api/conversations/toggle-ai/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
+    const { tenantId } = await assertTenantMembership(req);
 
     const { conversationId, aiEnabled } = await req.json().catch(() => ({} as any));
     if (!conversationId || typeof aiEnabled !== "boolean") {
@@ -13,9 +14,6 @@ export async function POST(req: NextRequest) {
     }
 
     const db = getAdminFirestore();
-    const userDoc = await db.collection("users").doc(decoded.uid).get();
-    const userData = userDoc.exists ? (userDoc.data() as any) : null;
-    const tenantId = userData?.tenantId || decoded.uid;
 
     const convoRef = db
       .collection("tenants")
@@ -26,8 +24,6 @@ export async function POST(req: NextRequest) {
     await convoRef.set({ aiEnabled }, { merge: true });
     return NextResponse.json({ ok: true });
   } catch (e) {
-    console.error("[toggle-ai] error", e);
-    return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
+    return handleTenantApiError(e, "[toggle-ai] error");
   }
 }
-

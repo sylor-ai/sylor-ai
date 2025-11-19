@@ -41,7 +41,7 @@ export default function HomePage() {
   }, []);
 
   // used in pricing section / product CTA  always go to signup
-  function goTo(_plan: "starter" | "pro") {
+  function goTo(_plan: "agency_core" | "agency_scale") {
     window.location.href = "/signup";
   }
   return (
@@ -340,7 +340,7 @@ export default function HomePage() {
                 </p>
               </div>
               <button
-                onClick={() => goTo("starter")}
+                onClick={() => goTo("agency_core")}
                 className="rounded-[10px] bg-white/10 px-4 py-1.5 text-sm text-white hover:bg-white/15"
               >
                 Start chatting 
@@ -432,7 +432,7 @@ export default function HomePage() {
           <div className="rounded-[10px] border border-white/5 bg-gradient-to-r from-purple-500/5 via-slate-900 to-slate-900/30 p-8 text-center">
             <p className="text-sm text-white/50">Pricing</p>
             <h2 className="mt-2 text-2xl font-semibold text-white">
-              Start free. Then just $149/mo.
+              Agency plans start at $1,499/mo.
             </h2>
             <p className="mt-2 text-sm text-white/50 max-w-2xl mx-auto">
               Perfect for contractors, remodeling companies, pool & landscaping,
@@ -444,15 +444,15 @@ export default function HomePage() {
                 <p className="text-xs text-white/40 uppercase tracking-wide">
                   Starter
                 </p>
-                <p className="mt-2 text-3xl font-bold">$149</p>
+                <p className="mt-2 text-3xl font-bold">$1,499</p>
                 <p className="text-sm text-white/40">per month</p>
                 <ul className="mt-4 space-y-2 text-sm text-white/70">
-                  <li> 50 leads / mo</li>
+                  <li> Agency-grade SMS automation</li>
                   <li> SMS automation</li>
                   <li> Google Calendar booking</li>
                 </ul>
                 <button
-                  onClick={() => goTo("starter")}
+                  onClick={() => goTo("agency_core")}
                   className="mt-4 inline-flex rounded-[10px] bg-white/10 px-4 py-1.5 text-sm text-white hover:bg-white/15"
                 >
                   Choose Starter
@@ -463,7 +463,7 @@ export default function HomePage() {
                 <p className="text-xs text-slate-500 uppercase tracking-wide">
                   Pro
                 </p>
-                <p className="mt-2 text-3xl font-bold">$399</p>
+                <p className="mt-2 text-3xl font-bold">$2,499</p>
                 <p className="text-sm text-slate-500">per month</p>
                 <ul className="mt-4 space-y-2 text-sm text-slate-700">
                   <li> Unlimited leads</li>
@@ -471,7 +471,7 @@ export default function HomePage() {
                   <li> Multi-location / tenants</li>
                 </ul>
                 <button
-                  onClick={() => goTo("pro")}
+                  onClick={() => goTo("agency_scale")}
                   className="mt-4 block w-full rounded-[10px] bg-slate-950 py-2 text-center text-sm text-white hover:bg-slate-900"
                 >
                   Choose Pro

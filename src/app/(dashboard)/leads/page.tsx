@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -6,6 +6,7 @@ import { useCurrentUser } from "@/hooks/use-current-user";
 import { api } from "@/lib/api";
 import type { Lead } from "@/types";
 import { DashboardButton } from "@/components/dashboard-button";
+import { formatTimestamp, normalizeTimestamps } from "@/lib/utils";
 
 type NewLeadState = {
   name: string;
@@ -58,24 +59,24 @@ export default function LeadsPage() {
   useEffect(() => {
     async function load() {
       if (loading) return;
-      if (!currentUser) {
+      if (!currentUser || !currentUser.tenantId) {
         return;
       }
       const data = await api.getLeads(currentUser.tenantId);
-      setLeads(data);
+      setLeads(normalizeTimestamps(data));
     }
     load();
   }, [loading, currentUser, router]);
 
   async function refresh() {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.tenantId) return;
     const data = await api.getLeads(currentUser.tenantId);
-    setLeads(data);
+    setLeads(normalizeTimestamps(data));
   }
 
   async function handleCreateLead(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.tenantId) return;
 
     setSaving(true);
     await api.createLead(currentUser.tenantId, {
@@ -174,7 +175,7 @@ export default function LeadsPage() {
               <th className="text-left py-3 px-2 font-medium">City</th>
               <th className="text-left py-3 px-2 font-medium">Value</th>
               <th className="text-left py-3 px-2 font-medium">Status</th>
-              <th className="text-left py-3 px-2 font-medium">Created</th>
+              <th className="text-left py-3 px-2 font-medium">Last activity</th>
             </tr>
           </thead>
           <tbody>
@@ -210,7 +211,14 @@ export default function LeadsPage() {
                       {lead.status}
                     </span>
                   </td>
-                  <td className="py-3 px-2 text-xs text-white/60">{lead.created || "-"}</td>
+                  <td className="py-3 px-2 text-xs text-white/60">
+                    {formatTimestamp(
+                      (lead as any).lastMessageAt ||
+                        (lead as any).updatedAt ||
+                        (lead as any).createdAt ||
+                        (lead as any).created
+                    )}
+                  </td>
                 </tr>
               ))
             )}

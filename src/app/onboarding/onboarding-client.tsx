@@ -1,10 +1,18 @@
-// FILE: src/app/onboarding/onboarding-client.tsx
 "use client";
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getFirebaseAuth, getFirebaseDb } from "@/lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
+
+function getActiveTenantIdFromCookie() {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith("sylor_tenant_id="));
+  return match ? decodeURIComponent(match.split("=")[1]) : null;
+}
 
 export default function OnboardingClient() {
   const router = useRouter();
@@ -14,11 +22,12 @@ export default function OnboardingClient() {
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSearchParams(new URLSearchParams(window.location.search));
   }, []);
 
-  // plan from URL (?plan=starter|pro) – fallback to starter (used only for copy + redirect)
-  const selectedPlan = (searchParams?.get("plan") || "starter").toLowerCase();
+  // plan from URL (?plan=agency_core|agency_scale) - optional
+  const selectedPlan = (searchParams?.get("plan") as string | null)?.toLowerCase() || null;
 
   const [businessName, setBusinessName] = useState("");
   const [businessPhone, setBusinessPhone] = useState("");
@@ -37,14 +46,14 @@ export default function OnboardingClient() {
       const current = auth.currentUser;
 
       if (!current) {
-        // not logged in → send to signup, keep plan in URL
-        router.push(`/signup?plan=${selectedPlan}`);
+        // not logged in -> send to signup, keep plan in URL
+        router.push(`/signup${selectedPlan ? `?plan=${selectedPlan}` : ""}`);
         return;
       }
 
       // 2) write tenant data directly to Firestore
       const db = getFirebaseDb();
-      const tenantId = current.uid; // your tenant = owner uid in this setup
+      const tenantId = getActiveTenantIdFromCookie() || current.uid;
 
       await setDoc(
         doc(db, "tenants", tenantId),
@@ -52,14 +61,16 @@ export default function OnboardingClient() {
           id: tenantId,
           businessName,
           businessPhone,
+          type: "direct",
+          parentAgencyId: undefined,
         },
         { merge: true }
       );
 
       // Plan is handled by Stripe checkout + webhook, not onboarding
 
-      // 3) done → go to dashboard
-      router.push("/dashboard");
+      // 3) done -> next step
+      router.push(`/setup${selectedPlan ? `?plan=${selectedPlan}` : ""}`);
     } catch (error) {
       console.error(error);
       setErr("Something went wrong. Please try again.");
@@ -74,15 +85,19 @@ export default function OnboardingClient() {
         onClick={() => router.push("/")}
         className="absolute top-6 left-6 text-sm text-white/50 hover:text-white/80"
       >
-        ← Back to site
+        {"< Back to site"}
       </button>
 
       <div className="w-full max-w-lg rounded-[18px] border border-white/10 bg-[#0f1011]/70 p-8 shadow-xl">
         <p className="text-xs text-white/35 mb-2">Step 2 of 2</p>
         <h1 className="text-2xl font-semibold mb-2">Set up your workspace</h1>
         <p className="text-sm text-white/45 mb-6">
-          We’ll connect new leads to this business profile. You chose:{" "}
-          <span className="text-white">{selectedPlan.toUpperCase()}</span>
+          We&apos;ll connect new leads to this business profile.
+          {selectedPlan ? (
+            <>
+              {" "}You chose: <span className="text-white">{selectedPlan.toUpperCase()}</span>
+            </>
+          ) : null}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -112,7 +127,7 @@ export default function OnboardingClient() {
             />
           </div>
 
-          {/* UI-only field – NOT stored yet */}
+          {/* UI-only field - NOT stored yet */}
           <div>
             <label className="text-sm text-white/55 mb-1 block">
               Industry / service
@@ -124,7 +139,7 @@ export default function OnboardingClient() {
               className="w-full rounded-[10px] bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40"
             />
             <p className="mt-1 text-[10px] text-white/25">
-              (This is just for your AI later — not required.)
+              (This is just for your AI later - not required.)
             </p>
           </div>
 
@@ -139,7 +154,7 @@ export default function OnboardingClient() {
             disabled={saving}
             className="w-full rounded-[10px] bg-white text-black py-2 text-sm font-medium hover:bg-white/90 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Finish & go to dashboard →"}
+            {saving ? "Saving..." : "Finish & go to dashboard >>"}
           </button>
         </form>
 

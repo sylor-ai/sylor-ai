@@ -1,14 +1,17 @@
 // src/app/setup/_setup-inner.tsx
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { getFirebaseAuth } from "@/lib/firebase";
+import type { PlanId } from "@/types";
 
-export default function SetupInner() {
+export default function SetupInner({ initialPlan }: { initialPlan?: string }) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const planFromUrl = (searchParams.get("plan") || "").toLowerCase();
+  const planFromUrl =
+    initialPlan === "agency_core" || initialPlan === "agency_scale"
+      ? (initialPlan as PlanId)
+      : null;
 
   const [businessName, setBusinessName] = useState("UrbanLux Construction");
   const [businessPhone, setBusinessPhone] = useState("+1 (818) 555-1234");
@@ -40,6 +43,8 @@ export default function SetupInner() {
         body: JSON.stringify({
           businessName,
           businessPhone,
+          // NOTE: /api/profile persists plan as pendingPlanId only.
+          // Actual subscription activation still happens after Stripe checkout.
           plan: planFromUrl || undefined,
         }),
       });
@@ -50,7 +55,9 @@ export default function SetupInner() {
         return;
       }
 
-      const next = planFromUrl ? `/pricing?plan=${planFromUrl}` : `/pricing`;
+      const next = planFromUrl
+        ? `/billing/activate?plan=${planFromUrl}`
+        : `/dashboard`;
       router.push(next);
     } catch (error: any) {
       console.error(error);
@@ -58,8 +65,6 @@ export default function SetupInner() {
       setLoading(false);
     }
   }
-
-  const displayPlan = planFromUrl || "starter";
 
   return (
     <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4 py-10 sm:py-0">
@@ -84,8 +89,14 @@ export default function SetupInner() {
         {/* Card */}
         <div className="rounded-[18px] border border-white/10 bg-[#0f1011]/65 backdrop-blur p-6 sm:p-8 shadow-[0_0_40px_rgba(0,0,0,0.35)]">
           <p className="text-xs text-white/35 mb-3">
-            You will pick a plan next. Current:{" "}
-            <span className="uppercase">{displayPlan}</span>
+            {planFromUrl ? (
+              <>
+                You will confirm your plan next:{" "}
+                <span className="uppercase">{planFromUrl}</span>
+              </>
+            ) : (
+              "You can pick a plan later from Billing."
+            )}
           </p>
           <h1 className="text-2xl font-semibold mb-2">
             Tell us about your business

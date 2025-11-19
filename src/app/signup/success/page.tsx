@@ -1,34 +1,29 @@
-import { Suspense } from "react";
+// FILE: src/app/signup/success/page.tsx
 import SignupSuccessClient from "./signup-success-client";
 
-type SearchParams = {
+type RawSearchParams = {
   [key: string]: string | string[] | undefined;
 };
 
-export default function SignupSuccessPage({
+type SearchParams = Promise<RawSearchParams>;
+
+export default async function SignupSuccessPage({
   searchParams,
 }: {
   searchParams: SearchParams;
 }) {
-  const raw = searchParams.session_id;
-  const sessionId =
-    typeof raw === "string"
-      ? raw
-      : Array.isArray(raw)
-      ? raw[0]
-      : null;
+  const params = await searchParams;
 
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
-          <div className="text-sm text-white/70">
-            Finishing your account…
-          </div>
-        </div>
-      }
-    >
-      <SignupSuccessClient sessionId={sessionId} />
-    </Suspense>
-  );
+  const rawSessionId = params.session_id ?? (params.sessionId as string | undefined);
+  const rawPlan = params.plan;
+
+  const sessionId = typeof rawSessionId === "string" ? rawSessionId : undefined;
+
+  const plan =
+    typeof rawPlan === "string" &&
+    (rawPlan === "agency_core" || rawPlan === "agency_scale")
+      ? rawPlan
+      : undefined;
+
+  return <SignupSuccessClient sessionId={sessionId ?? null} plan={plan} />;
 }

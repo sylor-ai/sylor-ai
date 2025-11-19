@@ -24,26 +24,30 @@ import type { User, Tenant, Plan } from "@/types";
 
 // Local plan mirror (used to render Billing/Plans)
 const PLANS: Record<string, Plan> = {
-  starter: {
-    id: "starter",
-    name: "Starter",
-    price: 149,
-    features: ["50 Leads/mo", "SMS Automation", "Basic Analytics"],
-    productId: "prod_TJgp5PFopMUBwK",
-    priceId: "price_1SN3ReHBRIMb0ChwEPz1g2w5",
+  agency_core: {
+    id: "agency_core",
+    name: "Agency Core",
+    price: 1499,
+    includedSms: 20000,
+    overageRate: 0.02,
+    maxSubAccounts: 10,
+    features: ["20,000 SMS included", "Up to 10 client accounts", "AI SMS follow-up + booking"],
+    priceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_CORE_PRICE_ID,
   },
-  pro: {
-    id: "pro",
-    name: "Pro",
-    price: 399,
+  agency_scale: {
+    id: "agency_scale",
+    name: "Agency Scale",
+    price: 2499,
+    includedSms: 50000,
+    overageRate: 0.018,
+    maxSubAccounts: 25,
     features: [
-      "Unlimited Leads",
-      "SMS & Voice AI",
-      "Advanced Analytics",
-      "Calendar Sync",
+      "50,000 SMS included",
+      "Up to 25 client accounts",
+      "AI SMS follow-up + booking",
+      "Lower overage: $0.018/SMS",
     ],
-    productId: "prod_TJgplWZ9KPGuvY",
-    priceId: "price_1SN3RrHBRIMb0ChwjSIbQaYn",
+    priceId: process.env.NEXT_PUBLIC_STRIPE_AGENCY_SCALE_PRICE_ID,
   },
 };
 
@@ -341,12 +345,13 @@ export const api = {
     return PLANS[tenant.planId] || null;
   },
 
-  // Create a Stripe checkout session for a given plan (starter|pro)
+  // Create a Stripe checkout session for a given plan
   createStripeCheckoutSession: async (
     planId: Plan["id"]
   ): Promise<{ redirectUrl: string }> => {
     const plan = PLANS[planId];
     if (!plan) throw new Error("Unknown plan");
+    if (!plan.priceId) throw new Error("Missing Stripe price for plan");
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
 

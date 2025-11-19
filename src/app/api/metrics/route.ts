@@ -1,16 +1,13 @@
 // FILE: src/app/api/metrics/route.ts
 import { NextResponse } from "next/server";
-import { getAdminFirestore, verifyIdTokenFromRequest } from "@/lib/firebase-admin";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: Request) {
   try {
-    const decoded = await verifyIdTokenFromRequest(req);
-    if (!decoded) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-
     const db = getAdminFirestore();
-    const userSnap = await db.collection("users").doc(decoded.uid).get();
-    const user = userSnap.exists ? (userSnap.data() as any) : null;
-    const tenantId = user?.tenantId || decoded.uid;
+    const { tenantId } = await assertTenantMembership(req as any);
 
     const leadsSnap = await db.collection("tenants").doc(tenantId).collection("leads").get();
     const convosSnap = await db.collection("tenants").doc(tenantId).collection("conversations").get();
@@ -49,7 +46,6 @@ export async function GET(req: Request) {
       humanMessages7d,
     });
   } catch (e) {
-    console.error("[metrics] error", e);
-    return NextResponse.json({ error: "server-error" }, { status: 500 });
+    return handleTenantApiError(e, "[metrics] error");
   }
 }

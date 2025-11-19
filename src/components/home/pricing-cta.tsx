@@ -4,16 +4,20 @@ import Link from "next/link";
 
 const PLANS = [
   {
-    name: "Starter",
-    price: "$149",
-    tagline: "Per location / mo",
-    includes: ["50 AI qualified leads", "SMS + web intake", "Operator fallbacks"],
+    name: "Agency Core",
+    price: "$1,499",
+    tagline: "Agency plan / mo",
+    includes: ["20,000 SMS included", "Up to 10 client accounts", "AI SMS follow-up + booking"],
   },
   {
-    name: "Pro",
-    price: "$399",
-    tagline: "Per location / mo",
-    includes: ["Unlimited automations", "Voice + calendar sync", "Advanced analytics & API"],
+    name: "Agency Scale",
+    price: "$2,499",
+    tagline: "Agency plan / mo",
+    includes: [
+      "50,000 SMS included",
+      "Up to 25 client accounts",
+      "Lower overage: $0.018/SMS",
+    ],
     highlight: true,
   },
 ];
@@ -29,11 +33,11 @@ export function PricingCTA() {
           Pricing
         </span>
         <h2 className="text-3xl md:text-4xl font-semibold tracking-tight text-white">
-          Scale from your first 50 leads to thousands.
+          Scale from your first leads to thousands.
         </h2>
         <p className="text-white/70 text-lg">
-          No credits, no usage throttles. All plans ship with AI, automations, and human-grade
-          controls.
+          Agency-only plans with generous SMS included and predictable overage. AI, automation,
+          and handoff controls are included on every plan.
         </p>
       </div>
 
@@ -63,10 +67,10 @@ export function PricingCTA() {
               ))}
             </ul>
             <Link
-              href="/signup"
+              href={`/signup?plan=${plan.name === "Agency Core" ? "agency_core" : "agency_scale"}`}
               className={plan.highlight ? "btn-pill-primary w-full" : "btn-pill-outline w-full"}
             >
-              {plan.highlight ? "Start Pro trial" : "Start Starter plan"}
+              Activate plan
             </Link>
           </article>
         ))}

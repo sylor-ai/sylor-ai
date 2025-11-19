@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { verifyIdToken, getAdminFirestore } from "@/lib/firebase-admin";
-import { getSessionToken } from "@/lib/session";
+import { getAdminFirestore } from "@/lib/firebase-admin";
+import { assertTenantMembership } from "@/lib/tenant-context";
+import { handleTenantApiError } from "@/lib/api-error";
 
 function normalizeSlug(raw: string): string {
   return raw
@@ -11,26 +12,10 @@ function normalizeSlug(raw: string): string {
     .replace(/^-|-$/g, "");
 }
 
-async function getTenantIdForUid(uid: string): Promise<string> {
-  const db = getAdminFirestore();
-  const userSnap = await db.collection("users").doc(uid).get();
-  if (!userSnap.exists) return uid;
-  const data = userSnap.data() as any;
-  return data?.tenantId || uid;
-}
-
 export async function GET(req: NextRequest) {
   try {
-    const rawSession = req.cookies.get("sylor_session")?.value;
-    const token = getSessionToken(rawSession);
-    if (!token) {
-      return NextResponse.json({ ok: false, error: "not-authenticated" }, { status: 401 });
-    }
-
-    const decoded = await verifyIdToken(token);
-    const uid = decoded.uid;
+    const { tenantId } = await assertTenantMembership(req as any);
     const db = getAdminFirestore();
-    const tenantId = await getTenantIdForUid(uid);
 
     const tenantSnap = await db.collection("tenants").doc(tenantId).get();
     if (!tenantSnap.exists) {
@@ -45,23 +30,14 @@ export async function GET(req: NextRequest) {
       businessName: t.businessName ?? "",
     });
   } catch (err) {
-    console.error("[public-link GET] error", err);
-    return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
+    return handleTenantApiError(err, "[public-link GET] error");
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const rawSession = req.cookies.get("sylor_session")?.value;
-    const token = getSessionToken(rawSession);
-    if (!token) {
-      return NextResponse.json({ ok: false, error: "not-authenticated" }, { status: 401 });
-    }
-
-    const decoded = await verifyIdToken(token);
-    const uid = decoded.uid;
+    const { tenantId } = await assertTenantMembership(req as any);
     const db = getAdminFirestore();
-    const tenantId = await getTenantIdForUid(uid);
 
     const body = await req.json().catch(() => ({} as any));
     const { publicSlug, publicCaptureEnabled } = body;
@@ -104,7 +80,6 @@ export async function POST(req: NextRequest) {
       publicCaptureEnabled: !!publicCaptureEnabled,
     });
   } catch (err) {
-    console.error("[public-link POST] error", err);
-    return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
+    return handleTenantApiError(err, "[public-link POST] error");
   }
 }

@@ -52,10 +52,17 @@ export default function LoginPage() {
       router.replace(redirectTo || "/dashboard");
     } catch (err: any) {
       console.error("[login] sign-in failed", err);
-      setError(
-        err?.message ??
-          "We couldn’t log you in. Please check your email and password."
-      );
+      const code = err?.code as string | undefined;
+      if (code === "auth/invalid-credential" || code === "auth/wrong-password") {
+        setError("Invalid email or password. Please try again.");
+      } else if (code === "auth/user-not-found") {
+        setError("No account found for that email. Try signing up.");
+      } else {
+        setError(
+          err?.message ??
+            "We couldn't log you in. Please check your email and password."
+        );
+      }
     } finally {
       setLoading(false);
     }

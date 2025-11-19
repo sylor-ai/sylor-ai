@@ -1,114 +1,91 @@
-// FILE: src/app/api/sms/send/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { getTenantBySlug } from "@/lib/tenant-server";
-import { sendSms } from "@/lib/telnyx";
+import { authRatelimit } from "@/lib/rate-limit";
 
-function normalizePhone(raw: string): string {
-  return (raw || "").replace(/[^0-9+]/g, "");
+type LeadPayload = {
+  name?: string;
+  phone?: string;
+  message?: string;
+  email?: string;
+  tenantSlug?: string;
+  tenantKey?: string;
+};
+
+async function resolveTenantId(db: FirebaseFirestore.Firestore, slug?: string | null, tenantKey?: string | null) {
+  let tenantId: string | null = null;
+  if (slug) {
+    const snap = await db
+      .collection("tenants")
+      .where("publicSlug", "==", slug.trim().toLowerCase())
+      .where("publicCaptureEnabled", "==", true)
+      .limit(1)
+      .get();
+    if (!snap.empty) {
+      tenantId = snap.docs[0].id;
+    }
+  }
+  if (!tenantId && tenantKey) {
+    const snap = await db
+      .collection("tenants")
+      .where("publicKey", "==", tenantKey.trim())
+      .limit(1)
+      .get();
+    if (!snap.empty) {
+      tenantId = snap.docs[0].id;
+    }
+  }
+  return tenantId;
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const json = await req.json().catch(() => ({} as any));
-    const {
-      to: rawTo,
-      body: rawBody,      // allow callers to send "body"
-      text: rawText,      // or "text"
-      from: explicitFrom, // optional override
-      tenantId,
-      slug,
-    } = json || {};
+    const body = (await req.json().catch(() => ({}))) as LeadPayload;
+    const name = (body.name || "").trim();
+    const phone = (body.phone || "").trim();
+    const message = (body.message || "").trim();
+    const email = (body.email || "").trim();
+    const slug = (body.tenantSlug || (body as any).slug || "").trim();
+    const tenantKey = (body.tenantKey || "").trim();
 
-    // Validate & prepare
-    const to = normalizePhone(rawTo ?? "");
-    if (!to) {
-      return NextResponse.json({ ok: false, error: "missing-to" }, { status: 400 });
-    }
-    const message = (rawText ?? rawBody ?? "").toString().trim();
-    if (!message) {
-      return NextResponse.json({ ok: false, error: "missing-message" }, { status: 400 });
+    if (!slug && !tenantKey) {
+      return NextResponse.json({ ok: false, error: "invalid-tenant" }, { status: 400 });
     }
 
-    // Resolve tenant (to get default from-number)
     const db = getAdminFirestore();
-    let tenantData:
-      | { telnyxNumber?: string | null; twilioNumber?: string | null; businessName?: string | null }
-      | null = null;
 
-    if (typeof slug === "string" && slug.trim()) {
-      const t = await getTenantBySlug(slug.trim().toLowerCase());
-      if (t) {
-        tenantData = {
-          telnyxNumber: t.telnyxNumber ?? null,
-          twilioNumber: t.twilioNumber ?? null,
-          businessName: t.businessName ?? null,
-        };
-      }
-    } else if (typeof tenantId === "string" && tenantId.trim()) {
-      const snap = await db.collection("tenants").doc(tenantId.trim()).get();
-      if (snap.exists) {
-        const t = snap.data() as any;
-        tenantData = {
-          telnyxNumber: t?.telnyxNumber ?? null,
-          twilioNumber: t?.twilioNumber ?? null,
-          businessName: t?.businessName ?? null,
-        };
+    const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+    if (tenantKey) {
+      const { success } = await authRatelimit.limit(`public-lead:${tenantKey}:${ip}`);
+      if (!success) {
+        return NextResponse.json({ ok: false, error: "rate-limited" }, { status: 429 });
       }
     }
-
-    // Determine "from"
-    const from =
-      explicitFrom ||
-      tenantData?.telnyxNumber ||
-      tenantData?.twilioNumber ||
-      process.env.TELNYX_DEFAULT_FROM ||
-      null;
-
-    if (!from) {
-      return NextResponse.json(
-        { ok: false, error: "no-from-configured" },
-        { status: 400 }
-      );
+    const tenantId = await resolveTenantId(db, slug || null, tenantKey || null);
+    if (!tenantId) {
+      return NextResponse.json({ ok: false, error: "invalid-tenant" }, { status: 400 });
     }
 
-    // Send SMS (✅ use `text`, not `body`)
-    const telnyxResp = await sendSms({
-      to,
-      from,
-      text: message,
+    if (!phone && !email && !message) {
+      return NextResponse.json({ ok: false, error: "missing-fields" }, { status: 400 });
+    }
+
+    // TODO: add per-IP and per-tenant rate limiting here to prevent abuse of public lead forms.
+
+    const leadRef = db.collection("tenants").doc(tenantId).collection("leads").doc();
+    await leadRef.set({
+      id: leadRef.id,
+      name: name || null,
+      phone: phone || null,
+      email: email || null,
+      message: message || null,
+      source: "public",
+      publicSlug: slug || null,
+      createdAt: new Date(),
     });
-
-    if (!telnyxResp.success) {
-      return NextResponse.json(
-        { ok: false, error: telnyxResp.error || "sms-failed" },
-        { status: 400 }
-      );
-    }
-
-    // Optional: log to Firestore if tenantId provided
-    try {
-      if (tenantId) {
-        await db
-          .collection("tenants")
-          .doc(tenantId)
-          .collection("outboundSms")
-          .add({
-            to,
-            from,
-            body: message,
-            provider: "telnyx",
-            providerResponse: telnyxResp ?? null,
-            createdAt: new Date(),
-          });
-      }
-    } catch (logErr) {
-      console.warn("[sms/send] failed to log outbound sms", logErr);
-    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("[sms/send] error", err);
+    console.error("[public/lead] error", err);
     return NextResponse.json({ ok: false, error: "server-error" }, { status: 500 });
   }
 }

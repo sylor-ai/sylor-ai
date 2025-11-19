@@ -1,140 +1,160 @@
-// FILE: src/app/api/auth/verify-code/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { Redis } from "@upstash/redis";
+import { FieldValue } from "firebase-admin/firestore";
 import { getAdminAuth, getAdminFirestore } from "@/lib/firebase-admin";
-import {
-  devGetSignup,
-  devDeleteSignup,
-  type DevSignupPayload,
-} from "@/lib/dev-signup-store";
-
-const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
-const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-
-let redis: Redis | null = null;
-if (redisUrl && redisToken) {
-  redis = new Redis({ url: redisUrl, token: redisToken });
-} else {
-  console.warn("[verify-code] No Redis – using in-memory dev store");
-}
+import { initTenantUsageIfMissing } from "@/lib/usage";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => ({} as any));
   const { email, code } = body;
 
-  if (!email || !code) {
+  const normalizedEmail =
+    typeof email === "string" ? email.trim().toLowerCase() : "";
+  const normalizedCode = typeof code === "string" ? code.trim() : "";
+
+  if (!normalizedEmail || !normalizedEmail.includes("@")) {
     return NextResponse.json(
-      { ok: false, error: "Missing email or code." },
+      { ok: false, error: "Valid email is required." },
       { status: 400 }
     );
   }
 
-  const normalizedEmail = String(email).toLowerCase();
-  const adminAuth = getAdminAuth();
-  const db = getAdminFirestore();
-  const key = `signup-code:${normalizedEmail}`;
-
-  // ─── 1. Load payload ─────────────────────────────
-  let payload: DevSignupPayload | null = null;
-
-  if (redis) {
-    payload = (await redis.get(key)) as DevSignupPayload | null;
-  } else {
-    payload = devGetSignup(key);
-  }
-
-  if (!payload) {
-    return NextResponse.json(
-      { ok: false, error: "Code expired or not found." },
-      { status: 404 }
-    );
-  }
-
-  // ─── 2. Check code (ALWAYS validate) ─────────────
-  if (payload.code !== String(code)) {
+  if (!normalizedCode || normalizedCode.length < 4) {
     return NextResponse.json(
       { ok: false, error: "Invalid code." },
       { status: 400 }
     );
   }
 
-  const name = payload.name || "User";
-  const password = payload.password || "tempPass123";
-
-  // ─── 3. Ensure Firebase user exists ──────────────
-  let userRecord;
   try {
-    userRecord = await adminAuth.getUserByEmail(normalizedEmail);
-  } catch {
-    userRecord = await adminAuth.createUser({
+    const adminAuth = getAdminAuth();
+    const db = getAdminFirestore();
+    const pendingRef = db.collection("pendingSignups").doc(normalizedEmail);
+    const snap = await pendingRef.get();
+
+    if (!snap.exists) {
+      return NextResponse.json(
+        { ok: false, error: "invalid-code" },
+        { status: 400 }
+      );
+    }
+
+    const data = snap.data() as any;
+    const expectedCode = data?.code as string | undefined;
+    const expiresAt = data?.codeExpiresAt as number | undefined;
+
+    if (!expectedCode || expectedCode !== normalizedCode) {
+      return NextResponse.json(
+        { ok: false, error: "invalid-code" },
+        { status: 400 }
+      );
+    }
+
+    if (typeof expiresAt === "number" && Date.now() > expiresAt) {
+      return NextResponse.json(
+        { ok: false, error: "code-expired" },
+        { status: 400 }
+      );
+    }
+
+    const name = (data?.name as string) || "";
+    const password = (data?.password as string) || "";
+    const plan = data?.plan ?? null;
+
+    if (!password) {
+      return NextResponse.json(
+        { ok: false, error: "missing-password" },
+        { status: 400 }
+      );
+    }
+
+    let existing = null;
+    try {
+      existing = await adminAuth.getUserByEmail(normalizedEmail);
+    } catch {
+      existing = null;
+    }
+
+    const firestore = db;
+
+    if (existing) {
+      const userDoc = await firestore.collection("users").doc(existing.uid).get();
+      if (userDoc.exists) {
+        return NextResponse.json(
+          { ok: false, error: "email-in-use" },
+          { status: 400 }
+        );
+      } else {
+        await adminAuth.deleteUser(existing.uid).catch(() => {});
+      }
+    }
+
+    const newUser = await adminAuth.createUser({
       email: normalizedEmail,
       password,
       displayName: name,
     });
-  }
 
-  // Align password with what the user entered during signup-code flow
-  // This ensures email/password login works after verifying the code,
-  // even if the user existed previously with a different password.
-  try {
-    if (typeof password === "string" && password.length >= 6) {
-      await adminAuth.updateUser(userRecord.uid, { password });
-    }
-  } catch (e) {
-    // non-fatal: if update fails, continue with login by custom token
-    console.warn("[verify-code] could not update password for user", normalizedEmail);
-  }
+    const tenantId = newUser.uid;
+    const initials = (name || normalizedEmail)
+      .split(" ")
+      .map((n: string) => n[0])
+      .join("")
+      .toUpperCase();
 
-  // ─── 4. Ensure Firestore tenant + user docs ──────
-  const tenantId = userRecord.uid;
-  const initials = name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase();
+    await firestore.collection("tenants").doc(tenantId).set(
+      {
+        id: tenantId,
+        businessName: "",
+        businessPhone: "",
+        planId: null,
+        hasActiveSubscription: false,
+        stripeCustomerId: `cus_${Date.now()}`,
+        telnyxNumber: null,
+        telnyxMessagingProfileId: null,
+        createdAt: FieldValue.serverTimestamp(),
+        updatedAt: FieldValue.serverTimestamp(),
+        type: "agency",
+        parentAgencyId: null,
+      },
+      { merge: true }
+    );
 
-  const tenantRef = db.collection("tenants").doc(tenantId);
-  const userRef = db.collection("users").doc(tenantId);
+    await firestore.collection("users").doc(tenantId).set(
+      {
+        id: tenantId,
+        name: name || normalizedEmail,
+        email: normalizedEmail,
+        avatarInitials: initials || "U",
+        tenantId,
+        memberships: [
+          {
+            tenantId,
+            role: "owner",
+            isAgency: true,
+          },
+        ],
+        defaultTenantId: tenantId,
+      },
+      { merge: true }
+    );
 
-  const tenantSnap = await tenantRef.get();
-  if (!tenantSnap.exists) {
-    await tenantRef.set({
-      id: tenantId,
-      businessName: "",
-      businessPhone: "",
-      planId: payload.plan ?? null,
-      stripeCustomerId: `cus_${Date.now()}`,
-      telnyxNumber: null,
-      telnyxMessagingProfileId: null,
-      createdAt: Date.now(),
+    await initTenantUsageIfMissing(tenantId);
+
+    await pendingRef.delete().catch(() => {});
+
+    const customToken = await adminAuth.createCustomToken(newUser.uid);
+
+    return NextResponse.json({
+      ok: true,
+      user: { id: newUser.uid, email: newUser.email },
+      plan: plan ?? null,
+      customToken,
     });
+  } catch (err) {
+    console.error("[verify-code] error", err);
+    return NextResponse.json(
+      { ok: false, error: "server-error" },
+      { status: 500 }
+    );
   }
-
-  const userSnap = await userRef.get();
-  if (!userSnap.exists) {
-    await userRef.set({
-      id: tenantId,
-      name,
-      email: normalizedEmail,
-      avatarInitials: initials,
-      tenantId,
-    });
-  }
-
-  // ─── 5. Clean up code ────────────────────────────
-  if (redis) {
-    await redis.del(key);
-  } else {
-    devDeleteSignup(key);
-  }
-
-  // ─── 6. Return custom token to client ────────────
-  const customToken = await adminAuth.createCustomToken(userRecord.uid);
-
-  console.log(`[verify-code] Signup completed for ${normalizedEmail}`);
-  return NextResponse.json({
-    ok: true,
-    customToken,
-    user: { id: userRecord.uid, email: normalizedEmail },
-  });
 }

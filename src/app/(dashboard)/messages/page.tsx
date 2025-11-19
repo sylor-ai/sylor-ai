@@ -40,7 +40,7 @@ export default function MessagesPage() {
 
         try {
           const plan = await api.getCurrentPlan(user.tenantId);
-          setIsPro(plan?.id === "pro");
+          setIsPro(plan?.id === "agency_scale");
         } catch {}
       } catch (e) {
         console.error(e);
@@ -69,6 +69,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     if (!tenantId || !selectedConversationId) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedConversation(null);
       setMessages([]);
       return;

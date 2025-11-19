@@ -11,24 +11,26 @@ export default async function SetupPage({
 }: {
   searchParams: SearchParams;
 }) {
-  // ✅ Await searchParams because it’s now a Promise in Next.js 16
   const params = await searchParams;
 
   const rawPlan = params.plan;
-  const plan =
+  const candidate =
     typeof rawPlan === "string"
       ? rawPlan
       : Array.isArray(rawPlan)
       ? rawPlan[0]
-      : "starter";
+      : undefined;
+
+  const plan =
+    candidate === "agency_core" || candidate === "agency_scale"
+      ? candidate
+      : undefined;
 
   return (
     <Suspense
       fallback={
         <div className="min-h-screen bg-[#0a0a0b] text-white flex items-center justify-center px-4">
-          <div className="text-sm text-white/60">
-            Loading business setup…
-          </div>
+          <div className="text-sm text-white/60">Loading business setup...</div>
         </div>
       }
     >

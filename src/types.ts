@@ -1,21 +1,37 @@
 // src/types.ts
+export type TenantMembership = {
+  tenantId: string;
+  role: "owner" | "admin" | "agent";
+  isAgency?: boolean;
+};
+
 export type User = {
   id: string;
   name: string;
   email: string;
   avatarInitials: string;
-  tenantId: string;
+  // legacy single-tenant field (keep for compatibility)
+  tenantId?: string;
+  memberships?: TenantMembership[];
+  defaultTenantId?: string;
 };
+
+export type PlanId = "agency_core" | "agency_scale";
+
+export type TenantType = "direct" | "agency" | "client";
 
 export type Tenant = {
   id: string;
   businessName: string;
   businessPhone: string;
   stripeCustomerId?: string | null;
-  planId?: string | null;
+  planId?: PlanId | null;
+  hasActiveSubscription?: boolean;
   telnyxNumber?: string | null;
   telnyxMessagingProfileId?: string | null;
   createdAt?: any | null;
+  type?: TenantType;
+  parentAgencyId?: string | null;
 
   // Public lead capture slug (tenants can have a public URL)
   publicSlug?: string | null;
@@ -84,10 +100,13 @@ export type Message = {
 };
 
 export type Plan = {
-  id: "starter" | "pro";
+  id: "agency_core" | "agency_scale";
   name: string;
   price: number;
   features: string[];
+  includedSms?: number;
+  overageRate?: number;
+  maxSubAccounts?: number;
   productId?: string;
   priceId?: string;
 };
