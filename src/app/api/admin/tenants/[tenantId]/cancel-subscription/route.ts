@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
-import Stripe from "stripe";
 import { requireSuperAdmin } from "@/lib/admin-auth";
 import { adminDb } from "@/lib/firebase-admin";
-
-const stripeSecret = process.env.STRIPE_SECRET_KEY;
-const stripe = stripeSecret
-  ? new Stripe(stripeSecret, { apiVersion: "2024-06-20" })
-  : null;
+import { stripe } from "@/lib/stripe-server";
 
 type ParamsPromise = Promise<{ tenantId: string }>;
 
@@ -16,6 +11,7 @@ export async function POST(
 ) {
   try {
     await requireSuperAdmin();
+
     const { tenantId } = await context.params;
 
     if (!tenantId) {
@@ -32,8 +28,9 @@ export async function POST(
       );
     }
 
-    const ref = adminDb.collection("tenants").doc(tenantId);
-    const snap = await ref.get();
+    const tenantRef = adminDb.collection("tenants").doc(tenantId);
+    const snap = await tenantRef.get();
+
     if (!snap.exists) {
       return NextResponse.json(
         { ok: false, error: "Tenant not found" },
@@ -50,7 +47,7 @@ export async function POST(
       });
     }
 
-    await ref.update({
+    await tenantRef.update({
       hasActiveSubscription: false,
       status: "canceled",
     });
