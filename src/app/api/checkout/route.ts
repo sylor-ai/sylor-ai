@@ -46,8 +46,13 @@ export async function POST(req: NextRequest) {
     }
 
     if (!priceId) {
+      console.error("[checkout] Plan not configured", {
+        planId: plan,
+        env_core_set: !!process.env.STRIPE_AGENCY_CORE_PRICE_ID,
+        env_scale_set: !!process.env.STRIPE_AGENCY_SCALE_PRICE_ID,
+      });
       return NextResponse.json(
-        { ok: false, error: "Plan not configured" },
+        { ok: false, error: "Plan not configured", planId: plan },
         { status: 400 }
       );
     }

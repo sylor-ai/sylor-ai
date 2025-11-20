@@ -34,16 +34,19 @@ if (!getApps().length) {
 }
 
 // singletons
-const adminAuth = getAuth(app);
-const adminDb = getFirestore(app);
+const adminAuthInstance = getAuth(app);
+const adminDbInstance = getFirestore(app);
 
 export function getAdminAuth() {
-  return adminAuth;
+  return adminAuthInstance;
 }
 
 export function getAdminFirestore() {
-  return adminDb;
+  return adminDbInstance;
 }
+
+export const adminAuth = adminAuthInstance;
+export const adminDb = adminDbInstance;
 
 // Verify a raw ID token string
 export async function verifyIdToken(token: string) {

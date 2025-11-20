@@ -1,19 +1,29 @@
 // src/types.ts
 export type TenantMembership = {
   tenantId: string;
-  role: "owner" | "admin" | "agent";
+  role: "owner" | "admin" | "agent" | "member" | "viewer";
   isAgency?: boolean;
 };
 
+export type UserRole =
+  | "member"
+  | "owner"
+  | "viewer"
+  | "admin"
+  | "agent"
+  | "super_admin";
+
 export type User = {
   id: string;
-  name: string;
   email: string;
-  avatarInitials: string;
+  name?: string;
+  avatarInitials?: string;
   // legacy single-tenant field (keep for compatibility)
   tenantId?: string;
   memberships?: TenantMembership[];
-  defaultTenantId?: string;
+  defaultTenantId?: string | null;
+  role?: UserRole;
+  lastLoginAt?: string | null;
 };
 
 export type PlanId = "agency_core" | "agency_scale";

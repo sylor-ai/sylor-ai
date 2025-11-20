@@ -160,14 +160,14 @@ export default function BillingClient() {
     router.push(`/billing/activate?plan=${planId}`);
   };
 
-  async function handleUpgrade() {
+  const startCheckout = async (planId: PlanOption) => {
     setBusy(true);
     setErr(null);
     try {
       const res = await authedFetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ planId: "agency_scale" }),
+        body: JSON.stringify({ planId }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data?.url) {
@@ -178,6 +178,10 @@ export default function BillingClient() {
       setErr(e?.message || "Could not start checkout.");
       setBusy(false);
     }
+  };
+
+  async function handleUpgrade() {
+    await startCheckout("agency_scale");
   }
 
   async function handleManageBilling() {

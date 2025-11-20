@@ -349,13 +349,8 @@ export const api = {
   createStripeCheckoutSession: async (
     planId: Plan["id"]
   ): Promise<{ redirectUrl: string }> => {
-    const plan = PLANS[planId];
-    if (!plan) throw new Error("Unknown plan");
-    if (!plan.priceId) throw new Error("Missing Stripe price for plan");
+    if (!planId) throw new Error("Unknown plan");
 
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL ?? window.location.origin;
-
-    // include ID token so server can associate checkout with the tenant
     let authHeader: Record<string, string> = {};
     try {
       const auth = getFirebaseAuth();
@@ -366,12 +361,7 @@ export const api = {
     const res = await fetch("/api/checkout", {
       method: "POST",
       headers: { "Content-Type": "application/json", ...authHeader },
-      body: JSON.stringify({
-        priceId: plan.priceId,
-        planId,
-        successUrl: `${baseUrl}/billing?checkout=success&plan=${planId}`,
-        cancelUrl: `${baseUrl}/billing?checkout=canceled`,
-      }),
+      body: JSON.stringify({ planId }),
     });
 
     if (!res.ok) {

@@ -8,6 +8,7 @@ const PROTECTED_PATHS = [
   "/appointments",
   "/billing",
   "/settings",
+  "/admin",
 ];
 
 function isProtectedPath(pathname: string) {
@@ -57,5 +58,6 @@ export const config = {
     "/appointments/:path*",
     "/billing/:path*",
     "/settings/:path*",
+    "/admin/:path*",
   ],
 };

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { FieldValue } from "firebase-admin/firestore";
 import { getAdminFirestore, getAdminAuth } from "./firebase-admin";
 import { NextRequest } from "next/server";
 import { SESSION_COOKIE, parseSessionCookie } from "@/lib/session";
@@ -69,6 +70,12 @@ export async function getActiveTenantForRequest(req: NextRequest) {
     return { tenantId: cookieTenant, tenant: null, user: null };
   }
   const userData = userSnap.data() as any;
+  if (userData?.forceLogoutAt) {
+    await userSnap.ref
+      .update({ forceLogoutAt: FieldValue.delete() })
+      .catch(() => {});
+    return { tenantId: null, tenant: null, user: null };
+  }
   const memberships = Array.isArray(userData?.memberships) ? userData.memberships : [];
 
   let tenantId =
