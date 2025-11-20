@@ -38,6 +38,12 @@ export async function POST(req: NextRequest) {
       const now = Date.now();
       const expiresAt = now + 1000 * 60 * 60;
 
+      const forwardedFor = req.headers.get("x-forwarded-for");
+      const clientIp =
+        forwardedFor?.split(",")[0]?.trim() ||
+        req.headers.get("x-real-ip") ||
+        null;
+
       await adminDb.collection(RESET_COLLECTION).doc(tokenHash).set({
         uid: user.uid,
         email: normalizedEmail,
@@ -45,10 +51,7 @@ export async function POST(req: NextRequest) {
         createdAt: now,
         expiresAt,
         used: false,
-        ip:
-          req.headers.get("x-forwarded-for") ??
-          req.ip ??
-          null,
+        ip: clientIp,
         userAgent: req.headers.get("user-agent") ?? null,
       });
 
