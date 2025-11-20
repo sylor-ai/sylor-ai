@@ -1,10 +1,5 @@
 // FILE: src/lib/mail.ts
-import { Resend } from "resend";
-
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const FROM_EMAIL = process.env.MAIL_FROM || "Sylor.ai <onboarding@sylor.ai>";
-
-const resend = RESEND_API_KEY ? new Resend(RESEND_API_KEY) : null;
+import { FROM_EMAIL, resend } from "./resend";
 
 export async function sendVerificationEmail(to: string, code: string) {
   if (!resend) {

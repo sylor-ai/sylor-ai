@@ -111,6 +111,16 @@ export default function LoginPage() {
             />
           </div>
 
+          <p className="text-[11px] text-white/50">
+            <button
+              type="button"
+              onClick={() => router.push("/forgot-password")}
+              className="underline underline-offset-2 hover:text-white/80"
+            >
+              Forgot your password?
+            </button>
+          </p>
+
           {error && (
             <p className="text-xs text-red-400 bg-red-500/10 rounded-xl px-3 py-2">
               {error}

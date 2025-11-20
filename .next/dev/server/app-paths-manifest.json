@@ -1,18 +1,11 @@
 {
-  "/(dashboard)/billing/page": "app/(dashboard)/billing/page.js",
-  "/(dashboard)/dashboard/clients/page": "app/(dashboard)/dashboard/clients/page.js",
   "/(dashboard)/dashboard/page": "app/(dashboard)/dashboard/page.js",
-  "/(dashboard)/dashboard/performance/page": "app/(dashboard)/dashboard/performance/page.js",
-  "/(dashboard)/dashboard/usage/page": "app/(dashboard)/dashboard/usage/page.js",
-  "/(dashboard)/leads/page": "app/(dashboard)/leads/page.js",
-  "/api/agency/clients/route": "app/api/agency/clients/route.js",
-  "/api/agency/usage-summary/route": "app/api/agency/usage-summary/route.js",
   "/api/analytics/overview/route": "app/api/analytics/overview/route.js",
+  "/api/auth/forgot-password/route": "app/api/auth/forgot-password/route.js",
   "/api/auth/log-login/route": "app/api/auth/log-login/route.js",
+  "/api/auth/logout/route": "app/api/auth/logout/route.js",
   "/api/me/workspaces/route": "app/api/me/workspaces/route.js",
-  "/api/tenant/billing/route": "app/api/tenant/billing/route.js",
-  "/api/tenant/performance/route": "app/api/tenant/performance/route.js",
-  "/api/tenant/usage/route": "app/api/tenant/usage/route.js",
+  "/forgot-password/page": "app/forgot-password/page.js",
   "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }
