@@ -18,6 +18,7 @@ import {
   orderBy,
   addDoc,
   setDoc,
+  deleteDoc,
 } from "firebase/firestore";
 import { getFirebaseAuth, getFirebaseDb } from "./firebase";
 import type { User, Tenant, Plan } from "@/types";
@@ -281,6 +282,55 @@ export const api = {
     // denormalize id if needed by UI that expects leadId
     await setDoc(ref, { leadId: ref.id }, { merge: true });
     return { id: ref.id };
+  },
+
+  // Update an existing lead
+  updateLead: async (
+    tenantId: string,
+    leadId: string,
+    updates: {
+      name?: string;
+      phone?: string;
+      service?: string;
+      city?: string;
+      value?: number;
+      status?: "New" | "Contacted" | "Booked" | "Closed";
+      email?: string;
+    }
+  ) => {
+    const db = getFirebaseDb();
+    const ref = doc(db, "tenants", tenantId, "leads", leadId);
+    const payload: Record<string, any> = {};
+
+    if (typeof updates.name === "string") payload.name = updates.name;
+    if (typeof updates.phone === "string") payload.phone = updates.phone;
+    if (typeof updates.service === "string") payload.service = updates.service;
+    if (typeof updates.city === "string") payload.city = updates.city;
+    if (typeof updates.email === "string") payload.email = updates.email;
+    if (
+      typeof updates.value === "number" &&
+      Number.isFinite(updates.value)
+    ) {
+      payload.value = updates.value;
+    }
+    if (updates.status) {
+      payload.status = updates.status;
+    }
+
+    payload.updatedAt = new Date().toISOString();
+
+    if (Object.keys(payload).length === 1 && payload.updatedAt) {
+      // only timestamp would be written, skip
+      return;
+    }
+
+    await setDoc(ref, payload, { merge: true });
+  },
+
+  deleteLead: async (tenantId: string, leadId: string) => {
+    const db = getFirebaseDb();
+    const ref = doc(db, "tenants", tenantId, "leads", leadId);
+    await deleteDoc(ref);
   },
 
   // Verify code, sign in with custom token, set cookie via server

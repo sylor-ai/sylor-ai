@@ -478,10 +478,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     NAV.find((item) => isNavActive(pathname, item))?.label || "Dashboard";
 
   return (
-    <div className="min-h-screen bg-[#050509] text-white">
-      <div className="flex min-h-screen">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#050509] text-white">
+      <div className="grid min-h-full lg:grid-cols-[16rem,1fr]">
         {/* Desktop sidebar */}
-        <aside className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-white/5 bg-[#09090d]">
+        <aside className="hidden lg:block lg:w-64 lg:border-r lg:border-white/5 bg-[#09090d]">
           <SidebarContent
             navItems={filteredNav}
             hydrated={hydrated}
@@ -494,7 +494,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </aside>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col min-h-screen">
+        <div className="grid grid-rows-[auto,1fr] min-h-full lg:h-screen lg:overflow-hidden">
           <header className="sticky top-0 z-40 border-b border-white/5 bg-[#050509]/95 backdrop-blur">
             <div className="flex flex-col gap-3 px-4 py-3 sm:px-6 lg:px-10 xl:px-12 max-w-7xl mx-auto w-full">
               <div className="flex items-center justify-between gap-3">
@@ -550,7 +550,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             </div>
           </header>
 
-          <main className="flex-1">
+          <main className="flex-1 overflow-y-auto">
             <div className="px-4 pb-10 pt-4 sm:px-6 lg:px-10 xl:px-12 lg:pt-6 max-w-7xl mx-auto w-full">
               {children}
             </div>

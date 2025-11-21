@@ -198,10 +198,10 @@ a {
     border-color: rgba(255, 255, 255, 0.25);
   }
 
-  .btn-pill-outline:hover {
-    @apply text-white;
-    border-color: rgba(255, 255, 255, 0.6);
-  }
+.btn-pill-outline:hover {
+  @apply text-white;
+  border-color: rgba(255, 255, 255, 0.6);
+}
 }
 
 .chip {
@@ -213,6 +213,25 @@ a {
   background: rgba(255, 255, 255, 0.04);
   letter-spacing: 0.03em;
   text-transform: uppercase;
+}
+
+.select-pill {
+  background-color: rgba(255, 255, 255, 0.04);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.select-pill option {
+  background-color: #09090f;
+  color: #f5f5ff;
+}
+
+select.select-pill::-ms-expand {
+  display: none;
+}
+
+select.select-pill:focus-visible {
+  outline: none;
 }
 
 .sidebar,

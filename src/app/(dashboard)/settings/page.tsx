@@ -175,85 +175,87 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-12 w-full max-w-2xl mx-auto px-4 sm:px-0">
       {/* Header */}
-      <div>
-        <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
-        <p className="text-sm text-white/40">
-          Business info, phones, AI behaviour, and account.
+      <div className="space-y-1 text-center sm:text-left">
+        <h1 className="text-3xl font-semibold tracking-tight">Account settings</h1>
+        <p className="text-sm text-white/50">
+          Manage your business profile, public link, and session.
         </p>
       </div>
 
-      {/* Business card */}
-      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl">
-        <h2 className="text-sm font-medium mb-3">Business</h2>
-        <form onSubmit={handleSave} className="space-y-3" aria-label="Business settings">
-          <div>
-            <label htmlFor="businessName" className="text-xs text-white/50 mb-1 block">
-              Business name
-            </label>
-            <input
-              id="businessName"
-              name="businessName"
-              type="text"
-              value={businessName}
-              onChange={(e) => setBusinessName(e.target.value)}
-              required
-              placeholder="Enter your business name"
-              disabled={loading}
-              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
-            />
-          </div>
+      <div className="grid gap-5 lg:grid-cols-2">
+        {/* Business card */}
+        <div className="panel rounded-[28px] bg-white/[0.04] shadow-[0_18px_35px_rgba(5,5,9,0.55)]">
+          <h2 className="text-sm font-semibold mb-4 text-white/80">Business profile</h2>
+          <form onSubmit={handleSave} className="space-y-4" aria-label="Business settings">
+            <div className="space-y-1.5">
+              <label htmlFor="businessName" className="text-xs text-white/50">
+                Business name
+              </label>
+              <input
+                id="businessName"
+                name="businessName"
+                type="text"
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                required
+                placeholder="Enter your business name"
+                disabled={loading}
+                className="w-full rounded-2xl bg-[#0b0b0c] border border-white/10 px-4 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
+              />
+            </div>
 
-          <div>
-            <label htmlFor="businessPhone" className="text-xs text-white/50 mb-1 block">
-              Business phone
-            </label>
-            <input
-              id="businessPhone"
-              name="businessPhone"
-              type="tel"
-              value={businessPhone}
-              onChange={(e) => setBusinessPhone(e.target.value)}
-              required
-              placeholder="+1 (555) 000-0000"
-              disabled={loading}
-              className="w-full rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
-            />
-          </div>
+            <div className="space-y-1.5">
+              <label htmlFor="businessPhone" className="text-xs text-white/50">
+                Business phone
+              </label>
+              <input
+                id="businessPhone"
+                name="businessPhone"
+                type="tel"
+                value={businessPhone}
+                onChange={(e) => setBusinessPhone(e.target.value)}
+                required
+                placeholder="+1 (555) 000-0000"
+                disabled={loading}
+                className="w-full rounded-2xl bg-[#0b0b0c] border border-white/10 px-4 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-60"
+              />
+            </div>
 
+            <button
+              type="submit"
+              disabled={saving || loading}
+              className="w-full rounded-2xl bg-white text-black px-4 py-2 text-sm font-semibold hover:bg-white/90 disabled:opacity-60"
+            >
+              {saving ? "Saving..." : "Save changes"}
+            </button>
+
+            {message ? (
+              <p className="text-xs text-white/40 mt-1 text-center sm:text-left" role="status">
+                {message}
+              </p>
+            ) : null}
+          </form>
+        </div>
+
+        {/* AI card */}
+        <div className="panel rounded-[28px] bg-white/[0.04] shadow-[0_18px_35px_rgba(5,5,9,0.5)]">
+          <h2 className="text-sm font-semibold mb-2 text-white/80">AI behaviour</h2>
+          <p className="text-xs text-white/40 mb-4">
+            Add rules for auto-confirm, auto-book, routing etc.
+          </p>
           <button
-            type="submit"
-            disabled={saving || loading}
-            className="rounded-xl bg-white text-black px-4 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
+            type="button"
+            className="w-full rounded-2xl bg-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/20"
           >
-            {saving ? "Saving..." : "Save changes"}
+            + Add rule
           </button>
-
-          {message ? (
-            <p className="text-xs text-white/40 mt-1" role="status">
-              {message}
-            </p>
-          ) : null}
-        </form>
-      </div>
-
-      {/* AI card */}
-      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl">
-        <h2 className="text-sm font-medium mb-3">AI behaviour</h2>
-        <p className="text-xs text-white/35 mb-2">
-          Add rules for auto-confirm, auto-book, routing etc.
-        </p>
-        <button
-          type="button"
-          className="rounded-xl bg-white/5 px-3 py-1.5 text-sm text-white/80 hover:bg-white/10"
-        >
-          + Add rule
-        </button>
+        </div>
       </div>
 
       {/* Public lead link */}
-      <div className="rounded-2xl border border-white/5 bg-white/2 backdrop-blur p-5 max-w-xl">
+      <div className="panel rounded-[28px] bg-white/[0.04] shadow-[0_18px_35px_rgba(5,5,9,0.5)]">
         <h2 className="text-sm font-medium mb-1">Public lead link</h2>
         <p className="text-xs text-white/40 mb-3">
           Share a simple link where homeowners can request a quote. Replies flow into Messages.
@@ -271,16 +273,16 @@ export default function SettingsPage() {
             Enable public lead link
           </label>
 
-          <div>
+          <div className="space-y-1">
             <label className="text-xs text-white/50 mb-1 block">Link slug</label>
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-white/40">/lead/</span>
+            <div className="flex items-center gap-2 rounded-2xl bg-black/40 border border-white/10 px-3 py-2">
+              <span className="text-xs text-white/50">/lead/</span>
               <input
                 value={publicSlug}
                 onChange={(e) => setPublicSlug(e.target.value)}
                 disabled={!publicEnabled || pubLoading}
                 placeholder="your-business-name"
-                className="flex-1 rounded-xl bg-[#0b0b0c] border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/40 disabled:opacity-40"
+                className="flex-1 bg-transparent text-sm outline-none placeholder:text-white/30 disabled:opacity-40"
               />
             </div>
             <p className="mt-1 text-[10px] text-white/30">
@@ -289,7 +291,7 @@ export default function SettingsPage() {
           </div>
 
           {publicEnabled && publicSlug && (
-            <div className="rounded-xl bg-white/5 border border-white/10 px-3 py-2 flex items-center justify-between gap-2">
+            <div className="rounded-2xl bg-white/5 border border-white/10 px-3 py-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
               <div className="text-xs break-all">
                 <span className="text-white/50">Your link:</span>{" "}
                 <span className="text-white">{`${baseUrl || ""}/lead/${publicSlug}`}</span>
@@ -297,7 +299,7 @@ export default function SettingsPage() {
               <button
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(`${baseUrl || ""}/lead/${publicSlug}`).catch(() => {})}
-                className="text-xs px-2 py-1 rounded-[8px] bg-white text-black hover:bg-white/90"
+                className="text-xs px-3 py-1.5 rounded-full bg-white text-black hover:bg-white/90"
               >
                 Copy
               </button>
@@ -312,7 +314,7 @@ export default function SettingsPage() {
           <button
             type="submit"
             disabled={pubSaving || pubLoading}
-            className="rounded-xl bg-white text-black px-4 py-1.5 text-sm font-medium hover:bg-white/90 disabled:opacity-60"
+            className="w-full sm:w-auto rounded-2xl bg-white text-black px-4 py-2 text-sm font-semibold hover:bg-white/90 disabled:opacity-60"
           >
             {pubSaving ? "Saving..." : "Save changes"}
           </button>
@@ -320,7 +322,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Danger zone */}
-      <div className="rounded-2xl border border-red-500/20 bg-red-950/30 p-5 max-w-xl">
+      <div className="panel border border-red-400/30 bg-red-950/40 rounded-[28px] shadow-[0_20px_45px_rgba(120,20,20,0.25)]">
         <h2 className="text-sm font-medium mb-2 text-red-200">Danger zone</h2>
         <p className="text-xs text-red-100/70 mb-3">
           Permanently delete this account and its tenant. This cannot be undone.
@@ -328,7 +330,7 @@ export default function SettingsPage() {
         <button
           type="button"
           onClick={handleDeleteAccount}
-          className="rounded-xl bg-red-500/90 px-4 py-1.5 text-sm font-medium text-white hover:bg-red-600"
+          className="w-full rounded-2xl bg-red-500/90 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 sm:w-auto"
         >
           Delete my account
         </button>

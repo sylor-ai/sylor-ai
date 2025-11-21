@@ -263,8 +263,30 @@ export default function BillingClient() {
                   </button>
                 )}
                 {!isClientTenant && (
-                  <button onClick={handleManageBilling} disabled={busy} className="btn-ghost disabled:opacity-50">
-                    Manage billing
+                  <button
+                    onClick={handleManageBilling}
+                    disabled={busy}
+                    className="btn-ghost flex items-center gap-2 rounded-full border-white/20 bg-white/5 px-3 py-1.5 text-xs font-semibold text-white/85 transition hover:border-white/40 hover:text-white disabled:opacity-50 md:px-5 md:py-2 md:text-sm"
+                  >
+                    <svg
+                      className="h-4 w-4 text-white/70"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M4 11h4" />
+                      <path d="M4 7h12" />
+                      <path d="M4 15h8" />
+                      <path d="M14 11h2" />
+                      <path d="M12 15h4" />
+                    </svg>
+                    <span className="md:inline-block md:text-base">
+                      <span className="md:hidden">Billing</span>
+                      <span className="hidden md:inline">Manage billing</span>
+                    </span>
                   </button>
                 )}
               </div>
