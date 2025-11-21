@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server";
 import { requireSuperAdmin } from "@/lib/admin-auth";
 import { adminDb } from "@/lib/firebase-admin";
-import { stripe } from "@/lib/stripe-server";
+import Stripe from "stripe";
+
+const stripeSecret = process.env.STRIPE_SECRET_KEY;
+
+const stripe = stripeSecret
+  ? new Stripe(stripeSecret, {
+      apiVersion: "2025-10-29.clover",
+    })
+  : null;
 
 type ParamsPromise = Promise<{ tenantId: string }>;
 
@@ -38,11 +46,13 @@ export async function POST(
       );
     }
 
-    const tenant = snap.data() || {};
-    const subscriptionId = tenant.stripeSubscriptionId as string | undefined;
+    const data = snap.data() || {};
+    const stripeSubscriptionId = data.stripeSubscriptionId as
+      | string
+      | undefined;
 
-    if (subscriptionId) {
-      await stripe.subscriptions.update(subscriptionId, {
+    if (stripeSubscriptionId) {
+      await stripe.subscriptions.update(stripeSubscriptionId, {
         cancel_at_period_end: true,
       });
     }
@@ -57,7 +67,7 @@ export async function POST(
     console.error("[admin] cancel-subscription failed", err);
     return NextResponse.json(
       { ok: false, error: err?.message ?? "Failed to cancel subscription" },
-      { status: err?.status ?? 500 }
+      { status: 500 }
     );
   }
 }
