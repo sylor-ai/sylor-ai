@@ -28,8 +28,30 @@ export async function POST(req: NextRequest) {
 
     await userRef.set({ defaultTenantId: tenantId }, { merge: true });
 
+    const tenantSnap = await db.collection("tenants").doc(tenantId).get();
+    const tenantType = ((tenantSnap.data() as any)?.type || (tenantSnap.data() as any)?.tenantType || "direct") as
+      | "agency"
+      | "client"
+      | "direct";
+    const membershipRole =
+      memberships.find((m: any) => m?.tenantId === tenantId)?.role || (user?.role as any) || "member";
+
     const res = NextResponse.json({ ok: true });
     res.cookies.set("sylor_tenant_id", tenantId, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.cookies.set("sylor_tenant_type", tenantType, {
+      httpOnly: true,
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 30,
+      secure: process.env.NODE_ENV === "production",
+    });
+    res.cookies.set("sylor_tenant_role", membershipRole, {
       httpOnly: true,
       sameSite: "lax",
       path: "/",

@@ -1,7 +1,7 @@
 // FILE: src/app/api/ai/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 type AiProfilePayload = {
@@ -34,7 +34,7 @@ function withDefaults(tenant: any) {
 
 export async function GET(req: NextRequest) {
   try {
-    const { tenant } = await assertTenantMembership(req);
+    const { tenant } = await assertTenantWriteContext(req as any);
 
     return NextResponse.json({ ok: true, profile: withDefaults(tenant) });
   } catch (e) {
@@ -44,7 +44,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
 
     const body = (await req.json().catch(() => ({}))) as AiProfilePayload;
     // basic validation & normalization

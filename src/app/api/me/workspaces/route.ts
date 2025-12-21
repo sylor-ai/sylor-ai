@@ -41,11 +41,37 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    return NextResponse.json({
+    const activeWs =
+      workspaces.find((w: any) => w.tenantId === defaultTenantId) ||
+      workspaces[0] ||
+      null;
+
+    const res = NextResponse.json({
       ok: true,
       workspaces,
       defaultTenantId,
     });
+
+    if (activeWs?.type) {
+      res.cookies.set("sylor_tenant_type", activeWs.type, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+    if (activeWs?.role) {
+      res.cookies.set("sylor_tenant_role", activeWs.role, {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+        maxAge: 60 * 60 * 24 * 30,
+      });
+    }
+
+    return res;
   } catch (err) {
     console.error("[me/workspaces] error", err);
     const status = (err as any)?.status && typeof (err as any).status === "number" ? (err as any).status : 500;

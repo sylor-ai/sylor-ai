@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [publicEnabled, setPublicEnabled] = useState(false);
   const [pubErr, setPubErr] = useState("");
   const [pubSaved, setPubSaved] = useState(false);
+  const [installVerifiedAt, setInstallVerifiedAt] = useState<string | null>(null);
   const baseUrl =
     process.env.NEXT_PUBLIC_APP_URL ?? (typeof window !== "undefined" ? window.location.origin : "");
 
@@ -67,6 +68,7 @@ export default function SettingsPage() {
         if (res.ok) {
           setPublicSlug(res.publicSlug ?? "");
           setPublicEnabled(res.publicCaptureEnabled ?? false);
+          setInstallVerifiedAt(res.installVerifiedAt ?? null);
         } else {
           setPubErr("Could not load public link settings.");
         }
@@ -178,10 +180,19 @@ export default function SettingsPage() {
     <div className="space-y-5 pb-12 w-full max-w-2xl mx-auto px-4 sm:px-0">
       {/* Header */}
       <div className="space-y-1 text-center sm:text-left">
-        <h1 className="text-3xl font-semibold tracking-tight">Account settings</h1>
-        <p className="text-sm text-white/50">
-          Manage your business profile, public link, and session.
-        </p>
+        <div className="flex items-center gap-3 justify-center sm:justify-start">
+          <h1 className="text-3xl font-semibold tracking-tight">Account settings</h1>
+          <span
+            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs ${
+              installVerifiedAt
+                ? "border border-emerald-300/30 bg-emerald-400/10 text-emerald-100"
+                : "border border-white/15 bg-white/5 text-white/70"
+            }`}
+          >
+            {installVerifiedAt ? "Install Verified" : "Install not verified"}
+          </span>
+        </div>
+        <p className="text-sm text-white/50">Manage your business profile, public link, and session.</p>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">

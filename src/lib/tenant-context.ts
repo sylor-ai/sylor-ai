@@ -3,6 +3,11 @@ import { FieldValue } from "firebase-admin/firestore";
 import { getAdminFirestore, getAdminAuth } from "./firebase-admin";
 import { NextRequest } from "next/server";
 import { SESSION_COOKIE, parseSessionCookie } from "@/lib/session";
+import { TenantMembership, TenantType } from "@/types";
+
+type AssertOptions = {
+  roles?: TenantMembership["role"][];
+};
 
 export async function getActiveTenantIdForUser(uid: string) {
   const db = getAdminFirestore();
@@ -18,6 +23,12 @@ export async function getActiveTenantIdForUser(uid: string) {
     return user.memberships[0].tenantId;
   }
   return user?.tenantId || null;
+}
+
+function normalizeTenantType(value: any): TenantType | null {
+  const type = value?.type || value?.tenantType || value;
+  if (type === "agency" || type === "client" || type === "direct") return type;
+  return null;
 }
 
 export async function assertMembership(uid: string, tenantId: string) {
@@ -86,21 +97,23 @@ export async function getActiveTenantForRequest(req: NextRequest) {
   const userRecord = { id: uid, uid, ...userData };
 
   if (!tenantId) {
-    return { user: userRecord, tenant: null, tenantId: null };
+    return { user: userRecord, tenant: null, tenantId: null, tenantType: null, membership: null };
   }
 
   const tenantSnap = await db.collection("tenants").doc(tenantId).get();
   if (!tenantSnap.exists) {
-    return { user: userRecord, tenant: null, tenantId: null };
+    return { user: userRecord, tenant: null, tenantId: null, tenantType: null, membership: null };
   }
 
   const tenant = { id: tenantId, ...(tenantSnap.data() as any) };
+  const membership = memberships.find((m: any) => m?.tenantId === tenantId) || null;
+  const tenantType = normalizeTenantType(tenant);
 
-  return { tenantId, tenant, user: userRecord };
+  return { tenantId, tenant, tenantType, membership, user: userRecord };
 }
 
-export async function assertTenantMembership(req: NextRequest) {
-  const { tenantId, tenant, user } = await getActiveTenantForRequest(req);
+export async function assertTenantWriteContext(req: NextRequest, options?: AssertOptions) {
+  const { tenantId, tenant, user, tenantType, membership } = await getActiveTenantForRequest(req);
   if (!user) {
     throw Object.assign(new Error("unauthorized"), { status: 401 });
   }
@@ -111,5 +124,28 @@ export async function assertTenantMembership(req: NextRequest) {
   if (!allowed) {
     throw Object.assign(new Error("forbidden"), { status: 403 });
   }
-  return { user, tenantId, tenant };
+  if (options?.roles && membership?.role && !options.roles.includes(membership.role)) {
+    throw Object.assign(new Error("forbidden"), { status: 403 });
+  }
+  return { user, tenantId, tenant, tenantType, membership };
+}
+
+export async function assertAgencyContext(req: NextRequest, options?: AssertOptions) {
+  const ctx = await assertTenantWriteContext(req, options);
+  if (ctx.tenantType !== "agency") {
+    throw Object.assign(new Error("forbidden"), { status: 403 });
+  }
+  return ctx;
+}
+
+export async function assertClientContext(req: NextRequest, options?: AssertOptions) {
+  const ctx = await assertTenantWriteContext(req, options);
+  if (ctx.tenantType === "agency") {
+    throw Object.assign(new Error("forbidden"), { status: 403 });
+  }
+  return ctx;
+}
+
+export async function assertTenantMembership(req: NextRequest) {
+  return assertTenantWriteContext(req);
 }

@@ -1,17 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertAgencyContext } from "@/lib/tenant-context";
 import { initTenantUsageIfMissing } from "@/lib/usage";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
-    const { tenantId: activeTenant, tenant: agency } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId: activeTenant } = await assertAgencyContext(req as any);
     const db = getAdminFirestore();
-    if (agency?.type !== "agency") {
-      return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
-    }
 
     const clientsSnap = await db
       .collection("tenants")
@@ -29,11 +27,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { user, tenantId: activeTenant, tenant: agency } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { user, tenantId: activeTenant } = await assertAgencyContext(req as any, {
+      roles: ["owner", "admin"],
+    });
     const db = getAdminFirestore();
-    if (agency?.type !== "agency") {
-      return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
-    }
 
     const body = await req.json().catch(() => ({}));
     const name = (body?.name || "").trim();

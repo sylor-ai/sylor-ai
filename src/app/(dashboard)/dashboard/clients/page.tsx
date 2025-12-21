@@ -16,6 +16,7 @@ type ClientTenant = {
   id: string;
   businessName: string;
   createdAt?: any;
+  installVerifiedAt?: any;
 };
 
 export default function ClientsPage() {
@@ -172,6 +173,7 @@ export default function ClientsPage() {
                   <tr>
                     <th className="px-3 py-2">Name</th>
                     <th className="px-3 py-2">Created</th>
+                    <th className="px-3 py-2">Install</th>
                     <th className="px-3 py-2" />
                   </tr>
                 </thead>
@@ -181,6 +183,17 @@ export default function ClientsPage() {
                       <td className="px-3 py-2 font-medium text-white">{c.businessName}</td>
                       <td className="px-3 py-2 text-white/70">
                         {formatTimestamp((c as any).createdAt)}
+                      </td>
+                      <td className="px-3 py-2">
+                        {c.installVerifiedAt ? (
+                          <span className="inline-flex items-center gap-2 rounded-full border border-emerald-300/30 bg-emerald-400/10 px-3 py-1 text-[11px] text-emerald-100">
+                            Install Verified
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] text-white/60">
+                            Not verified
+                          </span>
+                        )}
                       </td>
                       <td className="px-3 py-2 text-right">
                         <button

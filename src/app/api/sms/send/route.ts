@@ -3,12 +3,13 @@ import { NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import { sendSms } from "@/lib/telnyx";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function POST(req: Request) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
 
     const db = getAdminFirestore();
     const tenantDoc = await db.collection("tenants").doc(tenantId).get();

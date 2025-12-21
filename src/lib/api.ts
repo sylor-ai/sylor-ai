@@ -89,6 +89,7 @@ export async function getPublicLinkSettings(): Promise<{
   publicSlug?: string | null;
   publicCaptureEnabled?: boolean | null;
   businessName?: string | null;
+  installVerifiedAt?: string | null;
   error?: string;
 }> {
   try {
@@ -114,6 +115,7 @@ export async function getPublicLinkSettings(): Promise<{
       publicSlug: data.publicSlug ?? null,
       publicCaptureEnabled: data.publicCaptureEnabled ?? false,
       businessName: data.businessName ?? null,
+      installVerifiedAt: data.installVerifiedAt ?? null,
     };
   } catch (err: any) {
     console.error("Error in getPublicLinkSettings:", err);

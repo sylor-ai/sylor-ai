@@ -3,26 +3,54 @@
   "middleware": {
     "/": {
       "files": [
-        "server/edge/chunks/edge-wrapper_0b0266f1.js",
-        "server/edge/chunks/[root-of-the-server]__8345bbdf._.js",
-        "server/edge/chunks/turbopack-edge-wrapper_b4cf2a69.js"
+        "server/edge/chunks/node_modules_next_dist_esm_build_templates_edge-wrapper_3b93bb62.js",
+        "server/edge/chunks/[root-of-the-server]__9491d0b8._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_cd32efca.js"
       ],
       "name": "middleware",
       "page": "/",
       "matchers": [
         {
-          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!_next\\/static|_next\\/image|favicon.ico|assets\\/|.*\\.(?:png|jpg|svg|ico|css|js)).*))(\\\\.json)?[\\/#\\?]?$",
-          "originalSource": "/((?!_next/static|_next/image|favicon.ico|assets/|.*\\.(?:png|jpg|svg|ico|css|js)).*)"
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/dashboard(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/dashboard/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/leads(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/leads/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/messages(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/messages/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/appointments(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/appointments/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/billing(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/billing/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/settings(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/settings/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/admin(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/admin/:path*"
+        },
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/agency(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\\\.json)?[\\/#\\?]?$",
+          "originalSource": "/agency/:path*"
         }
       ],
       "wasm": [],
       "assets": [],
       "env": {
-        "__NEXT_BUILD_ID": "ufUunPhxm1hA2YvfMVNuv",
-        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "vi19pMxdAzRwoYhIex5NSkrJKBNlsYj5hfvg6Zedua4=",
-        "__NEXT_PREVIEW_MODE_ID": "86cadf9c05cf22169e196273866abb19",
-        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "c0c98f01d04cedc3b3014b090ee762a4e06615046aa31b7db314d7391c931666",
-        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "1423898508843650b457350396546f1e44847c172d1f1afd0ac3016054093ef1"
+        "__NEXT_BUILD_ID": "jrGY9GwdACYa4NufOgurD",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "XjvgaUkYx5RwgDeCCSkR1BNJErNR+2BPQdf5iznoncI=",
+        "__NEXT_PREVIEW_MODE_ID": "33a8f3d4e4a13ed6f005d9fa70959703",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "a7f8a1a0ed663e0a7072557d515b7f7d6b70f8a01870a4934a5c795373df2447",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "6268faa7c2b4154b1dac82d2214a145428630ae1583239d76e2297eec5899ca9"
       }
     }
   },

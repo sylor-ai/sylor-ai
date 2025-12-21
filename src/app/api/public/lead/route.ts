@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import { authRatelimit } from "@/lib/rate-limit";
 
 type LeadPayload = {
@@ -82,6 +83,20 @@ export async function POST(req: NextRequest) {
       publicSlug: slug || null,
       createdAt: new Date(),
     });
+
+    // Mark install verified on first successful inbound lead
+    const tenantRef = db.collection("tenants").doc(tenantId);
+    const tenantSnap = await tenantRef.get();
+    const tenantData = tenantSnap.exists ? (tenantSnap.data() as any) : null;
+    if (!tenantData?.installVerifiedAt) {
+      await tenantRef.set(
+        {
+          installVerifiedAt: FieldValue.serverTimestamp(),
+          installVerifiedSource: "public_lead",
+        },
+        { merge: true }
+      );
+    }
 
     return NextResponse.json({ ok: true });
   } catch (err) {

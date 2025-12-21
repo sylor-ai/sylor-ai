@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertAgencyContext } from "@/lib/tenant-context";
 import { getUsageStats } from "@/lib/usage";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
-    const { tenantId, tenant } = await assertTenantMembership(req as any);
-    if (tenant?.type !== "agency") {
-      return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
-    }
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertAgencyContext(req as any);
 
     const db = getAdminFirestore();
     const clientsSnap = await db

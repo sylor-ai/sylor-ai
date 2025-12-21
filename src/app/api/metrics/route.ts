@@ -1,13 +1,13 @@
 // FILE: src/app/api/metrics/route.ts
 import { NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: Request) {
   try {
     const db = getAdminFirestore();
-    const { tenantId } = await assertTenantMembership(req as any);
+    const { tenantId } = await assertTenantWriteContext(req as any);
 
     const leadsSnap = await db.collection("tenants").doc(tenantId).collection("leads").get();
     const convosSnap = await db.collection("tenants").doc(tenantId).collection("conversations").get();

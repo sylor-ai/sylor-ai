@@ -4,12 +4,12 @@ import {
 } from "@/lib/firebase-admin";
 import { resolvePlanConfig } from "@/lib/billing";
 import { getUsageStats, ensureTenantUsageDefaults } from "@/lib/usage";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    const { tenantId } = await assertTenantWriteContext(req as any);
     const db = getAdminFirestore();
 
     const tenantSnap = await db.collection("tenants").doc(tenantId).get();

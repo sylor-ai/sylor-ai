@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { Users } from "lucide-react";
 import { api } from "@/lib/api";
 import { DashboardButton } from "@/components/dashboard-button";
@@ -11,6 +11,8 @@ import WorkspaceSwitcher from "@/components/workspace-switcher";
 import { getFirebaseAuth } from "@/lib/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { logLoginToServer } from "@/lib/api";
+import { NavItem, getDefaultRouteForTenant, getNavForTenant, isAgencyPath } from "@/lib/navigation";
+import { TenantMembership, TenantType } from "@/types";
 
 type PlanCard = {
   title: string;
@@ -27,22 +29,7 @@ function useHydrated() {
   return hydrated;
 }
 
-type TenantKind = "agency" | "client" | null;
-
-const NAV = [
-  { label: "Overview", href: "/dashboard", icon: "grid" },
-  { label: "Leads", href: "/leads", icon: "checklist" },
-  { label: "Messages", href: "/messages", icon: "chat" },
-  { label: "Usage", href: "/dashboard/usage", icon: "gauge" },
-  { label: "Performance", href: "/dashboard/performance", icon: "trending" },
-  { label: "Clients", href: "/dashboard/clients", icon: "users" },
-  { label: "Billing", href: "/billing", icon: "card" },
-  { label: "AI Settings", href: "/settings/ai", icon: "cog" },
-  { label: "Public lead link", href: "/settings/public-link", icon: "cog" },
-  { label: "Account settings", href: "/settings/account", icon: "user-circle" },
-];
-
-type NavItem = (typeof NAV)[number];
+type TenantKind = TenantType | null;
 
 function isNavActive(pathname: string, item: NavItem) {
   const isOverview = item.href === "/dashboard";
@@ -51,7 +38,7 @@ function isNavActive(pathname: string, item: NavItem) {
     : pathname === item.href || pathname.startsWith(`${item.href}/`);
 }
 
-function SidebarIcon({ name }: { name: string }) {
+function SidebarIcon({ name }: { name?: string }) {
   const base =
     "inline-flex h-5 w-5 items-center justify-center rounded-md border border-white/15";
   switch (name) {
@@ -234,7 +221,7 @@ function SidebarContent({
   onLogout,
 }: SidebarContentProps) {
   const router = useRouter();
-  const skeletonCount = navItems.length || NAV.length;
+  const skeletonCount = navItems.length || 6;
 
   return (
     <div className="flex h-full flex-col">
@@ -333,6 +320,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const [authReady, setAuthReady] = useState(false);
   const [authedUser, setAuthedUser] = useState<any>(null);
   const [sessionSynced, setSessionSynced] = useState(false);
+  const [currentRole, setCurrentRole] = useState<TenantMembership["role"] | null>(null);
 
   const updateTenantType = useCallback(
     (value: TenantKind) => {
@@ -340,6 +328,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     },
     []
   );
+
+  const updateTenantRole = useCallback((value: TenantMembership["role"] | null) => {
+    setCurrentRole(value);
+  }, []);
 
   async function handleLogout() {
     try {
@@ -450,10 +442,12 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
               ? activeWs.type
               : null;
           updateTenantType(resolvedType);
+          updateTenantRole((activeWs?.role as TenantMembership["role"]) || null);
         }
       } catch (err) {
         if (active) {
           updateTenantType(null);
+          updateTenantRole(null);
           console.warn("[layout] unable to load workspace type", err);
           // If we can't load workspaces (likely expired session), send to login.
           router.replace("/login");
@@ -469,13 +463,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     };
   }, [authReady, authedUser, router, sessionSynced]);
 
-  const filteredNav =
-    currentTenantType === "agency"
-      ? NAV
-      : NAV.filter((item) => item.label !== "Clients");
+  const navItems = useMemo(
+    () => getNavForTenant({ tenantType: currentTenantType, role: currentRole }),
+    [currentTenantType, currentRole]
+  );
 
   const activeNav =
-    NAV.find((item) => isNavActive(pathname, item))?.label || "Dashboard";
+    navItems.find((item) => isNavActive(pathname, item))?.label || "Dashboard";
+
+  useEffect(() => {
+    if (tenantTypeLoading) return;
+    if (currentTenantType !== "agency" && isAgencyPath(pathname)) {
+      const fallback = getDefaultRouteForTenant({ tenantType: currentTenantType });
+      router.replace(fallback);
+    }
+  }, [currentTenantType, pathname, router, tenantTypeLoading]);
 
   return (
     <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-[#050509] text-white">
@@ -483,7 +485,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         {/* Desktop sidebar */}
         <aside className="hidden lg:block lg:w-64 lg:border-r lg:border-white/5 bg-[#09090d]">
           <SidebarContent
-            navItems={filteredNav}
+            navItems={navItems}
             hydrated={hydrated}
             tenantTypeLoading={tenantTypeLoading}
             activePath={pathname}
@@ -579,7 +581,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           aria-modal="true"
         >
           <SidebarContent
-            navItems={filteredNav}
+            navItems={navItems}
             hydrated={hydrated}
             tenantTypeLoading={tenantTypeLoading}
             activePath={pathname}

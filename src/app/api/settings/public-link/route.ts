@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 function normalizeSlug(raw: string): string {
@@ -14,7 +14,7 @@ function normalizeSlug(raw: string): string {
 
 export async function GET(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    const { tenantId } = await assertTenantWriteContext(req as any);
     const db = getAdminFirestore();
 
     const tenantSnap = await db.collection("tenants").doc(tenantId).get();
@@ -28,6 +28,7 @@ export async function GET(req: NextRequest) {
       publicSlug: t.publicSlug ?? null,
       publicCaptureEnabled: t.publicCaptureEnabled ?? false,
       businessName: t.businessName ?? "",
+      installVerifiedAt: t.installVerifiedAt ?? null,
     });
   } catch (err) {
     return handleTenantApiError(err, "[public-link GET] error");
@@ -36,7 +37,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
     const db = getAdminFirestore();
 
     const body = await req.json().catch(() => ({} as any));

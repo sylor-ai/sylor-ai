@@ -15,6 +15,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
+    // REQUIRE_TENANT_WRITE_CONTEXT
     const ctx = await getAuthContext(req);
     if (!ctx) {
       return NextResponse.json(

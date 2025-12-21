@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { FieldValue } from "firebase-admin/firestore";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { generateAiSmsReply } from "@/lib/ai-bot";
 import { sendSms } from "@/lib/telnyx";
 import { handleTenantApiError } from "@/lib/api-error";
@@ -10,7 +10,8 @@ const DEFAULT_REVIVE_LOOKBACK_DAYS = 7;
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
 
     const db = getAdminFirestore();
 

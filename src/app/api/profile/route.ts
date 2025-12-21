@@ -1,12 +1,12 @@
 // FILE: src/app/api/profile/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function GET(req: NextRequest) {
   try {
-    const { user, tenantId } = await assertTenantMembership(req);
+    const { user, tenantId } = await assertTenantWriteContext(req as any);
     if (!user || !tenantId) {
       return NextResponse.json({ ok: false, error: "unauthorized" }, { status: 401 });
     }
@@ -29,7 +29,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
     if (!tenantId) {
       return NextResponse.json(
         { ok: false, error: "no-tenant" },

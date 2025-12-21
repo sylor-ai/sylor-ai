@@ -1,12 +1,13 @@
 // FILE: src/app/api/conversations/ai-toggle/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId } = await assertTenantMembership(req as any);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId } = await assertTenantWriteContext(req as any);
     const db = getAdminFirestore();
 
     const { conversationId, aiPaused } = await req.json().catch(() => ({} as any));

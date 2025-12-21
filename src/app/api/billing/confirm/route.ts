@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getAdminFirestore } from "@/lib/firebase-admin";
 import { resolvePlanConfig } from "@/lib/billing";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 
 const PRICE_TO_PLAN: Record<string, { planId: "agency_core" | "agency_scale" }> = {};
 if (process.env.STRIPE_AGENCY_CORE_PRICE_ID) {
@@ -15,6 +16,8 @@ const AGENCY_PLAN_PRICE_IDS = new Set(Object.keys(PRICE_TO_PLAN));
 
 export async function POST(req: NextRequest) {
   try {
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId: activeTenant } = await assertTenantWriteContext(req as any);
     const { sessionId } = await req.json().catch(() => ({} as any));
     if (!sessionId) return NextResponse.json({ ok: false, error: "missing-sessionId" }, { status: 400 });
 
@@ -34,6 +37,9 @@ export async function POST(req: NextRequest) {
 
     if (!planIdRaw || !tenantId) {
       return NextResponse.json({ ok: false, error: "missing-metadata" }, { status: 400 });
+    }
+    if (tenantId !== activeTenant) {
+      return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
     }
 
     const mappedPlanId = priceId && PRICE_TO_PLAN[priceId] ? PRICE_TO_PLAN[priceId].planId : null;

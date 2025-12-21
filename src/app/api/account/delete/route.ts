@@ -1,12 +1,13 @@
 // SERVER ROUTE – runs on server, can use firebase-admin
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminAuth, getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { handleTenantApiError } from "@/lib/api-error";
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenant, user } = await assertTenantMembership(req);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenant, user } = await assertTenantWriteContext(req as any);
     const { uid } = await req.json();
 
     if (!uid || uid !== user.uid) {

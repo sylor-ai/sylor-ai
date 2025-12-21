@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { assertTenantMembership } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import { FieldValue } from "firebase-admin/firestore";
 import { handleTenantApiError } from "@/lib/api-error";
 
@@ -9,7 +9,7 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { tenantId } = await assertTenantMembership(req);
+    const { tenantId } = await assertTenantWriteContext(req as any);
     const { id: convoId } = await context.params;
     const db = getAdminFirestore();
 
@@ -67,7 +67,8 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { tenantId, user } = await assertTenantMembership(req);
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId, user } = await assertTenantWriteContext(req as any);
     const { id: convoId } = await context.params;
     const body = await req.json().catch(() => ({} as any));
     const { aiPaused } = body || {};

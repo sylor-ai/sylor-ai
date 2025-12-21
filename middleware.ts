@@ -9,6 +9,7 @@ const PROTECTED_PATHS = [
   "/billing",
   "/settings",
   "/admin",
+  "/agency",
 ];
 
 function isProtectedPath(pathname: string) {
@@ -20,6 +21,8 @@ function isProtectedPath(pathname: string) {
 export function middleware(request: NextRequest) {
   try {
     const { pathname } = new URL(request.url);
+    const tenantType = request.cookies.get("sylor_tenant_type")?.value || null;
+    const isAgency = pathname.startsWith("/agency");
 
     if (
       pathname === "/" ||
@@ -40,6 +43,10 @@ export function middleware(request: NextRequest) {
         loginUrl.searchParams.set("from", pathname);
         return NextResponse.redirect(loginUrl);
       }
+      if (isAgency && tenantType && tenantType !== "agency") {
+        const redirectUrl = new URL("/dashboard", request.url);
+        return NextResponse.redirect(redirectUrl);
+      }
       return NextResponse.next();
     }
 
@@ -59,5 +66,6 @@ export const config = {
     "/billing/:path*",
     "/settings/:path*",
     "/admin/:path*",
+    "/agency/:path*",
   ],
 };

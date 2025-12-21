@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import { NextRequest, NextResponse } from "next/server";
 import { getAdminFirestore } from "@/lib/firebase-admin";
-import { getActiveTenantForRequest } from "@/lib/tenant-context";
+import { assertTenantWriteContext } from "@/lib/tenant-context";
 import type { PlanId } from "@/types";
 
 const stripeSecret = process.env.STRIPE_SECRET_KEY;
@@ -22,13 +22,8 @@ const PLAN_TO_PRICE: Record<PlanId, string | undefined> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { tenantId, tenant, user } = await getActiveTenantForRequest(req as any);
-    if (!user) {
-      throw Object.assign(new Error("unauthorized"), { status: 401 });
-    }
-    if (!tenantId || !tenant) {
-      throw Object.assign(new Error("no-tenant"), { status: 400 });
-    }
+    // REQUIRE_TENANT_WRITE_CONTEXT
+    const { tenantId, tenant, user } = await assertTenantWriteContext(req as any);
 
     const body = await req.json().catch(() => ({}));
     const plan = (body.planId || body.plan || "") as PlanId;
